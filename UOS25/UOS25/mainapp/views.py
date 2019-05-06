@@ -15,4 +15,9 @@ def registerProduct(request):
         form = Form()
     return render(request, 'registerProduct.html', {'form':form})
 
+def dashBoard(request):
+    return render(request, 'dashBoard.html')
+
+def adminPage(request):
+    return render(request, 'adminPage.html')
     

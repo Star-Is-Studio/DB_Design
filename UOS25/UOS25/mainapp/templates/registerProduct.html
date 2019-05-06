@@ -1,4 +1,4 @@
-{%load staticfiles%}
+{%load static%}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,15 +24,20 @@
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">UOS25</a>
+        <a class="navbar-brand" href="/index">UOS25</a>
       </div>
   
       <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-          <li class="active"><a href="registerProduct" style="text-decoration:none">상품등록하기</a></li>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="/dashBoard">게시판</a></li>
+          <li class="active"><a href="/registerProduct" style="text-decoration:none">상품등록하기</a></li>
         </ul>
-      </div><!-- /.navbar-collapse -->
+        <form class="navbar-form navbar-right">
+          <input type="text" class="form-control" placeholder="Search...">
+        </form>
+      </div>
+      
     </div><!-- /.container-fluid -->
   </nav>
   
@@ -50,12 +55,15 @@
   </form>
 
   <!-- Footer -->
-  <footer style="margin-top:50px">
+  <footer style="margin-top:50px; background-color: #f5f5f5">
+    <br>
     <div class="container">
-      <p class="m-0 text-center text-white">Copyright &copy; 김현우,이정한,임창일 2019</p>
+      <p class="m-0 text-center text-white"><b>Copyright &copy; 김현우,이정한,임창일 2019</b></p>
+      <p class="m-0 text-center text-white"><b>문의사항 : diablo8273@gmail.com</b></p>
     </div>
-    <!-- /.container -->
+    <br>
   </footer>
+
 
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'js/jquery.min.js' %}"></script>
