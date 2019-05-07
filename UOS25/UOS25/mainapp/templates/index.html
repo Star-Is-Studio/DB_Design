@@ -16,58 +16,344 @@
   <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
   <!-- Custom styles for this template -->
   <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Nanum+Gothic" rel="stylesheet">
   <style>
+    body{
+      font-family: 'Nanum Gothic', sans-serif;
+    }
     hr{
       margin-top: 5px;
       margin-bottom: 5px
+    }    
+
+    .menu-title{
+      font-size: 20px;
     }
+
+    .navMenu{
+      margin-bottom: 0px;
+      height: 50px;
+    }
+    .navMenuFix{
+      width: 100%;
+      position:fixed;
+      top:0px;
+      z-index: 100;
+    }
+    .sideBar{
+      position:fixed;
+      z-index: 99;
+      top:50px;
+      width: 250px;
+      height: 1200px;
+    }
+    .main{
+      margin-left:250px;
+      z-index: 98;
+    }
+    .main-margin{
+      margin-left: 160px;
+    }
+    @media(max-width:900px){
+          .side-bar-small{
+            display: none;
+          }
+          .main-small{
+            margin-left: 0px;
+          }
+        }
+
   </style>
+  <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script>
+    $(document).ready(function(){
+      var navMenuOffset = $('.navMenu').offset();
+      $(window).scroll(function(){
+        if($(document).scrollTop() > navMenuOffset.top){
+          $('.navMenu').addClass('navMenuFix');
+        }
+        else{
+          $('.navMenu').removeClass('navMenuFix');
+        }
+      });
+    });
+  </script>
 </head>
 
 <body>
-  <nav class="navbar navbar-default"style="margin-bottom:0px">
+  <nav class="navbar navbar-default fixed-title navMenu">
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
-        <a class="navbar-brand" href="/index">UOS25</a>
+        <a class="navbar-brand" href="/index"><b>UOS25</b></a>
       </div> 
     </div><!-- /.container-fluid -->
   </nav>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-2" style="padding-left: 0px;padding-right: 0px;">
+    <div class="sideBar side-bar-small" style="padding-left: 0px;padding-right: 0px;">
     <b>
-      <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+      <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
         <br>
-      <li role="presentation" class="active"><a href="#"style="color:white" class="menu-title">주문/반품관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp주문관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp반품관리</a></li>
-      <hr style="width:90%"">
-      <li role="presentation"><a href="#"style="color:white;"class="menu-title">판매관리</a></li>
-      <hr style="width:90%"">
-      <li role="presentation"><a href="#"style="color:white"class="menu-title">재고관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp입고관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp출고관리</a></li>
-      <hr style="width:90%"">
-      <li role="presentation"><a href="#"style="color:white"class="menu-title">품목관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp신제품등록</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp물품삭제</a></li>
-      <hr style="width:90%"">
-      <li role="presentation"><a href="#"style="color:white"class="menu-title">자금관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp수입관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp지출관리</a></li>
-      <hr style="width:90%"">
-      <li role="presentation"><a href="#"style="color:white"class="menu-title">인력관리</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp직원고용</a></li>
-      <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp직원해고</a></li>
+      <li role="presentation" >
+        <a href="#"style="color:white" class="menu-title" data-toggle="collapse" data-target="#manage">
+        <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
+        주문/반품관리
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </a>
+    </li>
+      <div id="manage" class="collapse">
+          <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp주문관리</a></li>
+          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp반품관리</a></li>
+          </ul>
+      </div>
+      <hr style="width:90%">
+      <li role="presentation">
+        <a href="#"style="color:white;"class="menu-title">
+          <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+        판매관리
+      </a>
+    </li>
+      <hr style="width:90%">
+      <li role="presentation">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#remain">
+            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+        재고관리
+        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+      </a>
+      </li>
+      <div id="remain" class="collapse">
+          <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp입고관리</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp출고관리</a></li>
+          </ul>
+      </div>
+      <hr style="width:90%">
+      <li role="presentation">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#prod">
+            <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+          품목관리
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+        </a>
+      </li>
+      <div id="prod" class="collapse">
+          <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp신제품등록</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp물품삭제</a></li>
+          </ul>
+      </div>
+
+      <hr style="width:90%">
+      <li role="presentation">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#money">
+            <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+          자금관리
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+        </a>
+      </li>
+      <div id="money" class="collapse">
+          <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp수입관리</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp지출관리</a></li>
+          </ul>
+      </div>
+
+      <hr style="width:90%">
+      <li role="presentation">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#hu">
+            <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
+          인력관리
+          <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+        </a>
+      </li>
+      <div id="hu" class="collapse">
+          <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp직원고용</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp직원해고</a></li>
+          </ul>
+        </div>
       </ul>
     </b>
     </div>
-    <div class="col-md-7 col-offset-2" style="background-color:#f5f5f5">내용</div>
+
+    <div class="main main-small" style="background-color:#f5f5f5">
+      <table class="table table-striped" style="margin-left:5px">
+        <caption><h1 class="well">DashBoard</h1></caption>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>상품명</th>
+            <th>상품설명</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>1</th>
+            <td>갤럭시</td>
+            <td>아이폰보다좋음</td>
+          </tr>
+          <tr>
+            <th>2</th>
+            <td>삼다수</td>
+            <td>비쌈</td>
+          </tr>
+          <tr>
+            <th>3</th>
+            <td>시립대</td>
+            <td>쌈</td>
+          </tr>
+          <tr>
+              <th>1</th>
+              <td>갤럭시</td>
+              <td>아이폰보다좋음</td>
+            </tr>
+            <tr>
+              <th>2</th>
+              <td>삼다수</td>
+              <td>비쌈</td>
+            </tr>
+            <tr>
+              <th>3</th>
+              <td>시립대</td>
+              <td>쌈</td>
+            </tr>
+            <tr>
+                <th>1</th>
+                <td>갤럭시</td>
+                <td>아이폰보다좋음</td>
+              </tr>
+              <tr>
+                <th>2</th>
+                <td>삼다수</td>
+                <td>비쌈</td>
+              </tr>
+              <tr>
+                <th>3</th>
+                <td>시립대</td>
+                <td>쌈</td>
+              </tr>
+              <tr>
+                  <th>1</th>
+                  <td>갤럭시</td>
+                  <td>아이폰보다좋음</td>
+                </tr>
+                <tr>
+                  <th>2</th>
+                  <td>삼다수</td>
+                  <td>비쌈</td>
+                </tr>
+                <tr>
+                  <th>3</th>
+                  <td>시립대</td>
+                  <td>쌈</td>
+                </tr><tr>
+                    <th>1</th>
+                    <td>갤럭시</td>
+                    <td>아이폰보다좋음</td>
+                  </tr>
+                  <tr>
+                    <th>2</th>
+                    <td>삼다수</td>
+                    <td>비쌈</td>
+                  </tr>
+                  <tr>
+                    <th>3</th>
+                    <td>시립대</td>
+                    <td>쌈</td>
+                  </tr><tr>
+                      <th>1</th>
+                      <td>갤럭시</td>
+                      <td>아이폰보다좋음</td>
+                    </tr>
+                    <tr>
+                      <th>2</th>
+                      <td>삼다수</td>
+                      <td>비쌈</td>
+                    </tr>
+                    <tr>
+                      <th>3</th>
+                      <td>시립대</td>
+                      <td>쌈</td>
+                    </tr><tr>
+                        <th>1</th>
+                        <td>갤럭시</td>
+                        <td>아이폰보다좋음</td>
+                      </tr>
+                      <tr>
+                        <th>2</th>
+                        <td>삼다수</td>
+                        <td>비쌈</td>
+                      </tr>
+                      <tr>
+                        <th>3</th>
+                        <td>시립대</td>
+                        <td>쌈</td>
+                      </tr><tr>
+                          <th>1</th>
+                          <td>갤럭시</td>
+                          <td>아이폰보다좋음</td>
+                        </tr>
+                        <tr>
+                          <th>2</th>
+                          <td>삼다수</td>
+                          <td>비쌈</td>
+                        </tr>
+                        <tr>
+                          <th>3</th>
+                          <td>시립대</td>
+                          <td>쌈</td>
+                        </tr><tr>
+                            <th>1</th>
+                            <td>갤럭시</td>
+                            <td>아이폰보다좋음</td>
+                          </tr>
+                          <tr>
+                            <th>2</th>
+                            <td>삼다수</td>
+                            <td>비쌈</td>
+                          </tr>
+                          <tr>
+                            <th>3</th>
+                            <td>시립대</td>
+                            <td>쌈</td>
+                          </tr>
+          
+        </tbody>
+      </table>
+      <nav>
+        <div class="text-center">
+          <ul class="pagination">
+            <li>
+              <a href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">4</a></li>
+            <li><a href="#">5</a></li>
+            <li>
+              <a href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
   </div>
-
 </div>
-
+    <!-- Footer -->
+    <footer style="margin-top:50px; width:100%;background-color: #f5f5f5">
+        <br>
+        <div class="container">
+          <p class="m-0 text-center text-white"><b>Copyright &copy; 김현우,이정한,임창일 2019</b></p>
+          <p class="m-0 text-center text-white"><b>문의사항 : diablo8273@gmail.com</b></p>
+        </div>
+        <br>
+      </footer>
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
