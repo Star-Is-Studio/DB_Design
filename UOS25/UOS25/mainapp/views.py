@@ -3,7 +3,16 @@ from mainapp.forms import *
 
 # Create your views here.
 
-def login(request):
+'''def login(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = UserForm()
+    return render(request, 'index.html',{'form':form})'''
+
+def index(request):
     if request.method == 'POST':
         form = UserForm(request.POST)
         if form.is_valid():
@@ -11,10 +20,7 @@ def login(request):
     else:
         form = UserForm()
     return render(request, 'index.html',{'form':form})
-    
-def index(request):
-    return render(request, 'index.html')
-    
+
 def registerProduct(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -24,9 +30,14 @@ def registerProduct(request):
         form = ProductForm()
     return render(request, 'registerProduct.html', {'form':form})
 
+def deleteProduct(request):
+    return render(request, 'deleteProduct.html')
+
 def dashBoard(request):
     return render(request, 'dashBoard.html')
 
 def adminPage(request):
     return render(request, 'adminPage.html')
+
+
     

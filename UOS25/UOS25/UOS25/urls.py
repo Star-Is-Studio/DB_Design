@@ -22,7 +22,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/',index),
     path('registerProduct/',registerProduct),
+    path('deleteProduct/',deleteProduct),
     path('dashBoard/',dashBoard),
     path('adminPage/',adminPage),
-    path('login/',login),
+    #path('login/',login),
 ]
