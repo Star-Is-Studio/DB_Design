@@ -11,6 +11,17 @@ from mainapp.forms import *
     else:
         form = UserForm()
     return render(request, 'index.html',{'form':form})'''
+def login(request):
+    return render(request, 'login.html')
+
+def indexAdmin(request):
+    if request.method == 'POST':
+        form = UserForm(request.POST)
+        if form.is_valid():
+            form.save()
+    else:
+        form = UserForm()
+    return render(request, 'indexAdmin.html',{'form':form})
 
 def index(request):
     if request.method == 'POST':
@@ -39,5 +50,9 @@ def dashBoard(request):
 def adminPage(request):
     return render(request, 'adminPage.html')
 
+def employeeManage(request):
+    return render(request, 'employeeManage.html')
 
+def orderHead(request):
+    return render(request, 'orderHead.html')
     

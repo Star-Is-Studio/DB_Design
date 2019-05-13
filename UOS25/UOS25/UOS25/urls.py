@@ -21,9 +21,12 @@ from mainapp.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('index/',index),
+    path('indexAdmin/',indexAdmin),
+    path('orderHead/',orderHead),
     path('registerProduct/',registerProduct),
     path('deleteProduct/',deleteProduct),
+    path('employeeManage/',employeeManage),
     path('dashBoard/',dashBoard),
     path('adminPage/',adminPage),
-    #path('login/',login),
+    path('login/',login),
 ]

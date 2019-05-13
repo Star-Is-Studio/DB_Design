@@ -67,6 +67,7 @@
   </style>
   <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
   <script>
+
   </script>
 </head>
 
@@ -78,9 +79,6 @@
         <a class="navbar-brand" href="/index"><b>UOS25</b></a>
         <form class="navbar-brand" style="padding-top:8px">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
-        </form>
-        <form class="navbar-brand" style="padding-top:8px">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#signupModal">직원등록</button>
         </form>
       </div> 
     </div><!-- /.container-fluid -->
@@ -94,66 +92,51 @@
       <li role="presentation" >
         <a href="#"style="color:white" class="menu-title" data-toggle="collapse" data-target="#manage">
         <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
-        주문/반품관리
+        가맹점 관리
         <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
       </a>
     </li>
       <div id="manage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-          <li role="presentation" ><a href="/orderHead"style="color:white" >&nbsp&nbsp본사 주문 관리</a></li>
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp본사 반품 관리</a></li>
-          </ul>
+          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp가맹점 추가</a></li>
+          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp가맹점 수정</a></li>
+          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp가맹점 탈퇴</a></li>
+        </ul>
       </div>
       <hr style="width:90%">
       <li role="presentation">
-        <a href="#"style="color:white;"class="menu-title"data-toggle="collapse" data-target="#sale">
+        <a href="#"style="color:white;"class="menu-title">
           <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-        판매관리
-        <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
+        가맹요금 수납
       </a>
     </li>
-    <div id="sale" class="collapse">
-      <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp물품판매</a></li>
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp고객 반품 관리</a></li>
-      </ul>
-    </div>
       <hr style="width:90%">
       <li role="presentation">
-        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#remainManage">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#orderManage">
             <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-        재고관리
+        납품 및 주문 관리
         <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
       </a>
       </li>
-      <div id="remainManage" class="collapse">
+      <div id="orderManage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="#"style="color:white" data-toggle="collapse" data-target="#remain">
-                &nbsp&nbsp재고 현황 관리
-                <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-              </a></li>
-              <div id="remain" class="collapse">
-                <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                    <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 추가</a></li>
-                    <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 삭제</a></li>
-                </ul>
-            </div>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp유통기한관리</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp납품 업체 관리</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp가맹점 주문 관리</a></li>
           </ul>
       </div>
 
       <hr style="width:90%">
       <li role="presentation">
-        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#money">
+        <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#productManage">
             <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
-          자금관리
+          상품 관리
           <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
         </a>
       </li>
-      <div id="money" class="collapse">
+      <div id="productManage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp매출 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp유지비 관리</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp상품 등록</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp상품 조회/삭제</a></li>
           </ul>
       </div>
 
@@ -161,15 +144,14 @@
       <li role="presentation">
         <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#hu">
             <span class="glyphicon glyphicon-user" aria-hidden="true"></span>
-          인력관리
+          고객 관리
           <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
         </a>
       </li>
       <div id="hu" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="/employeeManage"style="color:white" >&nbsp&nbsp점원 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp근무기록 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp월급 관리</a></li>
+              <li role="presentation" ><a href="/hireEmployee"style="color:white" >&nbsp&nbsp고객 등록</a></li>
+              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp고객 조회/삭제</a></li>
             </ul>
         </div>
       </ul>

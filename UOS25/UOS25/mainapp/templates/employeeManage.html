@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="panel panel-default">
+    <div class="panel-body">
+      직원고용
+    </div>
+  </div>
+  <form method="POST" style="margin-left:50px;padding-bottom: 5px">
+    <div class="form-group" style="margin-left:50px">
+      <label for="name">직원이름</label>
+      <input type="text" class="form-control" id="name" name="employeeName" maxlength="50" style="width:auto">
+    </div>
+    {%csrf_token%}
+    <button type="submit" class="btn btn-default">고용</button>
+  </form>
+  <div class="panel panel-default">
+      <div class="panel-body" style="margin-left:50px">
+        직원해고
+      </div>
+    </div>
+  <form method="POST" style="margin-left:50px;padding-bottom: 5px">
+      <div class="form-group">
+        <label for="name">직원이름</label>
+        <input type="text" class="form-control" id="name" name="employeeName" maxlength="50" style="width:auto">
+      </div>
+      {%csrf_token%}
+      <button type="submit" class="btn btn-default">해고</button>
+    </form>
+{%endblock%}
+
