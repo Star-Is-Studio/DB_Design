@@ -52,17 +52,7 @@
       margin-left:250px;
       z-index: 98;
     }
-    .main-margin{
-      margin-left: 160px;
-    }
-    @media(max-width:900px){
-          .side-bar-small{
-            display: none;
-          }
-          .main-small{
-            margin-left: 0px;
-          }
-        }
+
 
   </style>
   <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -80,12 +70,15 @@
         <form class="navbar-brand" style="padding-top:8px">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
         </form>
+        <form class="navbar-brand" style="padding-top:8px">
+          <a class="btn btn-default" href="/login" role="button">로그아웃</a>
+      </form>
       </div> 
     </div><!-- /.container-fluid -->
   </nav>
 <div class="container-fluid">
   <div class="row">
-    <div class="sideBar side-bar-small" style="padding-left: 0px;padding-right: 0px;">
+    <div class="sideBar side-bar-small" id="sdBar" style="padding-left: 0px;padding-right: 0px;">
     <b>
       <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
         <br>
@@ -106,7 +99,7 @@
       <hr style="width:90%">
       <li role="presentation">
         <a href="#"style="color:white;"class="menu-title">
-          <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+          <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
         가맹요금 수납
       </a>
     </li>
@@ -128,7 +121,7 @@
       <hr style="width:90%">
       <li role="presentation">
         <a href="#"style="color:white"class="menu-title"data-toggle="collapse" data-target="#productManage">
-            <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-barcode" aria-hidden="true"></span>
           상품 관리
           <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
         </a>
@@ -216,7 +209,7 @@
 </div>
 
     <!-- Footer -->
-    <footer style="margin-top:50px; width:100%;background-color: #f5f5f5">
+    <footer style="width:100%;background-color: #e4bcbc">
         <br>
         <div class="container">
           <p class="m-0 text-center text-white"><b>Copyright &copy; 김현우,이정한,임창일 2019</b></p>
@@ -227,6 +220,8 @@
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <!-- Custom js-->
+  <script src="{% static 'js/custom.js' %}"></script>
 </body>
 
 </html>

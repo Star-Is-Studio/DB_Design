@@ -52,17 +52,6 @@
       margin-left:250px;
       z-index: 98;
     }
-    .main-margin{
-      margin-left: 160px;
-    }
-    @media(max-width:900px){
-          .side-bar-small{
-            display: none;
-          }
-          .main-small{
-            margin-left: 0px;
-          }
-        }
 
   </style>
   <script src="//code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -82,12 +71,15 @@
         <form class="navbar-brand" style="padding-top:8px">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#signupModal">직원등록</button>
         </form>
+        <form class="navbar-brand" style="padding-top:8px">
+          <a class="btn btn-default" href="/login" role="button">로그아웃</a>
+      </form>
       </div> 
     </div><!-- /.container-fluid -->
   </nav>
 <div class="container-fluid">
   <div class="row">
-    <div class="sideBar side-bar-small" style="padding-left: 0px;padding-right: 0px;">
+    <div class="sideBar side-bar-small" id="sdBar" style="padding-left: 0px;padding-right: 0px;">
     <b>
       <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
         <br>
@@ -100,8 +92,8 @@
     </li>
       <div id="manage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-          <li role="presentation" ><a href="/orderHead"style="color:white" >&nbsp&nbsp본사 주문 관리</a></li>
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp본사 반품 관리</a></li>
+          <li role="presentation" ><a href="/orderHeadManage"style="color:white" >&nbsp&nbsp본사 주문 관리</a></li>
+          <li role="presentation" ><a href="/refundHeadManage"style="color:white" >&nbsp&nbsp본사 반품 관리</a></li>
           </ul>
       </div>
       <hr style="width:90%">
@@ -114,8 +106,8 @@
     </li>
     <div id="sale" class="collapse">
       <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp물품판매</a></li>
-          <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp고객 반품 관리</a></li>
+          <li role="presentation" ><a href="/saleProduct"style="color:white" >&nbsp&nbsp물품판매</a></li>
+          <li role="presentation" ><a href="/refundCustomerManage"style="color:white" >&nbsp&nbsp고객 반품 관리</a></li>
       </ul>
     </div>
       <hr style="width:90%">
@@ -134,11 +126,11 @@
               </a></li>
               <div id="remain" class="collapse">
                 <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                    <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 추가</a></li>
-                    <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 삭제</a></li>
+                    <li role="presentation" ><a href="/registerProduct"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 추가</a></li>
+                    <li role="presentation" ><a href="/deleteProduct"style="color:white" >&nbsp&nbsp&nbsp&nbsp재고 삭제</a></li>
                 </ul>
             </div>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp유통기한관리</a></li>
+              <li role="presentation" ><a href="/expiryDateManage"style="color:white" >&nbsp&nbsp유통기한관리</a></li>
           </ul>
       </div>
 
@@ -152,8 +144,8 @@
       </li>
       <div id="money" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp매출 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp유지비 관리</a></li>
+              <li role="presentation" ><a href="/saleManage"style="color:white" >&nbsp&nbsp매출 관리</a></li>
+              <li role="presentation" ><a href="/costManage"style="color:white" >&nbsp&nbsp유지비 관리</a></li>
           </ul>
       </div>
 
@@ -168,13 +160,14 @@
       <div id="hu" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
               <li role="presentation" ><a href="/employeeManage"style="color:white" >&nbsp&nbsp점원 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp근무기록 관리</a></li>
-              <li role="presentation" ><a href="#"style="color:white" >&nbsp&nbsp월급 관리</a></li>
+              <li role="presentation" ><a href="/workRecordManage"style="color:white" >&nbsp&nbsp근무기록 관리</a></li>
+              <li role="presentation" ><a href="/salaryManage"style="color:white" >&nbsp&nbsp월급 관리</a></li>
             </ul>
         </div>
       </ul>
     </b>
-    </div>    <div class="main main-small" style="background-color:#f5f5f5">
+    </div>    
+    <div class="main main-small" style="background-color:#f5f5f5">
 {% block content %}
 {%endblock%}
 </div>
@@ -184,9 +177,6 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">
-                        &times;
-                    </span>
                 </button>
                 <h4 class="modal-title" id="loginModalLabel">로그인</h4>
                 <div class="modal-body">
@@ -234,7 +224,7 @@
 </div>
 
     <!-- Footer -->
-    <footer style="margin-top:50px; width:100%;background-color: #f5f5f5">
+    <footer style="width:100%;background-color: #e4bcbc">
         <br>
         <div class="container">
           <p class="m-0 text-center text-white"><b>Copyright &copy; 김현우,이정한,임창일 2019</b></p>
@@ -245,6 +235,8 @@
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
+  <!-- Custom js-->
+  <script src="{% static 'js/custom.js' %}"></script>
 </body>
 
 </html>

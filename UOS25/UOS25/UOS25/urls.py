@@ -17,16 +17,25 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from mainapp.views import *
-
+#123 : 미구현
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('index/',index),
-    path('indexAdmin/',indexAdmin),
-    path('orderHead/',orderHead),
-    path('registerProduct/',registerProduct),
-    path('deleteProduct/',deleteProduct),
-    path('employeeManage/',employeeManage),
-    path('dashBoard/',dashBoard),
-    path('adminPage/',adminPage),
-    path('login/',login),
+    path('login/',login),#로그인페이지
+    path('index/',index),#가맹점인덱스
+    path('indexAdmin/',indexAdmin),#본사인덱스
+    ###가맹점페이지
+    path('orderHeadManage/',orderHeadManage),#본사주문관리
+    path('refundHeadManage/',refundHeadManage),#본사반품관리
+    path('saleProduct/',saleProduct),#물품판매
+    path('refundCustomerManage/',refundCustomerManage),#고객반품관리
+    path('registerProduct/',registerProduct),#재고추가
+    path('deleteProduct/',deleteProduct),#재고삭제
+    path('expiryDateManage/',expiryDateManage),#유통기한관리123
+    path('saleManage/',saleManage),#매출관리123
+    path('costManage/',costManage),#유지비관리123
+    path('employeeManage/',employeeManage),#점원관리
+    path('workRecordManage/',workRecordManage),#근무기록관리123
+    path('salaryManage/',salaryManage),#월급관리123
+    ###본사페이지
+    
 ]
