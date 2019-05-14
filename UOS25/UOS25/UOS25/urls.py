@@ -20,7 +20,7 @@ from mainapp.views import *
 #123 : 미구현
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/',login),#로그인페이지
+    path('',login),#로그인페이지
     path('index/',index),#가맹점인덱스
     path('indexAdmin/',indexAdmin),#본사인덱스
     ###가맹점페이지
