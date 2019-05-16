@@ -72,12 +72,12 @@
     <div class="container-fluid">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
-        <a class="navbar-brand" href="/index"><b>UOS25</b></a>
+        <a class="navbar-brand" href="{% url 'indexAdmin' %}"><b>UOS25</b></a>
         <form class="navbar-brand" style="padding-top:8px">
             <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
         </form>
         <form class="navbar-brand" style="padding-top:8px">
-          <a class="btn btn-default" href="/login" role="button">로그아웃</a>
+          <a class="btn btn-default" href="{% url 'login' %}" role="button">로그아웃</a>
       </form>
       </div> 
     </div><!-- /.container-fluid -->
@@ -89,14 +89,14 @@
       <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
         <br>
       <li role="presentation" >
-        <a href="/franchiseManage"style="color:white" class="menu-title">
+        <a href="{% url 'franchiseManage' %}"style="color:white" class="menu-title">
         <span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>
         가맹점 관리
       </a>
     </li>
       <hr style="width:90%">
       <li role="presentation">
-        <a href="/franchiseCostManage"style="color:white;"class="menu-title">
+        <a href="{% url 'franchiseCostManage' %}"style="color:white;"class="menu-title">
           <span class="glyphicon glyphicon-usd" aria-hidden="true"></span>
         가맹요금 수납
       </a>
@@ -111,8 +111,8 @@
       </li>
       <div id="orderManage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="/deliveryManage"style="color:white" >&nbsp&nbsp납품 업체 관리</a></li>
-              <li role="presentation" ><a href="/franchiseOrderManage"style="color:white" >&nbsp&nbsp가맹점 주문 관리</a></li>
+              <li role="presentation" ><a href="{% url 'deliveryManage' %}"style="color:white" >&nbsp&nbsp납품 업체 관리</a></li>
+              <li role="presentation" ><a href="{% url 'franchiseOrderManage' %}"style="color:white" >&nbsp&nbsp가맹점 주문 관리</a></li>
           </ul>
       </div>
 
@@ -126,8 +126,8 @@
       </li>
       <div id="productManage" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="/registerHeadProduct"style="color:white" >&nbsp&nbsp상품 등록</a></li>
-              <li role="presentation" ><a href="/HeadProductManage"style="color:white" >&nbsp&nbsp상품 조회/삭제</a></li>
+              <li role="presentation" ><a href="{% url 'registerHeadProduct' %}"style="color:white" >&nbsp&nbsp상품 등록</a></li>
+              <li role="presentation" ><a href="{% url 'HeadProductManage' %}"style="color:white" >&nbsp&nbsp상품 조회/삭제</a></li>
           </ul>
       </div>
 
@@ -141,8 +141,8 @@
       </li>
       <div id="hu" class="collapse">
           <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-              <li role="presentation" ><a href="/registerCustomer"style="color:white" >&nbsp&nbsp고객 등록</a></li>
-              <li role="presentation" ><a href="/customerManage"style="color:white" >&nbsp&nbsp고객 조회/삭제</a></li>
+              <li role="presentation" ><a href="{% url 'registerCustomer' %}"style="color:white" >&nbsp&nbsp고객 등록</a></li>
+              <li role="presentation" ><a href="{% url 'customerManage' %}"style="color:white" >&nbsp&nbsp고객 조회/삭제</a></li>
             </ul>
         </div>
       </ul>
@@ -188,7 +188,7 @@
                     </span>
                 </button>
                 <h4 class="modal-title" id="signupModalLabel">회원등록</h4>
-                <form method="POST" action="login">
+                <form method="POST" action="{% url 'login' %}">
                 <div class="form-group">
                     <div class="modal-body">
                         <label for="userId">회원등록</label>
