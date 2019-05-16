@@ -73,4 +73,27 @@ def workRecordManage(request):
 
 def salaryManage(request):
     return render(request, 'salaryManage.html')
+##본사페이지
+def franchiseManage(request):
+    return render(request, 'franchiseManage.html')
 
+def franchiseCostManage(request):
+    return render(request, 'franchiseCostManage.html')
+
+def deliveryManage(request):
+    return render(request, 'deliveryManage.html')
+
+def franchiseOrderManage(request):
+    return render(request, 'franchiseOrderManage.html')
+
+def registerHeadProduct(request):
+    return render(request, 'registerHeadProduct.html')
+
+def HeadProductManage(request):
+    return render(request, 'HeadProductManage.html')
+
+def registerCustomer(request):
+    return render(request, 'registerCustomer.html')
+
+def customerManage(request):
+    return render(request, 'customerManage.html')

@@ -6,46 +6,9 @@
   text-decoration: none;
   background-color: #283d92;
 }
-.menu-title{
-  font-size: 20px;
+h1{
+  font-family: 'Jua', sans-serif;
 }
-body{
-  font-family: 'Nanum Gothic', sans-serif;
+h2{
+  font-weight: bold;
 }
-hr{
-  margin-top: 5px;
-  margin-bottom: 5px
-}
-.navMenu{
-  margin-bottom: 0px;
-  height: 50px;
-}
-.navMenuFix{
-  width: 100%;
-  position:fixed;
-  top:0px;
-  z-index: 100;
-}
-.sideBar{
-  position:fixed;
-  z-index: 99;
-  top:50px;
-  width: 250px;
-  height: 1200px;
-}
-.main{
-  margin-left:250px;
-  z-index: 98;
-}
-.main-margin{
-  margin-left: 160px;
-}
-
-    @media(max-width:900px){
-      .side-bar-small{
-        display: none;
-      }
-      .main-small{
-        margin-left: 0px;
-      }
-    }

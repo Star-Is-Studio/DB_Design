@@ -20,6 +20,7 @@ from mainapp.views import *
 #123 : 미구현
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('login/',login),
     path('',login),#로그인페이지
     path('index/',index),#가맹점인덱스
     path('indexAdmin/',indexAdmin),#본사인덱스
@@ -37,5 +38,12 @@ urlpatterns = [
     path('workRecordManage/',workRecordManage),#근무기록관리123
     path('salaryManage/',salaryManage),#월급관리123
     ###본사페이지
-    
+    path('franchiseManage/',franchiseManage),#가맹점 관리
+    path('franchiseCostManage/',franchiseCostManage),#가맹요금 수납
+    path('deliveryManage/',deliveryManage),#납품 업체 관리
+    path('franchiseOrderManage/',franchiseOrderManage),#가맹점 주문 관리
+    path('registerHeadProduct/',registerHeadProduct),#상품 등록
+    path('HeadProductManage/',HeadProductManage),#상품 조회/삭제
+    path('registerCustomer/',registerCustomer),#고객 등록
+    path('customerManage/',customerManage),#고객 조회/삭제
 ]
