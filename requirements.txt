@@ -1,0 +1,2 @@
+django==1.11.8
+cx_oracle==6.4.1

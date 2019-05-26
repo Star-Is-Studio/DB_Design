@@ -75,11 +75,24 @@ WSGI_APPLICATION = 'UOS25.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # ORACLE_SETTING
+    'default' : {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'orcl',
+        'USER': 'uos25',
+        'PASSWORD': 'elqlelqlelq',
+        'HOST': 'dbdesign.c2lgvou0v1fy.ap-northeast-2.rds.amazonaws.com',
+        'PORT': '1521',
+        'DEFAULT_INDEX_TABLESPACE': 'UOS25',
     }
+    # LOCAL_SETTING
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
 }
+
+
 
 
 # Password validation
