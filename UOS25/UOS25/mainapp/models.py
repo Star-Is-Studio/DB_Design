@@ -3,20 +3,19 @@ from django.db import models
 # Create your models here.
 
 class Store(models.Model):
-    address = models.CharField(max_length=20)
+    address = models.CharField(max_length=80)
     contact = models.CharField(max_length=20)
     store_pay = models.FloatField() # 가맹요금비율
     store_code = models.IntegerField() # 지점상태코드
     
 class Supplier(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=25)
     contact = models.CharField(max_length=20)
-    email = models.CharField(max_length=20)
+    email = models.CharField(max_length=40)
     
 class Product(models.Model):
     barcode = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=50)
-    content = models.CharField(max_length=50)
     supply_price = models.IntegerField()
     unit_price = models.IntegerField()
     supplier_id = models.ForeignKey(Supplier) # ?
@@ -66,15 +65,14 @@ class Employee(models.Model):
     nighttime_hourpay = models.IntegerField()
     employed_date =  models.DateField()
     fire_date=  models.DateField()
-    contact = models.CharField(max_length=25)
+    contact = models.CharField(max_length=20)
     position_code = models.IntegerField()
 
 class Worklist(models.Model):
     emp_id = models.ForeignKey(Employee)
-    name = models.CharField(max_length=25)
     workstart_timestamp = models.DateTimeField()
     workend_timestamp = models.DateTimeField()
-    storeowner_check = models.BooleanField()
+    storeowner_check = models.CharField(max_length=1)
 
 class Maintenance(models.Model):
     store_id = models.ForeignKey(Store)
@@ -83,10 +81,10 @@ class Maintenance(models.Model):
     process_date = models.DateField()
     emp_id = models.ForeignKey(Employee)
     information = models.TextField() # 비고
-    storeowner_check = models.BooleanField()
+    storeowner_check = models.CharField(max_length=1)
 
 class Customer(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=25)
     mileage = models.IntegerField()
     gender = models.IntegerField()
     birthday = models.DateField()
@@ -98,7 +96,7 @@ class Receipt(models.Model):
     emp_id = models.ForeignKey(Employee)
     customer_id = models.ForeignKey(Customer)
     payment_method_code = models.IntegerField()
-    payment_information = models.CharField(max_length=20) # TODO 초단문?
+    payment_information = models.CharField(max_length=30)
     
 class Tradelist(models.Model):
     receipt_id = models.ForeignKey(Receipt)
@@ -107,12 +105,12 @@ class Tradelist(models.Model):
     is_refund = models.BooleanField()
     
 class Customerrefund(models.Model):
-    # receipt_id = models.ForeignKey() TODO 장고가 외래키를 기본키로 사용할 수 없는 걸로 보임.
+    receipt_id = models.ForeignKey(Receipt) # TODO 장고가 외래키를 기본키로 사용할 수 없는 걸로 보임.
     refund_date = models.DateTimeField()
     refund_reason_code = models.IntegerField()
 
 class Setting(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=20)
     value = models.IntegerField()
 
 class Code(models.Model):
