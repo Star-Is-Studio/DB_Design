@@ -5,8 +5,8 @@ from django.db import models
 class Store(models.Model):
     address = models.CharField(max_length=80)
     contact = models.CharField(max_length=20)
-    store_pay = models.FloatField() # 가맹요금비율
-    store_code = models.IntegerField() # 지점상태코드
+    store_pay = models.FloatField(default=None) # 가맹요금비율
+    store_code = models.IntegerField(default=None) # 지점상태코드
     
 class Supplier(models.Model):
     name = models.CharField(max_length=25)
@@ -14,104 +14,105 @@ class Supplier(models.Model):
     email = models.CharField(max_length=40)
     
 class Product(models.Model):
-    barcode = models.IntegerField(primary_key=True)
+    barcode = models.IntegerField(default=0, primary_key=True)
     name = models.CharField(max_length=50)
-    supply_price = models.IntegerField()
-    unit_price = models.IntegerField()
-    supplier_id = models.ForeignKey(Supplier) # ?
-    category_a = models.IntegerField() # 상품 대분류 코드
-    category_b = models.IntegerField() # 상품 소분류 코드
-    information = models.TextField()
-    img_path = models.TextField() # 사진파일경로
+    content = models.CharField(max_length=50)
+    supply_price = models.IntegerField(default=None)
+    unit_price = models.IntegerField(default=None)
+    supplier = models.ForeignKey(Supplier, default=None) # ?
+    category_a = models.IntegerField(default=None) # 상품 대분류 코드
+    category_b = models.IntegerField(default=None) # 상품 소분류 코드
+    information = models.TextField(default=None)
+    img_path = models.TextField(default=None) # 사진파일경로
 
 class Stock(models.Model):
-    store_id = models.ForeignKey(Store)
-    location_code = models.IntegerField() # TODO 이름이..
+    store = models.ForeignKey(Store)
+    location_code = models.IntegerField(default=None) # TODO 이름이..
     barcode  = models.ForeignKey(Product)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=None)
 
 class Order(models.Model):
-    store_id = models.ForeignKey(Store)
-    order_timestamp = models.DateTimeField()
-    complete_timestamp = models.DateTimeField()
-    process_code = models.IntegerField()
+    store = models.ForeignKey(Store)
+    order_timestamp = models.DateTimeField(default=None)
+    complete_timestamp = models.DateTimeField(default=None)
+    process_code = models.IntegerField(default=None)
     
 class Orderlist(models.Model):
-    order_id = models.ForeignKey(Order)
+    order = models.ForeignKey(Order)
     barcode = models.ForeignKey(Product)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=None)
     sent_timestamp = models.DateTimeField()
     arrival_timestamp = models.DateTimeField()
-    process_code = models.IntegerField()
+    process_code = models.IntegerField(default=None)
     
 
 class Storerefund(models.Model):
-    store_id = models.ForeignKey(Store)
+    store = models.ForeignKey(Store)
     barcode = models.ForeignKey(Product)
-    quantity = models.IntegerField()
-    refund_timestamp = models.IntegerField()
-    refund_reason_code = models.IntegerField()
-    process_code = models.IntegerField()
+    quantity = models.IntegerField(default=None)
+    refund_timestamp = models.IntegerField(default=None)
+    refund_reason_code = models.IntegerField(default=None)
+    process_code = models.IntegerField(default=None)
 
 class Storercpt(models.Model): # 가맹요금수납
-    store_id = models.ForeignKey(Store)
+    store = models.ForeignKey(Store)
     rcpt_timestamp = models.DateTimeField()
-    amount = models.IntegerField()
+    amount = models.IntegerField(default=None)
     
 class Employee(models.Model):
-    store_id = models.ForeignKey(Store)
+    store = models.ForeignKey(Store)
     name = models.CharField(max_length=25)
-    daytime_hourpay = models.IntegerField()
-    nighttime_hourpay = models.IntegerField()
+    daytime_hourpay = models.IntegerField(default=None)
+    nighttime_hourpay = models.IntegerField(default=None)
     employed_date =  models.DateField()
     fire_date=  models.DateField()
     contact = models.CharField(max_length=20)
-    position_code = models.IntegerField()
+    position_code = models.IntegerField(default=None)
 
 class Worklist(models.Model):
-    emp_id = models.ForeignKey(Employee)
+    emp = models.ForeignKey(Employee)
     workstart_timestamp = models.DateTimeField()
     workend_timestamp = models.DateTimeField()
     storeowner_check = models.CharField(max_length=1)
 
 class Maintenance(models.Model):
-    store_id = models.ForeignKey(Store)
-    maintenance_code = models.IntegerField()
-    amount = models.IntegerField()
+    store = models.ForeignKey(Store)
+    maintenance_code = models.IntegerField(default=None)
+    amount = models.IntegerField(default=None)
     process_date = models.DateField()
-    emp_id = models.ForeignKey(Employee)
-    information = models.TextField() # 비고
+    emp = models.ForeignKey(Employee)
+    information = models.TextField(default=None) # 비고
     storeowner_check = models.CharField(max_length=1)
 
 class Customer(models.Model):
     name = models.CharField(max_length=25)
-    mileage = models.IntegerField()
-    gender = models.IntegerField()
+    mileage = models.IntegerField(default=None)
+    gender = models.IntegerField(default=None)
     birthday = models.DateField()
     contact = models.CharField(max_length=20)
 
 class Receipt(models.Model):
-    store_id = models.ForeignKey(Store)
+    store = models.ForeignKey(Store)
     trade_timestamp = models.DateTimeField()
-    emp_id = models.ForeignKey(Employee)
-    customer_id = models.ForeignKey(Customer)
-    payment_method_code = models.IntegerField()
+    emp = models.ForeignKey(Employee)
+    customer = models.ForeignKey(Customer)
+    payment_method_code = models.IntegerField(default=None)
     payment_information = models.CharField(max_length=30)
     
 class Tradelist(models.Model):
-    receipt_id = models.ForeignKey(Receipt)
+    receipt = models.ForeignKey(Receipt)
     barcode = models.ForeignKey(Product)
-    quantity = models.IntegerField()
-    is_refund = models.BooleanField()
+    quantity = models.IntegerField(default=None)
+    is_refund = models.CharField(max_length=1)
     
 class Customerrefund(models.Model):
-    receipt_id = models.ForeignKey(Receipt) # TODO 장고가 외래키를 기본키로 사용할 수 없는 걸로 보임.
+    receipt = models.ForeignKey(Receipt) # TODO 장고가 외래키를 기본키로 사용할 수 없는 걸로 보임.
     refund_date = models.DateTimeField()
-    refund_reason_code = models.IntegerField()
+    refund_reason_code = models.IntegerField(default=None)
 
 class Setting(models.Model):
     name = models.CharField(max_length=20)
-    value = models.IntegerField()
+    value = models.IntegerField(default=None)
 
 class Code(models.Model):
     information = models.CharField(max_length=20)
