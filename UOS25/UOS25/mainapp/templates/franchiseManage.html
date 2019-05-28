@@ -9,43 +9,19 @@
       <caption><h2 class="well">지점 테이블</h2></caption>
       <thead>
         <tr>
-          <th>#</th>
-          <th>상품명</th>
-          <th>상품설명</th>
+          <th>지점 번호</th>
+          <th>지점 주소</th>
+          <th>지점 연락처</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th>1</th>
-          <td>갤럭시</td>
-          <td>아이폰보다좋음</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>삼다수</td>
-          <td>비쌈</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>시립대</td>
-          <td>쌈</td>
-        </tr>
-        <tr>     
-            <tr>
-                <th>1</th>
-                <td>갤럭시</td>
-                <td>아이폰보다좋음</td>
-              </tr>
-              <tr>
-                <th>2</th>
-                <td>삼다수</td>
-                <td>비쌈</td>
-              </tr>
-              <tr>
-                <th>3</th>
-                <td>시립대</td>
-                <td>쌈</td>
-              </tr>
+        {% for elem in stores %} 
+          <tr>
+            <th>{{ elem.id }}</th>
+            <td>{{ elem.address }}<td>
+            <td>{{ elem.contact }}</td>
+          </tr>
+        {% endfor %}
       </tbody>
     </table>
 <!-- Button trigger modal --><nav>

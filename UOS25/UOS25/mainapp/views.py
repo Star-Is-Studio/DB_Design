@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from mainapp.forms import *
+from mainapp.models import *
 
 # Create your views here.
 
@@ -75,7 +76,10 @@ def salaryManage(request):
     return render(request, 'salaryManage.html')
 ##본사페이지
 def franchiseManage(request):
-    return render(request, 'franchiseManage.html')
+    context=dict(
+        stores = [ elem for elem in Store.objects.raw('select * from mainapp_store')]
+    )
+    return render(request, 'franchiseManage.html', context)
 
 def franchiseCostManage(request):
     return render(request, 'franchiseCostManage.html')
