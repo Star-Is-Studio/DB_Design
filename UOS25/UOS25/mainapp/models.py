@@ -7,7 +7,7 @@ class Store(models.Model):
     contact = models.CharField(max_length=20)
     store_pay = models.FloatField(default=None) # 가맹요금비율
     store_code = models.IntegerField(default=None) # 지점상태코드
-    
+
 class Supplier(models.Model):
     name = models.CharField(max_length=25)
     contact = models.CharField(max_length=20)
@@ -16,7 +16,6 @@ class Supplier(models.Model):
 class Product(models.Model):
     barcode = models.IntegerField(default=0, primary_key=True)
     name = models.CharField(max_length=50)
-    content = models.CharField(max_length=50)
     supply_price = models.IntegerField(default=None)
     unit_price = models.IntegerField(default=None)
     supplier = models.ForeignKey(Supplier, default=None) # ?

@@ -1,13 +1,13 @@
-from models import *
+from mainapp.models import *
 
-class ManageStore():
-    pass
+def query_all(model):
+    sql = 'select * from {}'
+    table_name = model._meta.db_table
+    return model.objects.raw(sql.format(table_name))
 
-class ManageCenter():
-    def store(method, value=None, original_value=None):
-        '''
-        method ; get, modify, put
-        value ; modify, put
-        original_value ; get, modify
-        '''
-    
+def query_pk(model, pk, pk_name='id'):
+    sql = 'select * from {} where {}={}'
+    table_name = model._meta.db_table
+    return model.objects.raw(
+        sql.format(table_name, pk_name, pk)
+    )
