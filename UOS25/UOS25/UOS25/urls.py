@@ -19,16 +19,16 @@ from mainapp.views import *
 from django.conf.urls import url as path
 
 # 본사 페이지
-admin_urlpatterns = [
-    path(r'^admin/$',indexAdmin, name='indexAdmin'),#본사인덱스
-    path(r'^admin/franchiseManage/$',franchiseManage, name='franchiseManage'),#가맹점 관리
-    path(r'^admin/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
-    path(r'^admin/deliveryManage/$',deliveryManage, name='deliveryManage'),#납품 업체 관리
-    path(r'^admin/franchiseOrderManage/$',franchiseOrderManage, name='franchiseOrderManage'),#가맹점 주문 관리
-    path(r'^admin/registerHeadProduct/$',registerHeadProduct, name='registerHeadProduct'),#상품 등록
-    path(r'^admin/headProductManage/$',HeadProductManage, name='HeadProductManage'),#상품 조회/삭제
-    path(r'^admin/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
-    path(r'^admin/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
+central_urlpatterns = [
+    path(r'^central/$',indexAdmin, name='indexAdmin'),#본사인덱스
+    path(r'^central/franchiseManage/$',franchiseManage, name='franchiseManage'),#가맹점 관리
+    path(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
+    path(r'^central/deliveryManage/$',deliveryManage, name='deliveryManage'),#납품 업체 관리
+    path(r'^central/franchiseOrderManage/$',franchiseOrderManage, name='franchiseOrderManage'),#가맹점 주문 관리
+    path(r'^central/registerHeadProduct/$',registerHeadProduct, name='registerHeadProduct'),#상품 등록
+    path(r'^central/headProductManage/$',HeadProductManage, name='HeadProductManage'),#상품 조회/삭제
+    path(r'^central/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
+    path(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
 ]
 
 # 가맹점 페이지
@@ -51,5 +51,5 @@ franchise_urlpatterns = [
 # 통합페이지
 urlpatterns = [
     path(r'^$',login, name='login'),#로그인페이지
-] + admin_urlpatterns + franchise_urlpatterns
+] + central_urlpatterns + franchise_urlpatterns
 
