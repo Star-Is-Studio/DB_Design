@@ -16,40 +16,41 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from mainapp.views import *
-from django.conf.urls import url as path
+from django.conf.urls import url
 
 # 본사 페이지
 central_urlpatterns = [
-    path(r'^central/$',indexAdmin, name='indexAdmin'),#본사인덱스
-    path(r'^central/franchiseManage/$',franchiseManage, name='franchiseManage'),#가맹점 관리
-    path(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
-    path(r'^central/deliveryManage/$',deliveryManage, name='deliveryManage'),#납품 업체 관리
-    path(r'^central/franchiseOrderManage/$',franchiseOrderManage, name='franchiseOrderManage'),#가맹점 주문 관리
-    path(r'^central/registerHeadProduct/$',registerHeadProduct, name='registerHeadProduct'),#상품 등록
-    path(r'^central/headProductManage/$',HeadProductManage, name='HeadProductManage'),#상품 조회/삭제
-    path(r'^central/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
-    path(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
+    url(r'^central/$',indexAdmin, name='indexAdmin'),#본사인덱스
+    url(r'^central/franchiseManage/$',franchiseManage, name='franchiseManage'),#가맹점 관리
+    url(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
+    url(r'^central/deliveryManage/$',deliveryManage, name='deliveryManage'),#납품 업체 관리
+    url(r'^central/franchiseOrderManage/$',franchiseOrderManage, name='franchiseOrderManage'),#가맹점 주문 관리
+    url(r'^central/registerHeadProduct/$',registerHeadProduct, name='registerHeadProduct'),#상품 등록
+    url(r'^central/headProductManage/$',HeadProductManage, name='HeadProductManage'),#상품 조회/삭제
+    url(r'^central/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
+    url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
 ]
 
 # 가맹점 페이지
 franchise_urlpatterns = [    
-    path(r'^franchise/$',index, name='index'),#가맹점인덱스
-    path(r'^franchise/orderHeadManage/$',orderHeadManage, name='orderHeadManage'),#본사주문관리
-    path(r'^franchise/refundHeadManage/$',refundHeadManage, name='refundHeadManage'),#본사반품관리
-    path(r'^franchise/saleProduct/$',saleProduct, name='saleProduct'),#물품판매
-    path(r'^franchise/refundCustomerManage/$',refundCustomerManage, name='refundCustomerManage'),#고객반품관리
-    path(r'^franchise/registerProduct/$',registerProduct, name='registerProduct'),#재고추가
-    path(r'^franchise/deleteProduct/$',deleteProduct, name='deleteProduct'),#재고삭제
-    path(r'^franchise/expiryDateManage/$',expiryDateManage, name='expiryDateManage'),#유통기한관리
-    path(r'^franchise/saleManage/$',saleManage, name='saleManage'),#매출관리
-    path(r'^franchise/costManage/$',costManage, name='costManage'),#유지비관리
-    path(r'^franchise/employeeManage/$',employeeManage, name='employeeManage'),#점원관리
-    path(r'^franchise/workRecordManage/$',workRecordManage, name='workRecordManage'),#근무기록관리
-    path(r'^franchise/salaryManage/$',salaryManage, name='salaryManage'),#월급관리
+    url(r'^franchise/$',index, name='index'),#가맹점인덱스
+    url(r'^franchise/orderHeadManage/$',orderHeadManage, name='orderHeadManage'),#본사주문관리
+    url(r'^franchise/refundHeadManage/$',refundHeadManage, name='refundHeadManage'),#본사반품관리
+    url(r'^franchise/saleProduct/$',saleProduct, name='saleProduct'),#물품판매
+    url(r'^franchise/refundCustomerManage/$',refundCustomerManage, name='refundCustomerManage'),#고객반품관리
+    url(r'^franchise/registerProduct/$',registerProduct, name='registerProduct'),#재고추가
+    url(r'^franchise/deleteProduct/$',deleteProduct, name='deleteProduct'),#재고삭제
+    url(r'^franchise/expiryDateManage/$',expiryDateManage, name='expiryDateManage'),#유통기한관리
+    url(r'^franchise/saleManage/$',saleManage, name='saleManage'),#매출관리
+    url(r'^franchise/costManage/$',costManage, name='costManage'),#유지비관리
+    url(r'^franchise/employeeManage/$',employeeManage, name='employeeManage'),#점원관리
+    url(r'^franchise/workRecordManage/$',workRecordManage, name='workRecordManage'),#근무기록관리
+    url(r'^franchise/salaryManage/$',salaryManage, name='salaryManage'),#월급관리
 ]
 
 # 통합페이지
 urlpatterns = [
-    path(r'^$',login, name='login'),#로그인페이지
+    url(r'^admin/', admin.site.urls),
+    url(r'^$',login, name='login'),#로그인페이지
 ] + central_urlpatterns + franchise_urlpatterns
 

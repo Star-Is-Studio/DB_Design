@@ -1,7 +1,7 @@
 from django.shortcuts import render
-from mainapp.forms import *
 from mainapp.models import *
 from mainapp.query import *
+from django.core.handlers.wsgi import WSGIHandler
 
 # request type : django.core.handlers.wsgi.WSGIRequest
 # Create your views here.
@@ -14,27 +14,22 @@ from mainapp.query import *
     else:
         form = UserForm()
     return render(request, 'index.html',{'form':form})'''
+
+def check_central(func):
+    '''
+    본사 로그인 체크 데코레이터, @check_central로 사용
+    '''
+    def checker(request : WSGIHandler ,*args,**kwargs):
+        pass
     
 def login(request):
     return render(request, 'login.html')
 
 def indexAdmin(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-    else:
-        form = UserForm()
-    return render(request, 'indexAdmin.html',{'form':form})
+    return render(request, 'indexAdmin.html')
 
 def index(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-    else:
-        form = UserForm()
-    return render(request, 'index.html',{'form':form})
+    return render(request, 'index.html')
 
 # 본사 페이지
 def franchiseManage(request):
@@ -85,13 +80,7 @@ def refundCustomerManage(request):
     return render(request, 'refundCustomerManage.html')
     
 def registerProduct(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-    else:
-        form = ProductForm()
-    return render(request, 'registerProduct.html', {'form':form})
+    return render(request, 'registerProduct.html')
 
 def deleteProduct(request):
     return render(request, 'deleteProduct.html')
