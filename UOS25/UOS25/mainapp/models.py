@@ -119,3 +119,4 @@ class Code(models.Model):
 # no need.
 class User(models.Model):
     userId = models.IntegerField()
+    password = models.CharField(max_length=200)

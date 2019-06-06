@@ -1,10 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from mainapp.models import *
 from mainapp.query import *
-from django.core.handlers.wsgi import WSGIHandler
+from hashlib import sha256
 
-# request type : django.core.handlers.wsgi.WSGIRequest
-# Create your views here.
 
 '''def login(request):
     if request.method == 'POST':
@@ -19,10 +17,29 @@ def check_central(func):
     '''
     본사 로그인 체크 데코레이터, @check_central로 사용
     '''
-    def checker(request : WSGIHandler ,*args,**kwargs):
-        pass
-    
+    def checker(request,*args,**kwargs):
+        sess = request.session
+        if sess['_auth_user_id'] != '1':
+            return redirect('login')
+        return func(request,*args,**kwargs)
+    return checker
+        
 def login(request):
+    if request.method=='POST':
+        try:
+            post = request.POST
+            if not 'id' in post.keys() or not 'password' in post.keys():
+                raise Exception('un proper login post')
+            id, password = post['id'], post['password']
+            user_object : User = query_pk(User,int(id), 'userId')
+            if user_object is None:
+                raise Exception('no user')
+            if sha256(password.encode()) != user_object.password:
+                raise Exception("doesn't match password")
+            request.session['id'] = user_object.id
+        except Exception as e:
+            print(e)
+            return redirect('login')
     return render(request, 'login.html')
 
 def indexAdmin(request):
@@ -44,6 +61,7 @@ def franchiseCostManage(request):
     )
     return render(request, 'franchiseCostManage.html', context)
 
+@check_central
 def deliveryManage(request):
     return render(request, 'deliveryManage.html')
 
