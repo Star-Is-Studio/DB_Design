@@ -23,11 +23,7 @@ central_urlpatterns = [
     url(r'^central/$',indexAdmin, name='indexAdmin'),#본사인덱스
     url(r'^central/franchiseManage/$',franchiseManage, name='franchiseManage'),#가맹점 관리
     url(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
-    url(r'^central/deliveryManage/$',deliveryManage, name='deliveryManage'),#납품 업체 관리
-    url(r'^central/franchiseOrderManage/$',franchiseOrderManage, name='franchiseOrderManage'),#가맹점 주문 관리
-    url(r'^central/registerHeadProduct/$',registerHeadProduct, name='registerHeadProduct'),#상품 등록
-    url(r'^central/headProductManage/$',HeadProductManage, name='HeadProductManage'),#상품 조회/삭제
-    url(r'^central/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
+#지웠다.
     url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
 ]
 
