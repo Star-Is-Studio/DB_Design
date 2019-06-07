@@ -1,2 +1,0 @@
-django<2.0
-cx_oracle==6.4.1

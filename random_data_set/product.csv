@@ -1,5 +1,0 @@
-name, content, barcode, category_a, category_b, img_path, information, supply_price, unit_price, supplier_id
-'삼다수', '삼다수', 1, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 2, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 3, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 4, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1

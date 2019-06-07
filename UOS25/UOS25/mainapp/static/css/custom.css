@@ -1,8 +1,0 @@
-.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
-  color: #fff;
-  background-color: #283d92;
-}
-.nav>li>a:focus, .nav>li>a:hover {
-  text-decoration: none;
-  background-color: #283d92;
-}
