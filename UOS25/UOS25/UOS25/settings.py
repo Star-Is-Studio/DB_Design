@@ -86,6 +86,15 @@ DATABASES = {
         'DEFAULT_INDEX_TABLESPACE': 'UOS25',
     }
     # LOCAL_SETTING
+    # 'default' : {
+    #     'ENGINE': 'django.db.backends.oracle',
+    #     'NAME': 'xe',
+    #     'USER': 'system',
+    #     'PASSWORD': 'oracle',
+    #     'HOST': 'localhost',
+    #     'PORT': '49161',
+    #     'DEFAULT_INDEX_TABLESPACE': 'UOS25',
+    # }
     # 'default': {
     #     'ENGINE': 'django.db.backends.sqlite3',
     #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),

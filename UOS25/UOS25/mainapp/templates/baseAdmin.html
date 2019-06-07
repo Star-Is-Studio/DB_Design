@@ -150,16 +150,12 @@
                 <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
               </a>
             </li>
-            <!-- 합치거나 삭제 예정 -->
             <div id="hu" class="collapse">
               <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                <li role="presentation"><a href="{% url 'registerCustomer' %}" style="color:white">&nbsp;&nbsp;고객 등록</a>
-                </li>
-                <li role="presentation"><a href="{% url 'customerManage' %}" style="color:white">&nbsp;&nbsp;고객 조회/삭제</a>
+                <li role="presentation"><a href="{% url 'customerManage' %}" style="color:white">&nbsp;&nbsp;고객 관리</a>
                 </li>
               </ul>
             </div>
-            <!-- ---------------- -->
           </ul>
         </b>
       </div>
@@ -182,20 +178,20 @@
                 </span>
               </button>
               <h4 class="modal-title" id="loginModalLabel">로그인</h4>
-              <div class="modal-body">
-                <form method="GET">
-                  <label for="userId">아이디</label>
-                  <input type="text" class="form-control" id="userId" name="userId" maxlength="50" style="width:auto">
+              <form method="POST" action='{% url 'login' %}'>
+                <div class="modal-body">
+                  <label for="user_id">아이디</label>
+                  <input type="text" class="form-control" id="user_id" name="user_id" maxlength="50" style="width:auto">
                   <label for="password">패스워드</label>
                   <input type="password" class="form-control" id="password" name="password" maxlength="50"
                     style="width:auto">
-                </form>
-              </div>
-              <div class="modal-footer">
-                {% csrf_token %}
-                <button type="button" class="btn btn-primary">로그인</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-              </div>
+                </div>
+                <div class="modal-footer">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary">로그인</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

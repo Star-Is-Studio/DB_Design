@@ -2,33 +2,29 @@
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
-    <h1>고객 관리</h1>
+    <h1>납품 업체 관리</h1>
   </div>
 </div>
 <table class="table table-striped" style="margin-left:5px">
   <thead>
     <tr>
-      <th>고객 번호</th>
-      <th>이름</th>
-      <th>마일리지</th>
-      <th>성별</th>
-      <th>생일</th>
+      <th>납품 업체 번호</th>
+      <th>상호명</th>
       <th>연락처</th>
+      <th>이메일</th>
     </tr>
   </thead>
   <tbody>
-    {% for customer in customers %}
+    {% for supplier in suppliers %}
     <tr>
-      <td>{{ customer.customer_id }}</td>
-      <td>{{ customer.name }}</td>
-      <td>{{ customer.mileage }}</td>
-      <td>{{ customer.gender }}</td>
-      <td>{{ customer.birthday }}</td>
-      <td>{{ customer.contact }}</td>
+      <td>{{ supplier.supplier_id }}</td>
+      <td>{{ supplier.name }}</td>
+      <td>{{ supplier.contact }}</td>
+      <td>{{ supplier.email }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
-        onclick="update_onclick({{ customer.customer_id }}, '{{ customer.name }}',
-        {{ customer.mileage }}, {{ customer.gender }}, '{{ customer.birthday }}', '{{customer.contact}}')">수정</button></td>
-      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ customer.customer_id }}, '{{ customer.name }}')">삭제</button></td>
+        onclick="update_onclick({{ supplier.supplier_id }}, '{{ supplier.name }}', '{{ supplier.contact }}', '{{ supplier.email }}')">수정</button></td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del"
+        onclick="delete_onclick({{ supplier.supplier_id}}, '{{ supplier.name }}')">삭제</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -56,10 +52,10 @@
 
   <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">고객 추가</button>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">업체 추가</button>
   </div>
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search">고객 검색</button>
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search">업체 검색</button>
   </div>
 
 </nav>
@@ -72,13 +68,13 @@
       <!-- 모달 창 제목 -->
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addLabel">고객 추가</h4>
+        <h4 class="modal-title" id="addLabel">업체 추가</h4>
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'customerManage' %}?process=register&page={{this_page}}" method="POST">
+      <form action="{% url 'supplierManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ customerRegisterForm }}
+        {{ supplierRegisterForm }}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -92,17 +88,15 @@
 </div>
 
 <script type="text/javascript">
-delete_onclick = function(customer_id, customer_name) {
-  $("#delete_customer_name").text(customer_name);
-  $("#del_customer_id").val(customer_id);
+delete_onclick = function(supplier_id, supplier_name) {
+  $("#delete_supplier_name").text(supplier_name);
+  $("#del_supplier_id").val(supplier_id);
 }
-update_onclick = function(customer_id, name, mileage, gender, birthday, contact) {
-  $("#update_customer_id").val(customer_id);
+update_onclick = function(supplier_id, name, contact, email) {
+  $("#update_supplier_id").val(supplier_id);
   $("#update_name").val(name);
-  $("#update_mileage").val(mileage);
-  $("#update_gender").val(gender);
-  $("#update_birthday").val(birthday);
   $("#update_contact").val(contact);
+  $("#update_email").val(email);
 }
 </script>
 
@@ -119,10 +113,10 @@ update_onclick = function(customer_id, name, mileage, gender, birthday, contact)
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'customerManage' %}?process=delete&page={{this_page}}" method="POST">
+      <form action="{% url 'supplierManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
-        <span id="delete_customer_name"></span> 고객을 정말로 삭제하시겠습니까?
-        <input type="hidden" id="del_customer_id" name="customer_id" value=""> 
+        <span id="delete_supplier_name"></span> 업체를 정말로 삭제하시겠습니까?
+        <input type="hidden" id="del_supplier_id" name="supplier_id" value=""> 
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -148,9 +142,9 @@ update_onclick = function(customer_id, name, mileage, gender, birthday, contact)
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'customerManage' %}?process=update&page={{this_page}}" method="POST">
+      <form action="{% url 'supplierManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ customerUpdateForm }}
+        {{ supplierUpdateForm }}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -171,13 +165,13 @@ update_onclick = function(customer_id, name, mileage, gender, birthday, contact)
         <!-- 모달 창 제목 -->
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="addLabel">고객 검색</h4>
+          <h4 class="modal-title" id="addLabel">업체 검색</h4>
         </div>
   
         <!-- 모달 창 내용 -->
-        <form action="{% url 'customerManage' %}?process=search&page={{this_page}}" method="POST">
+        <form action="{% url 'supplierManage' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
-          {{ customerSearchForm }}
+          {{ supplierSearchForm }}
           {% csrf_token %}
         </div>
         <div class="modal-footer">

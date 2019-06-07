@@ -1,49 +1,76 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from django.db import connection
 from mainapp.models import *
 from mainapp.query import *
-from hashlib import sha256
 from mainapp.sqls import SQLs
 from mainapp.forms import *
+from hashlib import sha256
 
 
-'''def login(request):
-    if request.method == 'POST':
-        form = UserForm(request.POST)
-        if form.is_valid():
-            form.save()
-    else:
-        form = UserForm()
-    return render(request, 'index.html',{'form':form})'''
-
-def check_central(func):
+def login_check_central(func):
     '''
-    본사 로그인 체크 데코레이터, @check_central로 사용
+    본사 로그인 체크 데코레이터, @login_check_central로 사용
     '''
     def checker(request,*args,**kwargs):
         sess = request.session
-        if sess['_auth_user_id'] != '1':
+        if 'id' in sess and 'store_id' in sess:
+            if sess['store_id'] != None: # 가맹점 아이디일 경우
+                return redirect('index')
+        else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         return func(request,*args,**kwargs)
     return checker
         
+def login_check_store(func):
+    '''
+    지점 로그인 체크 데코레이터, @login_check_login로 사용
+    반드시 함수인자가 request, store_id.... 이어야함~
+    '''
+    def checker(request,*args,**kwargs):
+        sess = request.session
+        if 'id' in sess and 'store_id' in sess:
+            if sess['store_id'] == None: # 본점 아이디일 경우
+                return redirect('indexAdmin')
+        else: # 현재 세션에 로그인 정보가 없을 경우
+            return redirect('login')
+        return func(request,*args,**kwargs)
+    return checker
+    
 def login(request):
     if request.method=='POST':
+        # 로그인 요청 처리
         try:
             post = request.POST
-            if not 'id' in post.keys() or not 'password' in post.keys():
+            if not 'user_id' in post.keys() or not 'password' in post.keys():
                 raise Exception('un proper login post')
-            id, password = post['id'], post['password']
-            user_object : User = query_pk(User,int(id), 'userId')
+            id, password = post['user_id'], post['password']
+            user_object : User = query_pk(User, id, 'user_id')
             if user_object is None:
                 raise Exception('no user')
-            if sha256(password.encode()) != user_object.password:
+            if sha256(password.encode()).hexdigest() != user_object.password:
                 raise Exception("doesn't match password")
             request.session['id'] = user_object.id
+            request.session['store_id'] = user_object.store_id
         except Exception as e:
             print(e)
             return redirect('login')
-    return render(request, 'login.html')
+        # 로그인 성공 후 적절한 페이지로 연결
+        if user_object.store_id == None:
+            return redirect('indexAdmin')
+        else:
+            return redirect('index')
+    else:
+        #로그인 페이지 처리
+        return render(request, 'login.html')
 
+# 패스워드 처리 확인을 위한 코드!!
+def _join(id,pwd,store_id):
+    from hashlib import sha256
+    pwd = sha256(pwd.encode()).hexdigest()
+    return id, pwd, store_id
+    
+    
 def indexAdmin(request):
     return render(request, 'indexAdmin.html')
 
@@ -51,12 +78,21 @@ def index(request):
     return render(request, 'index.html')
 
 # 본사 페이지
+
+# 지점 관리
 def franchiseManage(request):
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
     if request.method == 'POST':
-        process = request.POST.get('process', False)
+        process = str(request.GET.get('process', False))
         
-        if process == 'register':
-            form = StoreRegisterForm(request.POST)
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = StoreRegisterForm(request.POST)
+            elif process == 'update' :
+                instance = Store.objects.get(store_id=request.POST.get('store_id', 'Error')) # 해당 store_id가 있는지 확인
+                form = StoreUpdateForm(request.POST, instance=instance)
             if form.is_valid():
                 store_id = form.cleaned_data['store_id']
                 address = form.cleaned_data['address']
@@ -65,30 +101,41 @@ def franchiseManage(request):
                 store_code = form.cleaned_data['store_code']
 
                 with connection.cursor() as cursor:
-                    cursor.execute(SQLs.sql_storeRegister, [store_id, address, contact, store_pay, store_code])
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_storeRegister, [store_id, address, contact, store_pay, store_code])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, store_id])
+                
+                return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
 
         elif process == 'delete':
             store_id = int(request.POST.get('store_id', 'Error'))
-
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_storeDelete, [store_id])
+            return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
 
-        elif process == 'update':
-            store_id = int(request.POST.get('store_id', 'Error'))
-            address = request.POST.get('address', False)
-            contact = request.POST.get('contact', False)
-            store_pay = float(request.POST.get('store_pay', 'Error'))
-            store_code = int(request.POST.get('store_code', 'Error'))
+        elif process == 'search':
+            form = StoreSearchForm(request.POST)
+            if form.is_valid():
+                address = "%" + form.cleaned_data['address'] + "%"
+                contact = "%" + form.cleaned_data['contact'] + "%"
+                store_pay_min = 0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
+                store_pay_max = 1 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
+                stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
 
-            with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, store_id])
+    else:
+        stores = Store.objects.raw(SQLs.sql_franchiseManage)
+        stores = stores[(10*(page-1)):10*page]
 
-        return HttpResponseRedirect('/central/franchiseManage')
-
-    stores = Store.objects.raw(SQLs.sql_franchiseManage)
     store_register_form = StoreRegisterForm()
-    return render(request, 'franchiseManage.html', {'stores' : stores, 'storeRegisterForm' : store_register_form})
-
+    store_update_form = StoreUpdateForm()
+    store_search_form = StoreSearchForm()
+    return render(request, 'franchiseManage.html', \
+        {'stores' : stores, 'storeRegisterForm' : store_register_form, 'storeUpdateForm' : store_update_form, \
+            'storeSearchForm' : store_search_form, 'this_page' : page, 'pages' : pages})
 
 def franchiseCostManage(request):
     context=dict(
@@ -96,9 +143,61 @@ def franchiseCostManage(request):
     )
     return render(request, 'franchiseCostManage.html', context)
 
-@check_central
+# 납품 업체 관리
 def supplierManage(request):
-    return render(request, 'deliveryManage.html')
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+        
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = SupplierRegisterForm(request.POST)
+            elif process == 'update' :
+                instance = Supplier.objects.get(supplier_id=request.POST.get('supplier_id', 'Error')) # 해당 supplier_id가 있는지 확인
+                form = SupplierUpdateForm(request.POST, instance=instance)
+            if form.is_valid():
+                supplier_id = form.cleaned_data['supplier_id']
+                name = form.cleaned_data['name']
+                contact = form.cleaned_data['contact']
+                email = form.cleaned_data['email']
+
+                with connection.cursor() as cursor:
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_supplierRegister, [supplier_id, name, contact, email])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, supplier_id])
+                
+                return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            supplier_id = int(request.POST.get('supplier_id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_supplierDelete, [supplier_id])
+            return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
+
+        elif process == 'search':
+            form = SupplierSearchForm(request.POST)
+            if form.is_valid():
+                name = "%" + form.cleaned_data['name'] + "%"
+                contact = "%" + form.cleaned_data['contact'] + "%"
+                email = "%" + form.cleaned_data['email'] + "%"
+                suppliers = Supplier.objects.raw(SQLs.sql_supplierSearch, [name, contact, email])
+
+    else:
+        suppliers = Supplier.objects.raw(SQLs.sql_supplierManage)
+        suppliers = suppliers[(10*(page-1)):10*page]
+
+    supplier_register_form = SupplierRegisterForm()
+    supplier_update_form = SupplierUpdateForm()
+    supplier_search_form = SupplierSearchForm()
+    return render(request, 'supplierManage.html', \
+        {'suppliers' : suppliers, 'supplierRegisterForm' : supplier_register_form, 'supplierUpdateForm' : supplier_update_form, \
+            'supplierSearchForm' : supplier_search_form, 'this_page' : page, 'pages' : pages})
 
 def storeOrderManage(request):
     return render(request, 'franchiseOrderManage.html')
@@ -112,36 +211,70 @@ def productManage(request):
     )
     return render(request, 'HeadProductManage.html', context)
 
-def registerCustomer(request):
+# 고객 관리
+def customerManage(request):
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
     if request.method == 'POST':
-        form = CustomerRegisterForm(request.POST)
-        if form.is_valid():
-            customer_id = form.cleaned_data['customer_id']
-            name = form.cleaned_data['name']
-            mileage = form.cleaned_data['mileage']
-            gender = form.cleaned_data['gender']
-            birthday = form.cleaned_data['birthday']
-            contact = form.cleaned_data['contact']
+        process = str(request.GET.get('process', False))
+        
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = CustomerRegisterForm(request.POST)
+            elif process == 'update' :
+                instance = Customer.objects.get(customer_id=request.POST.get('customer_id', 'Error')) # 해당 customer_id가 있는지 확인
+                form = CustomerUpdateForm(request.POST, instance=instance)
+            if form.is_valid():
+                customer_id = form.cleaned_data['customer_id']
+                name = form.cleaned_data['name']
+                mileage = form.cleaned_data['mileage']
+                gender = form.cleaned_data['gender']
+                birthday = form.cleaned_data['birthday']
+                contact = form.cleaned_data['contact']
 
+                with connection.cursor() as cursor:
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_customerRegister, [customer_id, name, mileage, gender, birthday, contact])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, customer_id])
+                
+                return HttpResponseRedirect('/central/customerManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            customer_id = int(request.POST.get('customer_id', 'Error'))
             with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_CustomerRegister, [customer_id, name, mileage, gender, birthday, contact])
+                cursor.execute(SQLs.sql_customerDelete, [customer_id])
+            return HttpResponseRedirect('/central/customerManage?page=%s' % page)
 
-            return HttpResponseRedirect('/central/customerManage')
+        elif process == 'search':
+            form = CustomerSearchForm(request.POST)
+            if form.is_valid():
+                print(form.cleaned_data)
+                name = "%" + form.cleaned_data['name'] + "%"
+                mileage_min = 0 if form.cleaned_data['mileage_min'] is None else int(form.cleaned_data['mileage_min'])
+                mileage_max = 99999999 if form.cleaned_data['mileage_max'] is None else int(form.cleaned_data['mileage_max'])
+                gender = 1 if form.cleaned_data['gender'] is None else form.cleaned_data['gender']
+                birthday_min = '1970-01-01' if form.cleaned_data['birthday_min'] is None else str(form.cleaned_data['birthday_min'])
+                birthday_max = '2100-12-12' if form.cleaned_data['birthday_max'] is None else str(form.cleaned_data['birthday_max'])
+                contact = "%" + form.cleaned_data['contact'] + "%"
+                print([name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
+                customers = Customer.objects.raw(SQLs.sql_customerSearch,\
+                    [name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
 
     else:
-        form = CustomerRegisterForm()
-    return render(request, 'registerCustomer.html', {'form' : form})
+        customers = Customer.objects.raw(SQLs.sql_customerManage)
+        customers = customers[(10*(page-1)):10*page]
 
-def customerManage(request):
-    # 단순한 삭제 메커니즘. 수정 필요.
-    delete_id = request.GET.get('delete_id', False)
-    if delete_id:
-        with connection.cursor() as cursor:
-            cursor.execute(SQLs.sql_CustomerDelete, [delete_id])
-    
-    customer_list = Customer.objects.raw(SQLs.sql_CustomerManage) # IDE에서 objects 없다고 에러뜨면 무시
-    return render(request, 'customerManage.html', {'customer_list' : customer_list})
-
+    customer_register_form = CustomerRegisterForm()
+    customer_update_form = CustomerUpdateForm()
+    customer_search_form = CustomerSearchForm()
+    return render(request, 'customerManage.html', \
+        {'customers' : customers, 'customerRegisterForm' : customer_register_form, 'customerUpdateForm' : customer_update_form, \
+            'customerSearchForm' : customer_search_form, 'this_page' : page, 'pages' : pages})
 
 # 가맹점 페이지
 def orderManage(request):

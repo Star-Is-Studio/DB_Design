@@ -210,21 +210,21 @@
               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               </button>
               <h4 class="modal-title" id="loginModalLabel">로그인</h4>
-              <div class="modal-body">
-                <form method="GET">
-                  <label for="userId">아이디</label>
-                  <input type="text" class="form-control" id="userId" name="userId" maxlength="50" style="width:auto">
+              <form method="POST" action='{% url 'login' %}'>
+                <div class="modal-body">
+                  <label for="user_id">아이디</label>
+                  <input type="text" class="form-control" id="user_id" name="user_id" maxlength="50" style="width:auto">
                   <label for="password">패스워드</label>
                   <input type="password" class="form-control" id="password" name="password" maxlength="50"
                     style="width:auto">
 
-                </form>
-              </div>
-              <div class="modal-footer">
-                {% csrf_token %}
-                <button type="button" class="btn btn-primary">로그인</button>
-                <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-              </div>
+                </div>
+                <div class="modal-footer">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-primary">로그인</button>
+                  <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>

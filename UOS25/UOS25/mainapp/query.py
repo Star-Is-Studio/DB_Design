@@ -18,10 +18,10 @@ def query_all(model):
 def query_pk(model, pk, pk_name='id'):
     sql = 'select * from {} where {}={}'
     table_name = model._meta.db_table
-    dat = model.objects.raw(
-        list(sql.format(table_name, pk_name, _sql_convert(pk)))
-    )
-    return None if len(dat)!=0 else dat[0]
+    dat = list(model.objects.raw(
+        sql.format(table_name, pk_name, _sql_convert(pk))
+    ))
+    return None if len(dat)==0 else dat[0]
 
 def query_insert(model, data : dict):
     '''

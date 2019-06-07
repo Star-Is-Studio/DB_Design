@@ -132,6 +132,6 @@ class Code(models.Model):
     information = models.CharField(max_length=20)
 
 class User(models.Model):
-    uesr_id = models.CharField(max_length=50)
+    user_id = models.CharField(max_length=50)
     password = models.CharField(max_length=200)
-    store_id = models.ForeignKey(Store, db_column='store_id')
+    store_id = models.ForeignKey(Store, db_column='store_id', null=True)
