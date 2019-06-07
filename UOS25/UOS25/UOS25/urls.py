@@ -27,7 +27,6 @@ central_urlpatterns = [
     url(r'^central/storeOrderManage/$', storeOrderManage, name='storeOrderManage'),#지점 주문 관리
     url(r'^central/registerProduct/$', registerProduct, name='registerProduct'),#상품 등록
     url(r'^central/productManage/$', productManage, name='productManage'),#상품 조회/삭제
-    url(r'^central/registerCustomer/$',registerCustomer, name='registerCustomer'),#고객 등록
     url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
 ]
 
