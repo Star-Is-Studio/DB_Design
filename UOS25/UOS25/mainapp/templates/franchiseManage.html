@@ -1,30 +1,36 @@
 {% extends 'baseAdmin.html' %}
 {% block content %}
-  <div class="panel panel-default" style="margin-bottom:0px">
-      <div class="panel-body" style="margin-left:50px">
-        <h1>가맹점 관리</h1>
-      </div>
-    </div>
-    <table class="table table-striped" style="margin-left:5px">
-      <caption><h2 class="well">지점 테이블</h2></caption>
-      <thead>
-        <tr>
-          <th>지점 번호</th>
-          <th>지점 주소</th>
-          <th>지점 연락처</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for elem in stores %} 
-          <tr>
-            <th>{{ elem.id }}</th>
-            <td>{{ elem.address }}<td>
-            <td>{{ elem.contact }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-<!-- Button trigger modal --><nav>
+<div class="panel panel-default" style="margin-bottom:0px">
+  <div class="panel-body" style="margin-left:50px">
+    <h1>가맹점 관리</h1>
+  </div>
+</div>
+<table class="table table-striped" style="margin-left:5px">
+  <thead>
+    <tr>
+      <th>지점 번호</th>
+      <th>지점 주소</th>
+      <th>지점 연락처</th>
+      <th>가맹 요금 비율</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for store in stores %}
+    <tr>
+      <td>{{ store.store_id }}</td>
+      <td>{{ store.address }}</td>
+      <td>{{ store.contact }}</td>
+      <td>{{ store.store_pay }}</td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
+        onclick="update_onclick({{ store.store_id }}, '{{ store.address }}', '{{ store.contact }}', {{ store.store_pay }}, {{ store.store_code }})">수정</button></td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ store.store_id }})">폐업</button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!--추가 버튼 및 페이지 표시 -->
+<nav>
   <div class="text-center">
     <ul class="pagination">
       <li>
@@ -44,17 +50,12 @@
       </li>
     </ul>
   </div>
+
+  <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">
-      추가
-    </button>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#del">
-      삭제
-    </button>
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#update">
-      수정
-    </button>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">지점 추가</button>
   </div>
+
 </nav>
 
 
@@ -63,64 +64,104 @@
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addLabel">추가하기</h4>
+        <h4 class="modal-title" id="addLabel">지점 추가</h4>
       </div>
-      <div class="modal-body">
-        <form>
 
-        
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">확인</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-        </div>
-      </form>
-      </div>
-    </div>
-  </div>
-<!--del모달-->
-<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="delLabel">삭제하기</h4>
-      </div>
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'franchiseManage' %}" method="POST">
       <div class="modal-body">
-        <form>
-
-        
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">확인</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-        </div>
-      </form>
-      </div>
-    </div>
-  </div>
-<!--update모달-->
-<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="updateLabel">수정하기</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-
-        
+        {{ storeRegisterForm }}
+        <input type="hidden" name="process" value="register">
+        {% csrf_token %}
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">확인</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
       </div>
-    </form>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+delete_onclick = function(store_id) {
+  $("#delete_store_id").text(store_id);
+  $("#del_store_id").val(store_id);
+}
+update_onclick = function(store_id, address, contact, store_pay, store_code) {
+  $("#update_store_id").val(store_id);
+  $("#update_store_address").val(address);
+  $("#update_store_contact").val(contact);
+  $("#update_store_pay").val(store_pay);
+  $("#update_store_code").val(store_code);
+}
+</script>
+
+<!--del모달-->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="delLabel">삭제하기</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'franchiseManage' %}" method="POST">
+      <div class="modal-body">
+        <span id="delete_store_id"></span> 호점을 정말로 폐업처리 하시겠습니까?
+        <input type="hidden" name="process" value="delete">
+        <input type="hidden" id="del_store_id" name="store_id" value=""> 
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!--update모달-->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateLabel">수정하기</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'franchiseManage' %}" method="POST">
+      <div class="modal-body">
+        <input type="hidden" name="process" value="update">
+        <input type="number" id="update_store_id" name="store_id" value="" readonly> 호점 <br>
+        주소 : <input type="text" id="update_store_address" name="address" value=""> <br>
+        연락처 : <input type="text" id="update_store_contact" name="contact" value=""> <br>
+        가맹요금 비율 : <input type="text" id="update_store_pay" name="store_pay" value=""> <br>
+        <input type="hidden" id="update_store_code" name="store_code" value="">
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+
+      </form>
     </div>
   </div>
 </div>
 {%endblock%}
-

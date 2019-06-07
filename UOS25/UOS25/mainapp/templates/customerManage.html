@@ -1,54 +1,40 @@
 {% extends 'baseAdmin.html' %}
 {% block content %}
-  <div class="panel panel-default" style="margin-bottom:0px">
-      <div class="panel-body" style="margin-left:50px">
-        <h1>고객 조회/삭제</h1>
-      </div>
-    </div>
-    <table class="table table-striped" style="margin-left:5px">
-      <caption><h2 class="well">고객 테이블</h2></caption>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>상품명</th>
-          <th>상품설명</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>1</th>
-          <td>갤럭시</td>
-          <td>아이폰보다좋음</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>삼다수</td>
-          <td>비쌈</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>시립대</td>
-          <td>쌈</td>
-        </tr>
-        <tr>     
-            <tr>
-                <th>1</th>
-                <td>갤럭시</td>
-                <td>아이폰보다좋음</td>
-              </tr>
-              <tr>
-                <th>2</th>
-                <td>삼다수</td>
-                <td>비쌈</td>
-              </tr>
-              <tr>
-                <th>3</th>
-                <td>시립대</td>
-                <td>쌈</td>
-              </tr>
-      </tbody>
-    </table>
-<!-- Button trigger modal --><nav>
+<div class="panel panel-default" style="margin-bottom:0px">
+  <div class="panel-body" style="margin-left:50px">
+    <h1>고객 조회/삭제</h1>
+  </div>
+</div>
+<table class="table table-striped" style="margin-left:5px">
+  <caption>
+    <h2 class="well">고객 테이블</h2>
+  </caption>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>고객명</th>
+      <th>마일리지</th>
+      <th>성별</th>
+      <th>생일</th>
+      <th>연락처</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for customer in customer_list %}
+    <tr>
+      <td>{{ customer.customer_id }}</td>
+      <td>{{ customer.name }}</td>
+      <td>{{ customer.mileage }}</td>
+      <td>{{ customer.gender }}</td>
+      <td>{{ customer.birthday }}</td>
+      <td>{{ customer.contact }}</td>
+      <td><a href='?delete_id={{ customer.customer_id }}'>삭제</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<!-- Button trigger modal -->
+<nav>
   <div class="text-center">
     <ul class="pagination">
       <li>
@@ -88,63 +74,65 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="addLabel">추가하기</h4>
       </div>
       <div class="modal-body">
         <form>
 
-        
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">확인</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-        </div>
-      </form>
-      </div>
-    </div>
-  </div>
-<!--del모달-->
-<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="delLabel">삭제하기</h4>
-      </div>
-      <div class="modal-body">
-        <form>
 
-        
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">확인</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-        </div>
-      </form>
-      </div>
-    </div>
-  </div>
-<!--update모달-->
-<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="updateLabel">수정하기</h4>
-      </div>
-      <div class="modal-body">
-        <form>
-
-        
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">확인</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
       </div>
-    </form>
+      </form>
+    </div>
+  </div>
+</div>
+<!--del모달-->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="delLabel">삭제하기</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--update모달-->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateLabel">수정하기</h4>
+      </div>
+      <div class="modal-body">
+        <form>
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
     </div>
   </div>
 </div>
 {%endblock%}
-
