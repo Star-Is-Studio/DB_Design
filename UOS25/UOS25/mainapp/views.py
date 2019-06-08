@@ -92,9 +92,8 @@ def index(request):
 @login_check_central
 def franchiseManage(request):
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAIN_APP_STORE').fetchone()
+        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
     cnt = int(cnt[0])
-    
     page = int(request.GET.get('page', 1))
     pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
