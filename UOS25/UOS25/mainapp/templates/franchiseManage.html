@@ -12,6 +12,7 @@
       <th>지점 주소</th>
       <th>지점 연락처</th>
       <th>가맹 요금 비율</th>
+      <th>가맹점 코드</th>
     </tr>
   </thead>
   <tbody>
@@ -21,6 +22,7 @@
       <td>{{ store.address }}</td>
       <td>{{ store.contact }}</td>
       <td>{{ store.store_pay }}</td>
+      <td>{{ store.store_code }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
         onclick="update_onclick({{ store.id }}, '{{ store.address }}', '{{ store.contact }}', {{ store.store_pay }}, {{ store.store_code }})">수정</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ store.id }})">폐업</button></td>
@@ -61,7 +63,7 @@
 
 <!--add모달-->
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog" style="width:18%">
     <div class="modal-content">
 
       <!-- 모달 창 제목 -->
@@ -73,7 +75,22 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'franchiseManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ storeRegisterForm }}
+        <div>
+          <label for=address  style="padding-top:5px">주소</label>
+          <input type="text" id="address" name="address" maxlength="80" class="form-control" required id="id_address" />
+        </div>
+        <div>
+            <label for=contact  style="padding-top:5px">연락처</label>
+            <input type="text" id="contact" name="contact" maxlength="20" class="form-control" required id="id_contact" />
+        </div>
+        <div>
+            <label for=store_pay  style="padding-top:5px">가맹 요금 비율</label>
+            <input type="number" id="store_pay" name="store_pay" step="any" class="form-control" required id="id_store_pay" />
+        </div>
+        <div>
+            <label for=store_code  style="padding-top:5px">가맹점 코드</label>
+            <input type="number" id="store_code"name="store_code" step="1" class="form-control" required id="id_store_code" />
+        </div>
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -159,7 +176,7 @@ update_onclick = function(id, address, contact, store_pay, store_code) {
 
 <!-- search 모달-->
 <div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="searchLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width:18%">
       <div class="modal-content">
   
         <!-- 모달 창 제목 -->
@@ -171,7 +188,10 @@ update_onclick = function(id, address, contact, store_pay, store_code) {
         <!-- 모달 창 내용 -->
         <form action="{% url 'franchiseManage' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
-          {{ storeSearchForm }}
+            <div>
+                <label for=store_code  style="padding-top:5px">가맹점 코드</label>
+                <input type="number" id="store_code"name="store_code" step="1" class="form-control" required id="id_store_code" />
+            </div>
           {% csrf_token %}
         </div>
         <div class="modal-footer">
