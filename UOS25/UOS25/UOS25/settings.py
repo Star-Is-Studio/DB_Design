@@ -79,11 +79,11 @@ DATABASES = {
     'default' : {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'orcl',
-        'USER': 'DBJANGO',
-        'PASSWORD': 'elqltjf',
-        'HOST': 'localhost',
-        'PORT': '1521'
-        # 'DEFAULT_INDEX_TABLESPACE': 'UOS25',
+        'USER': 'uos25',
+        'PASSWORD': 'elqlelqlelq',
+        'HOST': 'dbdesign.c2lgvou0v1fy.ap-northeast-2.rds.amazonaws.com',
+        'PORT': '1521',
+        'DEFAULT_INDEX_TABLESPACE': 'UOS25',
     }
     # LOCAL_SETTING
     # 'default' : {

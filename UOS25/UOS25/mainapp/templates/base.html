@@ -77,25 +77,29 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'index' %}"><img style="margin-top:-10px;" src="{%static 'img/uos25logo.gif'%}"></a>
-        <p class="navbar-brand"> 현재 로그인된 사용자 : {{ request.user_id }} </p>
-        <form class="navbar-brand" style="padding-top:8px">
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
-        </form>
+        <p class="navbar-brand"> {% if 'id' in request.session %} 아이디 : {{ request.user_id }} 지점번호 : {{ request.store_id }} 직급코드 : {{ request.emp_pos }} {% endif %} </p>
         <!--
         <form class="navbar-brand" style="padding-top:8px">
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#signupModal">직원등록</button>
         </form>
         -->
-        <form class="navbar-brand" style="padding-top:8px">
-          <a class="btn btn-default" href="{% url 'login' %}" role="button">로그아웃</a>
-        </form>
+        {% if 'id' in request.session %}
+          <form class="navbar-brand" style="padding-top:8px">
+            <a class="btn btn-default" href="{% url 'login' %}?logout" role="button">로그아웃</a>
+          </form>
+        {% else %}
+          <form class="navbar-brand" style="padding-top:8px">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
+          </form>
+        {% endif %}
+
       </div>
     </div>
   </nav>
   <!-- 좌측 메뉴바-->
   <div class="container-fluid">
     <div class="row">
-      <div class="sideBar side-bar-small" id="sdBar" style="padding-left: 0px;padding-right: 0px;">
+      <div class="sideBar side-bar-small" id="sdBar" style="paddikng-left: 0px;padding-right: 0px;">
         <b>
           <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
             <br>
