@@ -21,6 +21,8 @@ def login_check_central(func):
             return redirect('login')
         request.user_id = sess['id']
         request.store_id = sess['store_id']
+        request.emp_id = sess['emp_id']
+        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
         
@@ -37,6 +39,8 @@ def login_check_store(func):
             return redirect('login')
         request.user_id = sess['id']
         request.store_id = sess['store_id']
+        request.emp_id = sess['emp_id']
+        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
     
@@ -54,8 +58,13 @@ def login(request):
                 raise Exception('no user')
             if sha256(password.encode()).hexdigest() != user_object.password:
                 raise Exception("doesn't match password")
-            sess['id'] = user_object.id
-            sess['store_id'] = user_object.store_id
+            sess['id'] = id
+            sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
+            sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
+            # 직급코드 얻기
+            with connection.cursor() as c:
+                sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
+
         except Exception as e:
             print(e)
             return redirect('login')
