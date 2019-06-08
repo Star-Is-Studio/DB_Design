@@ -112,7 +112,10 @@ def franchiseManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     #지점은 그럴거같지않지만 상품의 경우 50개가 넘으면 잘되나 모르겠음.
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -179,14 +182,17 @@ def franchiseCostManage(request):
 def supplierManage(request):
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
+        cnt = c.execute('select count(id) from MAINAPP_SUPPLIER').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
 
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -253,14 +259,17 @@ def storeOrderManage(request):
 def productManage(request):
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
+        cnt = c.execute('select count(BARCODE) from MAINAPP_PRODUCT').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
 
     
     if request.method == 'POST':
@@ -345,7 +354,10 @@ def customerManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -425,7 +437,10 @@ def orderManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -470,7 +485,10 @@ def orderManageList(request, *args, **kwargs):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -520,7 +538,10 @@ def centralRefundManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -592,7 +613,10 @@ def employeeManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
