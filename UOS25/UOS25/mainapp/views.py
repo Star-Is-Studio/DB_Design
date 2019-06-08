@@ -39,16 +39,9 @@ def login_check_store(func):
     return checker
     
 def login(request):
+    sess = request.session
     if request.method=='POST':
-        sess = request.session
         post = request.POST
-        # 로그아웃 요청 처리
-        if 'logout' in post.keys():
-            if 'id' in sess.keys():
-                del sess['id']
-            if 'store_id' in sess.keys():
-                del sess['store_id']
-            return redirect('login')
         # 로그인 요청 처리
         try:
             if not 'user_id' in post.keys() or not 'password' in post.keys():
@@ -70,6 +63,14 @@ def login(request):
         else:
             return redirect('index')
     else:
+        get = request.GET
+        # 로그아웃 요청 처리
+        if 'logout' in get.keys():
+            if 'id' in sess.keys():
+                del sess['id']
+            if 'store_id' in sess.keys():
+                del sess['store_id']
+            return redirect('login')
         #로그인 페이지 처리
         return render(request, 'login.html')
 
