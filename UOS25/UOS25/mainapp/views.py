@@ -203,10 +203,12 @@ def supplierManage(request):
             'supplierSearchForm' : supplier_search_form, 'this_page' : page, 'pages' : pages})
 
 def storeOrderManage(request):
-    return render(request, 'franchiseOrderManage.html')
+    return render(request, 'storeOrderManage.html')
 
+# 상품 등록
 def registerProduct(request):
-    return render(request, 'registerHeadProduct.html')
+
+    return render(request, 'registerProduct.html',{'form':ProductRegisterForm()})
 
 def productManage(request):
     context = dict(
@@ -282,22 +284,23 @@ def customerManage(request):
 
 # 가맹점 페이지
 def orderManage(request):
-    return render(request, 'orderHeadManage.html')
+    return render(request, 'orderManage.html')
 
 def centralRefundManage(request):
-    return render(request, 'refundHeadManage.html')
+    return render(request, 'centralRefundManage.html')
 
 def saleProduct(request):
     return render(request, 'saleProduct.html')
 
 def customerRefundManage(request):
-    return render(request, 'refundCustomerManage.html')
-    
+    return render(request, 'customerRefundManage.html')
+
+# 재고 등록
 def registerStock(request):
-    return render(request, 'registerProduct.html')
+    return render(request, 'registerStock.html')
 
 def deleteStock(request):
-    return render(request, 'deleteProduct.html')
+    return render(request, 'deleteStock.html')
 
 def expireDateManage(request):
     return render(request, 'expiryDateManage.html')
@@ -306,13 +309,13 @@ def saleManage(request):
     return render(request, 'saleManage.html')
 
 def maintenanceCostManage(request):
-    return render(request, 'costManage.html')
+    return render(request, 'maintenanceCostManage.html')
 
 def employeeManage(request):
     return render(request, 'employeeManage.html')
 
 def workListManage(request):
-    return render(request, 'workRecordManage.html')
+    return render(request, 'workListManage.html')
 
 def salaryManage(request):
     return render(request, 'salaryManage.html')
