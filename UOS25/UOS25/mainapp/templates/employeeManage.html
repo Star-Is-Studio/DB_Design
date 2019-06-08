@@ -1,30 +1,167 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="panel panel-default">
-    <div class="panel-body" style="margin-left:50px;">
-      직원고용
+<div class="panel panel-default" style="margin-bottom:0px">
+  <div class="panel-body" style="margin-left:50px">
+    <h1>점원 관리</h1>
+  </div>
+</div>
+<table class="table table-striped" style="margin-left:5px">
+  <thead>
+    <tr>
+      <th>이름</th>
+      <th>주간 시급</th>
+      <th>야간 시급</th>
+      <th>고용일</th>
+      <th>해고일</th>
+      <th>연락처</th>
+      <th>직급</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for employee in employees %}
+    <tr>
+      <td>{{ employee.name }}</td>
+      <td>{{ employee.daytime_hourpay }}</td>
+      <td>{{ employee.nighttime_hourpay }}</td>
+      <td>{{ employee.employed_date }}</td>
+      <td>{{ employee.fire_date | default_if_none:"" }}</td>
+      <td>{{ employee.contact }}</td>
+      <td>{{ employee.position_code }}</td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
+        onclick="update_onclick({{ employee.id }}, '{{ employee.name }}', {{ employee.daytime_hourpay }}, {{ employee.nighttime_hourpay }},
+        '{{ employee.employed_date }}', '{{employee.fire_date | default_if_none:""}}', '{{employee.contact}}', '{{employee.position_code}}')">수정</button></td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
+        onclick="delete_onclick({{ employee.id }}, '{{employee.name}}')">삭제</button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!--추가 버튼 및 페이지 표시 -->
+<nav>
+  <div class="text-center">
+    <ul class="pagination">
+      <li>
+          <span aria-hidden="true">&laquo;</span>
+      </li>
+      {% for page in pages %}
+      {% if this_page == page %}
+      <li><a href="?page={{page}}"><b>{{page}}</b></a></li>
+      {% else %}
+      <li><a href="?page={{page}}">{{page}}</a></li>
+      {% endif %}
+      {% endfor %}
+      <li>
+          <span aria-hidden="true">&raquo;</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 추가 버튼 -->
+  <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">점원 추가</button>
+  </div>
+
+</nav>
+
+<!--add모달-->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addLabel">점원 추가</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'employeeManage' %}?process=register&page={{this_page}}" method="POST">
+      <div class="modal-body input-group">
+        {{ employeeRegisterForm }}
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
+
     </div>
   </div>
-  <form method="POST" style="margin-left:50px;padding-bottom: 5px">
-    <div class="form-group">
-      <label for="name">직원이름</label>
-      <input type="text" class="form-control" id="name" name="employeeName" maxlength="50" style="width:auto">
-    </div>
-    {%csrf_token%}
-    <button type="submit" class="btn btn-default">고용</button>
-  </form>
-  <div class="panel panel-default">
-      <div class="panel-body" style="margin-left:50px">
-        직원해고
-      </div>
-    </div>
-  <form method="POST" style="margin-left:50px;padding-bottom: 5px">
-      <div class="form-group">
-        <label for="name">직원이름</label>
-        <input type="text" class="form-control" id="name" name="employeeName" maxlength="50" style="width:auto">
-      </div>
-      {%csrf_token%}
-      <button type="submit" class="btn btn-default">해고</button>
-    </form>
-{%endblock%}
+</div>
 
+<script type="text/javascript">
+delete_onclick = function(id, name) {
+  $("#delete_id").text(name);
+  $("#del_id").val(id);
+}
+update_onclick = function(id, name, dpay, npay, edate, fdate, contact, poscode) {
+  $("#update_id").val(id);
+  $("#update_name").val(name);
+  $("#update_daytime_hourpay").val(dpay);
+  $("#update_nighttime_hourpay").val(npay);
+  $("#update_employed_date").val(edate);
+  $("#update_fire_date").val(fdate);
+  $("#update_contact").val(contact);
+  $("#update_position_code").val(poscode);
+}
+</script>
+
+<!--del모달-->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="delLabel">삭제하기</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'employeeManage' %}?process=delete&page={{this_page}}" method="POST">
+      <div class="modal-body">
+        <span id="delete_id"></span> 직원을 정말로 삭제하시겠습니까?
+        <input type="hidden" id="del_id" name="id" value=""> 
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<!--update모달-->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateLabel">수정하기</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'employeeManage' %}?process=update&page={{this_page}}" method="POST">
+      <div class="modal-body input-group">
+        {{ employeeUpdateForm }}
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+{%endblock%}

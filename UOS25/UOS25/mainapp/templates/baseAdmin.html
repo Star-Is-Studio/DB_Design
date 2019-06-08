@@ -78,7 +78,7 @@
       <!-- 페이지 최상단 로고와 로그인/로그아웃 버튼-->
       <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'indexAdmin' %}"><img style="margin-top:-10px;" src="{%static 'img/uos25logo.gif'%}"></a>
-        <p class="navbar-brand"> {% if 'store_id' in request.session %} 아이디 : {{ request.user_id }}, 본점{% endif %} </p>
+        <p class="navbar-brand"> {% if 'id' in request.session %} 아이디 : {{ request.user_id }}, 본점{% endif %} </p>
         {% if 'id' in request.session %}
           <form class="navbar-brand" style="padding-top:8px">
             <a class="btn btn-default" href="{% url 'login' %}?logout" role="button">로그아웃</a>
@@ -134,16 +134,11 @@
                 <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
               </a>
             </li>
-            <!-- 합치거나 삭제 예정 -->
             <div id="productManage" class="collapse">
               <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                <li role="presentation"><a href="{% url 'registerProduct' %}" style="color:white">&nbsp;&nbsp;상품
-                    등록</a></li>
-                <li role="presentation"><a href="{% url 'productManage' %}" style="color:white">&nbsp;&nbsp;상품
-                    조회/삭제</a></li>
+                <li role="presentation"><a href="{% url 'productManage' %}" style="color:white">&nbsp;&nbsp;상품 관리</a></li>
               </ul>
             </div>
-            <!-- ---------------- -->
 
             <hr style="width:90%">
             <li role="presentation">

@@ -25,15 +25,16 @@ central_urlpatterns = [
     url(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
     url(r'^central/supplierManage/$', supplierManage, name='supplierManage'),#납품 업체 관리
     url(r'^central/storeOrderManage/$', storeOrderManage, name='storeOrderManage'),#지점 주문 관리
-    url(r'^central/registerProduct/$', registerProduct, name='registerProduct'),#상품 등록
-    url(r'^central/productManage/$', productManage, name='productManage'),#상품 조회/삭제
-    url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 조회/삭제
+    # url(r'^central/registerProduct/$', registerProduct, name='registerProduct'),#상품 등록
+    url(r'^central/productManage/$', productManage, name='productManage'),#상품 관리
+    url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 관리
 ]
 
 # 가맹점 페이지
 franchise_urlpatterns = [    
     url(r'^franchise/$',index, name='index'),#가맹점인덱스
     url(r'^franchise/orderManage/$',orderManage, name='orderManage'),#주문관리
+    url(r'^franchise/orderManage/list/$', orderManageList, name='orderManageList'), #주문목록확인
     url(r'^franchise/centralRefundManage/$', centralRefundManage, name='centralRefundManage'),#본사반품관리
     url(r'^franchise/saleProduct/$', saleProduct, name='saleProduct'),#물품판매
     url(r'^franchise/customerRefundManage/$', customerRefundManage, name='customerRefundManage'),#고객반품관리

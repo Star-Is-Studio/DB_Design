@@ -2,27 +2,29 @@
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
-    <h1>유지비 관리</h1>
+    <h1>주문 목록 관리</h1>
   </div>
 </div>
 <table class="table table-striped" style="margin-left:5px">
   <thead>
     <tr>
-      <th>직원명</th>
-      <th>근무시작</th>
-      <th>근무종료</th>
-      <th>점주확인</th>
+      <th>바코드</th>
+      <th>수량</th>
+      <th>발송일</th>
+      <th>도착일</th>
+      <th>처리 결과</th>
     </tr>
   </thead>
   <tbody>
-    {% for worklist in worklists %}
+    {% for orderRecord in orderRecords %}
     <tr>
-      <td>{{ worklist.employee_id }}</td>
-      <td>{{ worklist.workstart_timestamp }}</td>
-      <td>{{ worklist.workend_timestamp }}</td>
-      <td>{{ worklist.storeowner_check }}</td>
+      <td>{{ orderRecord.barcode }}</td>
+      <td>{{ orderRecord.quantity }}</td>
+      <td>{{ orderRecord.sent_timestamp | default_if_none:"" }}</td>
+      <td>{{ orderRecord.arrival_timestamp | default_if_none:"" }}</td>
+      <td>{{ orderRecord.process_code }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
-        onclick="delete_onclick({{ worklist.id }})">삭제</button></td>
+        onclick="delete_onclick({{ orderRecord.id }}, '{{orderRecord.barcode}}')">취소</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -50,7 +52,7 @@
 
   <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
-    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">기록 추가</button>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">상품 주문 추가</button>
   </div>
 
 </nav>
@@ -63,13 +65,13 @@
       <!-- 모달 창 제목 -->
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addLabel">기록 추가</h4>
+        <h4 class="modal-title" id="addLabel">상품 주문 추가</h4>
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=register&page={{this_page}}" method="POST">
+      <form action="{% url 'orderManageList' %}?order_id={{ order.id }}&process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ workListRegisterForm }}
+        {{ orderListRegisterForm }}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -83,7 +85,8 @@
 </div>
 
 <script type="text/javascript">
-delete_onclick = function(id) {
+delete_onclick = function(id, name) {
+  $("#delete_id").text(name);
   $("#del_id").val(id);
 }
 </script>
@@ -97,13 +100,13 @@ delete_onclick = function(id) {
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
             aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="delLabel">기록 취소</h4>
+        <h4 class="modal-title" id="delLabel">취소하기</h4>
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=delete&page={{this_page}}" method="POST">
+      <form action="{% url 'orderManageList' %}?order_id={{ order.id }}&process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
-        이 기록을 정말로 취소하시겠습니까?
+        <span id="delete_id"></span> 의 주문을 정말로 취소하시겠습니까?
         <input type="hidden" id="del_id" name="id" value=""> 
         {% csrf_token %}
       </div>

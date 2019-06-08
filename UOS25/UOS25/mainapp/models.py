@@ -15,6 +15,9 @@ class Supplier(models.Model):
     name = models.CharField(max_length=25, null=False)
     contact = models.CharField(max_length=20, null=False)
     email = models.CharField(max_length=40, null=False)
+
+    def __str__(self):
+        return self.name
     
 # 상품 테이블
 class Product(models.Model):
@@ -22,11 +25,14 @@ class Product(models.Model):
     name = models.CharField(max_length=50, null=False)
     supply_price = models.DecimalField(decimal_places=0, max_digits=10, null=False)
     unit_price = models.DecimalField(decimal_places=0, max_digits=10, null=False)
-    supplier_id = models.ForeignKey(Supplier, null=False, db_column='supplier_id') 
+    supplier_id = models.ForeignKey(Supplier, null=False, db_column='supplier_id')
     category_a = models.DecimalField(decimal_places=0, max_digits=4, null=False) # 상품 대분류 코드
     category_b = models.DecimalField(decimal_places=0, max_digits=4, null=False) # 상품 소분류 코드
     explain = models.CharField(max_length=80, null=True)
     picture_file_path = models.CharField(max_length=80, null=True) # 사진파일경로
+
+    def __str__(self):
+        return self.name
 
 # 재고 테이블
 class Stock(models.Model):
@@ -49,7 +55,7 @@ class Order_list(models.Model):
     sent_timestamp = models.DateTimeField(null=True)
     arrival_timestamp = models.DateTimeField(null=True)
     process_code = models.DecimalField(decimal_places=0, max_digits=4, null=False)
-    order_id = models.ForeignKey(Order, null=False)
+    order_id = models.ForeignKey(Order, null=False, db_column='order_id') #기존 것은 db_column 빼먹었으므로 고친다면 주의
 
 # 지점반품 테이블
 class Store_refund(models.Model):
@@ -76,6 +82,9 @@ class Employee(models.Model):
     fire_date=  models.DateField(null=True)
     contact = models.CharField(max_length=20, null=False)
     position_code = models.DecimalField(decimal_places=0, max_digits=4, null=False)
+
+    def __str__(self):
+        return self.name
 
 # 근무기록 테이블
 class Work_list(models.Model):
