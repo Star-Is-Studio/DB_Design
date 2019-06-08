@@ -19,13 +19,13 @@ def login_check_central(func):
                 return redirect('index')
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
+        request.user_id = sess['id']
         return func(request,*args,**kwargs)
     return checker
         
 def login_check_store(func):
     '''
     지점 로그인 체크 데코레이터, @login_check_login로 사용
-    반드시 함수인자가 request, store_id.... 이어야함~
     '''
     def checker(request,*args,**kwargs):
         sess = request.session
@@ -34,14 +34,23 @@ def login_check_store(func):
                 return redirect('indexAdmin')
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
+        request.user_id = sess['id']
         return func(request,*args,**kwargs)
     return checker
     
 def login(request):
     if request.method=='POST':
+        sess = request.session
+        post = request.POST
+        # 로그아웃 요청 처리
+        if 'logout' in post.keys():
+            if 'id' in sess.keys():
+                del sess['id']
+            if 'store_id' in sess.keys():
+                del sess['store_id']
+            return redirect('login')
         # 로그인 요청 처리
         try:
-            post = request.POST
             if not 'user_id' in post.keys() or not 'password' in post.keys():
                 raise Exception('un proper login post')
             id, password = post['user_id'], post['password']
@@ -50,8 +59,8 @@ def login(request):
                 raise Exception('no user')
             if sha256(password.encode()).hexdigest() != user_object.password:
                 raise Exception("doesn't match password")
-            request.session['id'] = user_object.id
-            request.session['store_id'] = user_object.store_id
+            sess['id'] = user_object.id
+            sess['store_id'] = user_object.store_id
         except Exception as e:
             print(e)
             return redirect('login')
@@ -286,6 +295,7 @@ def customerManage(request):
 def orderManage(request):
     return render(request, 'orderManage.html')
 
+@login_check_store
 def centralRefundManage(request):
     return render(request, 'centralRefundManage.html')
 
