@@ -19,16 +19,16 @@
   <tbody>
     {% for customer in customers %}
     <tr>
-      <td>{{ customer.customer_id }}</td>
+      <td>{{ customer.id }}</td>
       <td>{{ customer.name }}</td>
       <td>{{ customer.mileage }}</td>
       <td>{{ customer.gender }}</td>
       <td>{{ customer.birthday }}</td>
       <td>{{ customer.contact }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
-        onclick="update_onclick({{ customer.customer_id }}, '{{ customer.name }}',
+        onclick="update_onclick({{ customer.id }}, '{{ customer.name }}',
         {{ customer.mileage }}, {{ customer.gender }}, '{{ customer.birthday }}', '{{customer.contact}}')">수정</button></td>
-      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ customer.customer_id }}, '{{ customer.name }}')">삭제</button></td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ customer.id }}, '{{ customer.name }}')">삭제</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -92,12 +92,12 @@
 </div>
 
 <script type="text/javascript">
-delete_onclick = function(customer_id, customer_name) {
+delete_onclick = function(id, customer_name) {
   $("#delete_customer_name").text(customer_name);
-  $("#del_customer_id").val(customer_id);
+  $("#del_id").val(id);
 }
-update_onclick = function(customer_id, name, mileage, gender, birthday, contact) {
-  $("#update_customer_id").val(customer_id);
+update_onclick = function(id, name, mileage, gender, birthday, contact) {
+  $("#update_id").val(id);
   $("#update_name").val(name);
   $("#update_mileage").val(mileage);
   $("#update_gender").val(gender);
@@ -122,7 +122,7 @@ update_onclick = function(customer_id, name, mileage, gender, birthday, contact)
       <form action="{% url 'customerManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
         <span id="delete_customer_name"></span> 고객을 정말로 삭제하시겠습니까?
-        <input type="hidden" id="del_customer_id" name="customer_id" value=""> 
+        <input type="hidden" id="del_id" name="id" value=""> 
         {% csrf_token %}
       </div>
       <div class="modal-footer">

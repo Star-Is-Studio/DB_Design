@@ -17,14 +17,14 @@
   <tbody>
     {% for supplier in suppliers %}
     <tr>
-      <td>{{ supplier.supplier_id }}</td>
+      <td>{{ supplier.id }}</td>
       <td>{{ supplier.name }}</td>
       <td>{{ supplier.contact }}</td>
       <td>{{ supplier.email }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
-        onclick="update_onclick({{ supplier.supplier_id }}, '{{ supplier.name }}', '{{ supplier.contact }}', '{{ supplier.email }}')">수정</button></td>
+        onclick="update_onclick({{ supplier.id }}, '{{ supplier.name }}', '{{ supplier.contact }}', '{{ supplier.email }}')">수정</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del"
-        onclick="delete_onclick({{ supplier.supplier_id}}, '{{ supplier.name }}')">삭제</button></td>
+        onclick="delete_onclick({{ supplier.id}}, '{{ supplier.name }}')">삭제</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -88,12 +88,12 @@
 </div>
 
 <script type="text/javascript">
-delete_onclick = function(supplier_id, supplier_name) {
+delete_onclick = function(id, supplier_name) {
   $("#delete_supplier_name").text(supplier_name);
-  $("#del_supplier_id").val(supplier_id);
+  $("#del_id").val(id);
 }
-update_onclick = function(supplier_id, name, contact, email) {
-  $("#update_supplier_id").val(supplier_id);
+update_onclick = function(id, name, contact, email) {
+  $("#update_id").val(id);
   $("#update_name").val(name);
   $("#update_contact").val(contact);
   $("#update_email").val(email);
@@ -116,7 +116,7 @@ update_onclick = function(supplier_id, name, contact, email) {
       <form action="{% url 'supplierManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
         <span id="delete_supplier_name"></span> 업체를 정말로 삭제하시겠습니까?
-        <input type="hidden" id="del_supplier_id" name="supplier_id" value=""> 
+        <input type="hidden" id="del_id" name="id" value=""> 
         {% csrf_token %}
       </div>
       <div class="modal-footer">

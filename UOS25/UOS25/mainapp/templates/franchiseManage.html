@@ -17,13 +17,13 @@
   <tbody>
     {% for store in stores %}
     <tr>
-      <td>{{ store.store_id }}</td>
+      <td>{{ store.id }}</td>
       <td>{{ store.address }}</td>
       <td>{{ store.contact }}</td>
       <td>{{ store.store_pay }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
-        onclick="update_onclick({{ store.store_id }}, '{{ store.address }}', '{{ store.contact }}', {{ store.store_pay }}, {{ store.store_code }})">수정</button></td>
-      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ store.store_id }})">폐업</button></td>
+        onclick="update_onclick({{ store.id }}, '{{ store.address }}', '{{ store.contact }}', {{ store.store_pay }}, {{ store.store_code }})">수정</button></td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ store.id }})">폐업</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -87,12 +87,12 @@
 </div>
 
 <script type="text/javascript">
-delete_onclick = function(store_id) {
-  $("#delete_store_id").text(store_id);
-  $("#del_store_id").val(store_id);
+delete_onclick = function(id) {
+  $("#delete_id").text(id);
+  $("#del_id").val(id);
 }
-update_onclick = function(store_id, address, contact, store_pay, store_code) {
-  $("#update_store_id").val(store_id);
+update_onclick = function(id, address, contact, store_pay, store_code) {
+  $("#update_id").val(id);
   $("#update_address").val(address);
   $("#update_contact").val(contact);
   $("#update_store_pay").val(store_pay);
@@ -115,8 +115,8 @@ update_onclick = function(store_id, address, contact, store_pay, store_code) {
       <!-- 모달 창 내용 -->
       <form action="{% url 'franchiseManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
-        <span id="delete_store_id"></span> 호점을 정말로 폐업처리 하시겠습니까?
-        <input type="hidden" id="del_store_id" name="store_id" value=""> 
+        <span id="delete_id"></span> 호점을 정말로 폐업처리 하시겠습니까?
+        <input type="hidden" id="del_id" name="id" value=""> 
         {% csrf_token %}
       </div>
       <div class="modal-footer">
