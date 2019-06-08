@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.db import connection
 from mainapp.models import *
@@ -20,9 +20,6 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
-        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
         
@@ -38,16 +35,20 @@ def login_check_store(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
-        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
     
 def login(request):
-    sess = request.session
     if request.method=='POST':
+        sess = request.session
         post = request.POST
+        # 로그아웃 요청 처리
+        if 'logout' in post.keys():
+            if 'id' in sess.keys():
+                del sess['id']
+            if 'store_id' in sess.keys():
+                del sess['store_id']
+            return redirect('login')
         # 로그인 요청 처리
         try:
             if not 'user_id' in post.keys() or not 'password' in post.keys():
@@ -57,14 +58,9 @@ def login(request):
             if user_object is None:
                 raise Exception('no user')
             if sha256(password.encode()).hexdigest() != user_object.password:
-                raise Exception("doesn't match password")
-            sess['id'] = id
-            sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
-            sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
-            # 직급코드 얻기
-            with connection.cursor() as c:
-                sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
-
+                raise Exception("doesn't match passworrrrd")
+            sess['id'] = user_object.id
+            sess['store_id'] = user_object.store_id.id
         except Exception as e:
             print(e)
             return redirect('login')
@@ -74,14 +70,6 @@ def login(request):
         else:
             return redirect('index')
     else:
-        get = request.GET
-        # 로그아웃 요청 처리
-        if 'logout' in get.keys():
-            if 'id' in sess.keys():
-                del sess['id']
-            if 'store_id' in sess.keys():
-                del sess['store_id']
-            return redirect('login')
         #로그인 페이지 처리
         return render(request, 'login.html')
 
@@ -103,16 +91,9 @@ def index(request):
 # 지점 관리
 @login_check_central
 def franchiseManage(request):
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        pages = [a for a in range(max(1, page-2), j+2)]
-    #지점은 그럴거같지않지만 상품의 경우 50개가 넘으면 잘되나 모르겠음.
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -136,7 +117,7 @@ def franchiseManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])
                 
-                return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -145,7 +126,7 @@ def franchiseManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_storeDelete, [id])
-            return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
 
         elif process == 'search':
             form = StoreSearchForm(request.POST)
@@ -201,7 +182,7 @@ def supplierManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, id])
                 
-                return HttpResponseRedirect(reverse('supplierManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -210,7 +191,7 @@ def supplierManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_supplierDelete, [id])
-            return HttpResponseRedirect(reverse('supplierManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
 
         elif process == 'search':
             form = SupplierSearchForm(request.POST)
@@ -271,7 +252,7 @@ def productManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_productUpdate, [name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path, barcode])
                 
-                return HttpResponseRedirect(reverse('productManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/productManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -280,8 +261,7 @@ def productManage(request):
             barcode = int(request.POST.get('barcode', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_productDelete, [barcode])
-            return HttpResponseRedirect(reverse('productManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/central/productManage?page=%s' % page)
 
         elif process == 'search':
             form = ProductSearchForm(request.POST)
@@ -345,7 +325,7 @@ def customerManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, id])
                 
-                return HttpResponseRedirect(reverse('customerManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/customerManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -354,8 +334,7 @@ def customerManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_customerDelete, [id])
-            return HttpResponseRedirect(reverse('customerManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/central/customerManage?page=%s' % page)
 
         elif process == 'search':
             form = CustomerSearchForm(request.POST)
@@ -405,7 +384,7 @@ def orderManage(request):
                 if process == 'register':
                     cursor.execute(SQLs.sql_orderRegister, [store_id, order_timestamp])
             
-            return HttpResponseRedirect(reverse('orderManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/franchise/orderManage?page=%s' % page)
         else:
             print(form.errors)
             print('가 발생')
@@ -442,7 +421,7 @@ def orderManageList(request, *args, **kwargs):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_orderListRegister, [barcode, quantity, order_id])
                     
-                return HttpResponseRedirect(reverse('orderManageList')+'?order_id=%s&page=%s' % (order_id, page))
+                return HttpResponseRedirect('/franchise/orderManage/list/?order_id=%s&page=%s' % (order_id, page))
             else:
                 print(form.errors)
                 print('가 발생')
@@ -451,8 +430,7 @@ def orderManageList(request, *args, **kwargs):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_orderListDelete, [id])
-            return HttpResponseRedirect(reverse('orderManageList')+'?order_id=%s&page=%s' % (order_id, page))
-
+            return HttpResponseRedirect('/franchise/orderManage/list/?order_id=%s&page=%s' % (order_id, page))
 
     else:
         orderRecords = Order_list.objects.raw(SQLs.sql_orderListManage, [order_id])
@@ -486,7 +464,7 @@ def centralRefundManage(request):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_storeRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
                 
-                return HttpResponseRedirect(reverse('centralRefundManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/franchise/centralRefundManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -495,8 +473,7 @@ def centralRefundManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_storeRefundDelete, [id])
-            return HttpResponseRedirect(reverse('centralRefundManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/franchise/centralRefundManage?page=%s' % page)
 
     else:
         refunds = Store_refund.objects.raw(SQLs.sql_storeRefundManage, [store_id])
@@ -605,7 +582,7 @@ def workListManage(request):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_workListRegister, [employee_id, workstart_timestamp, workend_timestamp])
                 
-                return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/franchise/workListManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -614,8 +591,7 @@ def workListManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_workListDelete, [id])
-            return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/franchise/workListManage?page=%s' % page)
 
     else:
         worklists = Work_list.objects.raw(SQLs.sql_workListManage, [store_id])

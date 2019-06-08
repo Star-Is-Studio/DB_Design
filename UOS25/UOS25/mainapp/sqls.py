@@ -145,5 +145,3 @@ class SQLs:
         values (%s, %s, %s, 'N')"
 
     sql_workListDelete = "delete from MAINAPP_WORK_LIST where id = %s"
-
-    sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
