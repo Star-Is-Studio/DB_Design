@@ -22,6 +22,8 @@ class SQLs:
         and store_pay between %s and %s\
         order by id"
 
+    sql_storeCount = "select count(id) from MAINAPP_STORE"
+
     sql_supplierManage = "select id, name, contact, email \
         from MAINAPP_SUPPLIER \
         order by id"
