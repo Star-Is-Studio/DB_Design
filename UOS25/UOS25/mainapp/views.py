@@ -20,6 +20,7 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
+        request.store_id = sess['store_id']
         return func(request,*args,**kwargs)
     return checker
         
@@ -35,6 +36,7 @@ def login_check_store(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
+        request.store_id = sess['store_id']
         return func(request,*args,**kwargs)
     return checker
     
