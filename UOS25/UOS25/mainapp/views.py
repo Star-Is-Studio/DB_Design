@@ -80,6 +80,7 @@ def index(request):
 # 본사 페이지
 
 # 지점 관리
+@login_check_central
 def franchiseManage(request):
     page = int(request.GET.get('page', 1))
     pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
@@ -91,10 +92,11 @@ def franchiseManage(request):
             if process == 'register':
                 form = StoreRegisterForm(request.POST)
             elif process == 'update' :
-                instance = Store.objects.get(store_id=request.POST.get('store_id', 'Error')) # 해당 store_id가 있는지 확인
+                instance = Store.objects.get(id=request.POST.get('id', 'Error')) # 해당 store_id가 있는지 확인
                 form = StoreUpdateForm(request.POST, instance=instance)
             if form.is_valid():
-                store_id = form.cleaned_data['store_id']
+                if process == 'update':
+                    id = form.cleaned_data['id'] #register의 경우 DB 트리거로 자동 지정
                 address = form.cleaned_data['address']
                 contact = form.cleaned_data['contact']
                 store_pay = form.cleaned_data['store_pay']
@@ -102,9 +104,9 @@ def franchiseManage(request):
 
                 with connection.cursor() as cursor:
                     if process == 'register':
-                        cursor.execute(SQLs.sql_storeRegister, [store_id, address, contact, store_pay, store_code])
+                        cursor.execute(SQLs.sql_storeRegister, ['', address, contact, store_pay, store_code])
                     elif process == 'update':
-                        cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, store_id])
+                        cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])
                 
                 return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
             else:
@@ -112,9 +114,9 @@ def franchiseManage(request):
                 print('가 발생')
 
         elif process == 'delete':
-            store_id = int(request.POST.get('store_id', 'Error'))
+            id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_storeDelete, [store_id])
+                cursor.execute(SQLs.sql_storeDelete, [id])
             return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
 
         elif process == 'search':
@@ -155,19 +157,20 @@ def supplierManage(request):
             if process == 'register':
                 form = SupplierRegisterForm(request.POST)
             elif process == 'update' :
-                instance = Supplier.objects.get(supplier_id=request.POST.get('supplier_id', 'Error')) # 해당 supplier_id가 있는지 확인
+                instance = Supplier.objects.get(id=request.POST.get('id', 'Error')) # 해당 id가 있는지 확인
                 form = SupplierUpdateForm(request.POST, instance=instance)
             if form.is_valid():
-                supplier_id = form.cleaned_data['supplier_id']
+                if process == 'update':
+                    id = form.cleaned_data['id']
                 name = form.cleaned_data['name']
                 contact = form.cleaned_data['contact']
                 email = form.cleaned_data['email']
 
                 with connection.cursor() as cursor:
                     if process == 'register':
-                        cursor.execute(SQLs.sql_supplierRegister, [supplier_id, name, contact, email])
+                        cursor.execute(SQLs.sql_supplierRegister, ['', name, contact, email])
                     elif process == 'update':
-                        cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, supplier_id])
+                        cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, id])
                 
                 return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
             else:
@@ -175,9 +178,9 @@ def supplierManage(request):
                 print('가 발생')
 
         elif process == 'delete':
-            supplier_id = int(request.POST.get('supplier_id', 'Error'))
+            id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_supplierDelete, [supplier_id])
+                cursor.execute(SQLs.sql_supplierDelete, [id])
             return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
 
         elif process == 'search':
@@ -223,10 +226,11 @@ def customerManage(request):
             if process == 'register':
                 form = CustomerRegisterForm(request.POST)
             elif process == 'update' :
-                instance = Customer.objects.get(customer_id=request.POST.get('customer_id', 'Error')) # 해당 customer_id가 있는지 확인
+                instance = Customer.objects.get(id=request.POST.get('id', 'Error')) # 해당 id가 있는지 확인
                 form = CustomerUpdateForm(request.POST, instance=instance)
             if form.is_valid():
-                customer_id = form.cleaned_data['customer_id']
+                if process == 'update':
+                    id = form.cleaned_data['id']
                 name = form.cleaned_data['name']
                 mileage = form.cleaned_data['mileage']
                 gender = form.cleaned_data['gender']
@@ -235,9 +239,9 @@ def customerManage(request):
 
                 with connection.cursor() as cursor:
                     if process == 'register':
-                        cursor.execute(SQLs.sql_customerRegister, [customer_id, name, mileage, gender, birthday, contact])
+                        cursor.execute(SQLs.sql_customerRegister, ['', name, mileage, gender, birthday, contact])
                     elif process == 'update':
-                        cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, customer_id])
+                        cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, id])
                 
                 return HttpResponseRedirect('/central/customerManage?page=%s' % page)
             else:
@@ -245,9 +249,9 @@ def customerManage(request):
                 print('가 발생')
 
         elif process == 'delete':
-            customer_id = int(request.POST.get('customer_id', 'Error'))
+            id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_customerDelete, [customer_id])
+                cursor.execute(SQLs.sql_customerDelete, [id])
             return HttpResponseRedirect('/central/customerManage?page=%s' % page)
 
         elif process == 'search':

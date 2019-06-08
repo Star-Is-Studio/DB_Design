@@ -13,6 +13,7 @@ class ProductRegisterForm(forms.ModelForm):
             self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             self.fields[field_name].label = ''
 #여기까지
+
 class StoreRegisterForm(forms.ModelForm):
     class Meta:
         model = Store
@@ -25,13 +26,17 @@ class StoreRegisterForm(forms.ModelForm):
             self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             self.fields[field_name].label = ''
 
-
 class StoreUpdateForm(StoreRegisterForm):
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
-        self.fields['store_id'].widget.attrs.update({'readonly' : True})
+    
+        # 자동 PK
+        # self.fields['id'].widget.attrs.update({'readonly' : True})
 
 class StoreSearchForm(forms.Form):
     address = forms.CharField(max_length=80, required=False)
@@ -59,11 +64,16 @@ class SupplierRegisterForm(forms.ModelForm):
             self.fields[field_name].label = ''
 
 class SupplierUpdateForm(SupplierRegisterForm):
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
-        self.fields['supplier_id'].widget.attrs.update({'readonly' : True})
+
+        # 자동 PK
+        # self.fields['id'].widget.attrs.update({'readonly' : True})
 
 class SupplierSearchForm(forms.Form):
     name = forms.CharField(max_length=25, required=False)
@@ -90,11 +100,16 @@ class CustomerRegisterForm(forms.ModelForm):
             self.fields[field_name].label = ''
 
 class CustomerUpdateForm(CustomerRegisterForm):
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
-        self.fields['customer_id'].widget.attrs.update({'readonly' : True})
+
+        # 자동 PK
+        # self.fields['id'].widget.attrs.update({'readonly' : True})
 
 class CustomerSearchForm(forms.Form):
     name = forms.CharField(max_length=25, required=False)
