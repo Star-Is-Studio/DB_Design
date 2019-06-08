@@ -26,13 +26,38 @@
   </script>
 </head>
 <body>
-    <div style="margin-left: 45%;margin-top:10%">
-        <a class="btn btn-default" href="{% url 'indexAdmin' %}" role="button" style="align-content: center;">본사</a>
-        <a class="btn btn-default" href="{% url 'index' %}" role="button" style="align-content: center">가맹점</a>
+
+    <div style="width:100%; text-align: center; margin-top:13%">
+      <div style="display: inline-block;">
+          <img src="{%static 'img/uos25logo.gif'%}">
+      </div>
+    </div>
+    <br>
+    <div style="width:100%; text-align: center">
+        <div style="display: inline-block;">
+          <form method="POST" action='{% url 'login' %}'>
+            <div style="margin-top: 5px;">
+              <input type="text" class="form-control" id="user_id" name="user_id" placeholder="아이디" maxlength="50" style="width:auto">
+            </div>
+            <div style="margin-top: 5px;">
+              <input type="password" class="form-control" id="password" name="password" placeholder="비밀번호" maxlength="50" style="width:auto">
+            </div>
+              {% csrf_token %}
+              <button style="margin-top: 5px;" type="submit" class="btn btn-primary">로그인</button>
+          </form>
+      </div>
     </div>
 
+    <!--아이디로 이동할 수 있게 대표아이디 하나씩만들어주셈
+      <div style="margin-left: 45%;margin-top:10%">
+      <div style="display: inline-block">
+        <a class="btn btn-default" href="{% url 'indexAdmin' %}" role="button" style="align-content: center;">본사</a>
+        <a class="btn btn-default" href="{% url 'index' %}" role="button" style="align-content: center">가맹점</a>
+      </div>
+    </div>-->
+
     <!-- Footer -->
-    <footer style="margin-top:50px; width:100%;background-color: #f5f5f5">
+    <footer style="margin-top:10%;width:100%;background-color: #f5f5f5">
         <br>
         <div class="container">
           <p class="m-0 text-center text-white"><b>Copyright &copy; 김현우,이정한,임창일 2019</b></p>
@@ -40,6 +65,8 @@
         </div>
         <br>
       </footer>
+
+
   <!-- Bootstrap core JavaScript -->
   <script src="{% static 'js/jquery.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
