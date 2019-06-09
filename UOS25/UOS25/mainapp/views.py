@@ -307,13 +307,55 @@ def supplierManage(request):
         {'suppliers' : suppliers, 'supplierRegisterForm' : supplier_register_form, 'supplierUpdateForm' : supplier_update_form, \
             'supplierSearchForm' : supplier_search_form, 'this_page' : page, 'pages' : pages})
 
+# 지점 주문 관리
 def storeOrderManage(request):
-    return render(request, 'storeOrderManage.html')
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_ORDER').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
 
-# # 상품 등록
-# def registerProduct(request):
+    if request.method=='POST':
+        pass
+    
+    orders = Order.objects.raw(SQLs.sql_storeOrderManage)
+    orders = orders[(10*(page-1)):10*page]
+    
+    return render(request, 'storeOrderManage.html', {'orders':orders, 'page':page, 'pages':pages})
 
-#     return render(request, 'registerProduct.html',{'form':ProductRegisterForm()})
+# 품 관리
+def storeRefundManage(request):
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_STORE_REFUND').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+
+    if request.method=='POST':
+        pass
+    
+    refunds = Store_refund.objects.raw(SQLs.sql_centralStoreRefundManage)
+    refunds = refunds[(10*(page-1)):10*page]
+    
+    return render(request, 'centralStoreRefundManage.html', {'refunds':refunds, 'page':page, 'pages':pages})
+
+
 
 # 상품 관리
 @login_check_central

@@ -212,3 +212,12 @@ class SQLs:
         rcpt_date = %s, rcpt_amount = %s, store_id = %s \
         where id = %s"
     
+    sql_storeOrderManage = "select id, store_id, order_timestamp, complete_timestamp, process_code \
+        from MAINAPP_ORDER \
+        order by order_timestamp"
+
+
+    sql_centralStoreRefundManage = 'select id, store_id, barcode, quantity, refund_timestamp, \
+        refund_reason_code, process_code\
+        from MAINAPP_STORE_REFUND\
+        order by store_id'
