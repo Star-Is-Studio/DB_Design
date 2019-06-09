@@ -10,6 +10,9 @@ class Store(models.Model):
     store_pay = models.FloatField(null=False) # 가맹요금비율
     store_code = models.DecimalField(decimal_places=0, max_digits=4, null=False) # 지점상태코드
 
+    def __str__(self):
+        return '_'.join((str(self.id), self.address[:10]))
+
 # 납품업체 테이블
 class Supplier(models.Model):
     name = models.CharField(max_length=25, null=False)

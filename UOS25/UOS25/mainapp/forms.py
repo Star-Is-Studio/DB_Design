@@ -189,6 +189,28 @@ class EmployeeUpdateForm(EmployeeRegisterForm):
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
 
+class FranchiseStoreRcptRegisterForm(forms.ModelForm):
+    class Meta:
+        model = Franchise_store_rcpt
+        fields = '__all__'
+
+    # Bootstrap CSS 적용
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            self.fields[field_name].label = ''
+
+class FranchiseStoreRcptUpdateForm(FranchiseStoreRcptRegisterForm):
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
+
+
 class StockRegisterForm(forms.ModelForm):
     class Meta:
         model = Stock

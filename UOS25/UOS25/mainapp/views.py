@@ -178,11 +178,66 @@ def franchiseManage(request):
         {'stores' : stores, 'storeRegisterForm' : store_register_form, 'storeUpdateForm' : store_update_form, \
             'storeSearchForm' : store_search_form, 'this_page' : page, 'pages' : pages})
 
+# 가맹요급 수납
 def franchiseCostManage(request):
-    context=dict(
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_FRANCHISE_STORE_RCPT').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
         
-    )
-    return render(request, 'franchiseCostManage.html', context)
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = FranchiseStoreRcptRegisterForm(request.POST)
+            elif process == 'update' :
+                instance = Franchise_store_rcpt.objects.get(id=request.POST.get('id', 'Error')) # 해당 id가 있는지 확인
+                form = FranchiseStoreRcptUpdateForm(request.POST, instance=instance)
+            if form.is_valid():
+                if process == 'update':
+                    id = form.cleaned_data['id']
+
+                store_id = form.cleaned_data['store_id'].id
+                rcpt_date = form.cleaned_data['rcpt_date']
+                rcpt_amount = form.cleaned_data['rcpt_amount']
+                
+                with connection.cursor() as cursor:
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_franchiseStoreRcptRegister, [store_id, rcpt_date, rcpt_amount])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_franchiseStoreRcptUpdate, [rcpt_date, rcpt_amount, store_id, id])
+                
+                return HttpResponseRedirect('/central/franchiseCostManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            id = int(request.POST.get('id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_franchiseStoreRcptDelete, [id])
+            return HttpResponseRedirect('/central/franchiseCostManage?page=%s' % page)
+
+    else:
+        franchiseStoreRcpts = Franchise_store_rcpt.objects.raw(SQLs.sql_franchiseStoreRcptManage)
+        franchiseStoreRcpts = franchiseStoreRcpts[(10*(page-1)):10*page]
+
+    franchise_store_rcpt_register_form = FranchiseStoreRcptRegisterForm()
+    franchise_store_rcpt_update_form = FranchiseStoreRcptUpdateForm()
+
+    return render(request, 'franchiseCostManage.html', \
+        {'franchise_store_rcpts' : franchiseStoreRcpts, 'franchiseStoreRcptRegisterForm' : franchise_store_rcpt_register_form, 'franchiseStoreRcptUpdateForm' : franchise_store_rcpt_update_form, \
+            'this_page' : page, 'pages' : pages})
 
 # 납품 업체 관리
 @login_check_central
@@ -682,6 +737,7 @@ def saleProductList(request):
 def customerRefundManage(request):
     return render(request, 'customerRefundManage.html')
 
+#재고 관리
 def stockManage(request):
     store_id = request.session['store_id']
 

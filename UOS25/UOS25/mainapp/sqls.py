@@ -197,3 +197,18 @@ class SQLs:
         values (%s, %s, 'N', %s)"
 
     sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
+
+
+    sql_franchiseStoreRcptManage = "select id, store_id, rcpt_date, rcpt_amount\
+        from MAINAPP_FRANCHISE_STORE_RCPT \
+        order by id"
+
+    sql_franchiseStoreRcptRegister = "insert into MAINAPP_FRANCHISE_STORE_RCPT(store_id, rcpt_date, rcpt_amount) \
+        values (%s, %s, %s)"
+
+    sql_franchiseStoreRcptDelete = "delete from MAINAPP_FRANCHISE_STORE_RCPT where id = %s"
+
+    sql_franchiseStoreRcptUpdate = "update MAINAPP_FRANCHISE_STORE_RCPT set \
+        rcpt_date = %s, rcpt_amount = %s, store_id = %s \
+        where id = %s"
+    
