@@ -139,20 +139,8 @@
             </li>
             <div id="remainManage" class="collapse">
               <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                <li role="presentation"><a href="#" style="color:white" data-toggle="collapse" data-target="#remain">
-                    &nbsp;&nbsp;재고 현황 관리
-                    <span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
-                  </a></li>
-                <!-- 합치거나 삭제 예정 -->
-                <div id="remain" class="collapse">
-                  <ul class="nav nav-pills nav-stacked" style="background-color: #424449;">
-                    <li role="presentation"><a href="{% url 'registerStock' %}"
-                        style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;재고 추가</a></li>
-                    <li role="presentation"><a href="{% url 'deleteStock' %}"
-                        style="color:white">&nbsp;&nbsp;&nbsp;&nbsp;재고
-                        삭제</a></li>
-                  </ul>
-                </div>
+                <li role="presentation"><a href="{% url 'stockManage' %}" style="color:white">&nbsp;&nbsp;재고 관리</a>
+                </li>
                 <!-- ----------------- -->
                 <li role="presentation"><a href="{% url 'expireDateManage' %}" style="color:white">&nbsp;&nbsp;유통기한관리</a>
                 </li>

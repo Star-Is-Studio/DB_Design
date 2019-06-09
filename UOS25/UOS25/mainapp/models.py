@@ -38,7 +38,7 @@ class Product(models.Model):
 class Stock(models.Model):
     store_id = models.ForeignKey(Store, null=False, db_column='store_id')
     display_location_code = models.DecimalField(decimal_places=0, max_digits=4, null=False)
-    barcode  = models.ForeignKey(Product, null=False)
+    barcode  = models.ForeignKey(Product, null=False, db_column='barcode')
     quantity = models.DecimalField(decimal_places=0, max_digits=6, default=0, null=False)
 
 # 주문 테이블

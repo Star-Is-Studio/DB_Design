@@ -112,6 +112,20 @@ class SQLs:
         employed_date = %s, fire_date = %s, contact = %s, position_code = %s \
         where store_id = %s and id = %s"
 
+    sql_stockManage = "select id, store_id, display_location_code, barcode, quantity \
+        from MAINAPP_STOCK \
+        where store_id = %s \
+        order by id"
+
+    sql_stockRegister = "insert into MAINAPP_STOCK(store_id, display_location_code, barcode, quantity) \
+        values (%s, %s, %s, %s)"
+
+    sql_stockDelete = "delete from MAINAPP_STOCK where store_id = %s and id = %s"
+
+    sql_stockUpdate = "update MAINAPP_STOCK set \
+        display_location_code = %s, barcode = %s, quantity = %s \
+        where store_id = %s and id = %s"
+    
     sql_orderManage = "select id, store_id, order_timestamp, complete_timestamp, process_code \
         from MAINAPP_ORDER \
         where store_id = %s \

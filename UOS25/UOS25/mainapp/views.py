@@ -682,11 +682,68 @@ def saleProductList(request):
 def customerRefundManage(request):
     return render(request, 'customerRefundManage.html')
 
-def registerStock(request):
-    return render(request, 'registerStock.html')
+def stockManage(request):
+    store_id = request.session['store_id']
 
-def deleteStock(request):
-    return render(request, 'deleteStock.html')
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_STOCK where store_id=%s', [store_id]).fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+        
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = StockRegisterForm(request.POST)
+            elif process == 'update' :
+                instance = Stock.objects.get(id=request.POST.get('id', 'Error')) # 해당 id가 있는지 확인
+                form = StockUpdateForm(request.POST, instance=instance)
+            if form.is_valid():
+                if process == 'update':
+                    id = form.cleaned_data['id']
+                            
+                display_location_code = form.cleaned_data['display_location_code']
+                barcode  = form.cleaned_data['barcode'].barcode
+                quantity = form.cleaned_data['quantity']
+
+                with connection.cursor() as cursor:
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_stockRegister, [store_id, display_location_code, barcode, quantity])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_stockUpdate, [display_location_code, barcode, quantity, store_id, id])
+                
+                return HttpResponseRedirect('/franchise/stockManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            id = int(request.POST.get('id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_stockDelete, [store_id, id])
+            return HttpResponseRedirect('/franchise/stockManage?page=%s' % page)
+
+    else:
+        stocks = Stock.objects.raw(SQLs.sql_stockManage, [store_id])
+        stocks = stocks[(10*(page-1)):10*page]
+
+    stock_register_form = StockRegisterForm()
+    stock_update_form = StockUpdateForm()
+
+    return render(request, 'stockManage.html', \
+        {'stocks' : stocks, 'stockRegisterForm' : stock_register_form, 'stockUpdateForm' : stock_update_form, \
+            'this_page' : page, 'pages' : pages})
+            
+
 
 def expireDateManage(request):
     return render(request, 'expiryDateManage.html')
