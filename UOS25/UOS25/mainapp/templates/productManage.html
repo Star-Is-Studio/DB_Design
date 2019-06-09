@@ -46,17 +46,17 @@
   <div class="text-center">
     <ul class="pagination">
       <li>
-          <span aria-hidden="true">&laquo;</span>
+          <span aria-hidden="true">-</span>
       </li>
       {% for page in pages %}
       {% if this_page == page %}
-      <li><a href="?page={{page}}"><b>{{page}}</b></a></li>
+      <li class="active"><a href="?page={{page}}">{{page}}</a></li>
       {% else %}
       <li><a href="?page={{page}}">{{page}}</a></li>
       {% endif %}
       {% endfor %}
       <li>
-          <span aria-hidden="true">&raquo;</span>
+          <span aria-hidden="true">-</span>
       </li>
     </ul>
   </div>

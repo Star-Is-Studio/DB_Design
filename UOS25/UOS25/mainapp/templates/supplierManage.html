@@ -32,23 +32,23 @@
 
 <!--추가 버튼 및 페이지 표시 -->
 <nav>
-    <div class="text-center">
-        <ul class="pagination">
-          <li>
-              <span aria-hidden="true">-</span>
-          </li>
-          {% for page in pages %}
-          {% if this_page == page %}
-          <li class="active"><a href="?page={{page}}">{{page}}</a></li>
-          {% else %}
-          <li><a href="?page={{page}}">{{page}}</a></li>
-          {% endif %}
-          {% endfor %}
-          <li>
-              <span aria-hidden="true">-</span>
-          </li>
-        </ul>
-      </div>
+  <div class="text-center">
+    <ul class="pagination">
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+      {% for page in pages %}
+      {% if this_page == page %}
+      <li class="active"><a href="?page={{page}}">{{page}}</a></li>
+      {% else %}
+      <li><a href="?page={{page}}">{{page}}</a></li>
+      {% endif %}
+      {% endfor %}
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+    </ul>
+  </div>
 
   <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">

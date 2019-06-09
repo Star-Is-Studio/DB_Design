@@ -78,14 +78,16 @@
       <!-- 페이지 최상단 로고와 로그인/로그아웃 버튼-->
       <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'indexAdmin' %}"><img style="margin-top:-10px;" src="{%static 'img/uos25logo.gif'%}"></a>
-        <p class="navbar-brand"> 현재 로그인된 아이디 : {{ request.user_id }} </p>
-        <form class="navbar-brand" style="padding-top:8px">
-          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
-        </form>
-        <form class="navbar-brand" style="padding-top:8px">
-          <a class="btn btn-default" href="{% url 'login' %}" role="button">로그아웃</a>
-        </form>
-      </div>
+        <p class="navbar-brand"> {% if 'id' in request.session %} 아이디 : {{ request.user_id }}, 본점, 직급코드 : {{ request.emp_pos }}{% endif %} </p>
+        {% if 'id' in request.session %}
+          <form class="navbar-brand" style="padding-top:8px">
+            <a class="btn btn-default" href="{% url 'login' %}?logout" role="button">로그아웃</a>
+          </form>
+        {% else %}
+          <form class="navbar-brand" style="padding-top:8px">
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
+          </form>
+        {% endif %}
     </div>
   </nav>
 
