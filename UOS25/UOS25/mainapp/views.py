@@ -105,8 +105,7 @@ def franchiseManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
-    print(j)
-    print(page)
+
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
