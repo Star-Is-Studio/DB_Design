@@ -21,6 +21,9 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
+        request.store_id = sess['store_id']
+        request.emp_id = sess['emp_id']
+        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
         
@@ -36,20 +39,16 @@ def login_check_store(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
+        request.store_id = sess['store_id']
+        request.emp_id = sess['emp_id']
+        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
     
 def login(request):
+    sess = request.session
     if request.method=='POST':
-        sess = request.session
         post = request.POST
-        # 로그아웃 요청 처리
-        if 'logout' in post.keys():
-            if 'id' in sess.keys():
-                del sess['id']
-            if 'store_id' in sess.keys():
-                del sess['store_id']
-            return redirect('login')
         # 로그인 요청 처리
         try:
             if not 'user_id' in post.keys() or not 'password' in post.keys():
@@ -59,9 +58,14 @@ def login(request):
             if user_object is None:
                 raise Exception('no user')
             if sha256(password.encode()).hexdigest() != user_object.password:
-                raise Exception("doesn't match passworrrrd")
-            sess['id'] = user_object.id
-            sess['store_id'] = user_object.store_id.id
+                raise Exception("doesn't match password")
+            sess['id'] = id
+            sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
+            sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
+            # 직급코드 얻기
+            with connection.cursor() as c:
+                sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
+
         except Exception as e:
             print(e)
             return redirect('login')
@@ -71,6 +75,14 @@ def login(request):
         else:
             return redirect('index')
     else:
+        get = request.GET
+        # 로그아웃 요청 처리
+        if 'logout' in get.keys():
+            if 'id' in sess.keys():
+                del sess['id']
+            if 'store_id' in sess.keys():
+                del sess['store_id']
+            return redirect('login')
         #로그인 페이지 처리
         return render(request, 'login.html')
 
@@ -80,12 +92,13 @@ def _join(id,pwd,store_id):
     pwd = sha256(pwd.encode()).hexdigest()
     return id, pwd, store_id
     
-    
+@login_check_central
 def indexAdmin(request):
     return render(request, 'indexAdmin.html')
-
+@login_check_store
 def index(request):
     return render(request, 'index.html')
+
 
 # 본사 페이지
 
