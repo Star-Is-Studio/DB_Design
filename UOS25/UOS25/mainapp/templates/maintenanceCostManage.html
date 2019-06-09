@@ -8,21 +8,25 @@
 <table class="table table-striped" style="margin-left:5px">
   <thead>
     <tr>
-      <th>직원명</th>
-      <th>근무시작</th>
-      <th>근무종료</th>
+      <th>분류</th>
+      <th>금액</th>
+      <th>처리일자</th>
+      <th>책임점원</th>
+      <th>비고</th>
       <th>점주확인</th>
     </tr>
   </thead>
   <tbody>
-    {% for worklist in worklists %}
+    {% for cost in costs %}
     <tr>
-      <td>{{ worklist.employee_id }}</td>
-      <td>{{ worklist.workstart_timestamp }}</td>
-      <td>{{ worklist.workend_timestamp }}</td>
-      <td>{{ worklist.storeowner_check }}</td>
+      <td>{{ cost.maintenance_cost_code }}</td>
+      <td>{{ cost.amount }}</td>
+      <td>{{ cost.process_date }}</td>
+      <td>{{ cost.employee_id }}</td>
+      <td>{{ cost.etc }}</td>
+      <td>{{ cost.storeowner_check }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
-        onclick="delete_onclick({{ worklist.id }})">삭제</button></td>
+        onclick="delete_onclick({{ cost.id }})">삭제</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -67,9 +71,9 @@
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=register&page={{this_page}}" method="POST">
+      <form action="{% url 'maintenanceCostManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ workListRegisterForm }}
+        {{ maintenanceCostRegisterForm }}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -101,7 +105,7 @@ delete_onclick = function(id) {
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=delete&page={{this_page}}" method="POST">
+      <form action="{% url 'maintenanceCostManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
         이 기록을 정말로 취소하시겠습니까?
         <input type="hidden" id="del_id" name="id" value=""> 

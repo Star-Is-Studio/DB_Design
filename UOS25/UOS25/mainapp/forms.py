@@ -248,3 +248,14 @@ class MaintenanceCostRegisterForm(forms.ModelForm):
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             self.fields[field_name].label = ''
+
+class SalaryManageForm(forms.Form):
+    date_min = forms.DateTimeField()
+    date_max = forms.DateTimeField()
+
+    # Bootstrap CSS 적용
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            self.fields[field_name].label = ''

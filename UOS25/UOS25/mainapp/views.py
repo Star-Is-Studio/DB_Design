@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.db import connection
 from mainapp.models import *
@@ -6,6 +6,7 @@ from mainapp.query import *
 from mainapp.sqls import SQLs
 from mainapp.forms import *
 from hashlib import sha256
+import datetime
 
 
 def login_check_central(func):
@@ -20,9 +21,6 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
-        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
         
@@ -38,16 +36,20 @@ def login_check_store(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
-        request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
     
 def login(request):
-    sess = request.session
     if request.method=='POST':
+        sess = request.session
         post = request.POST
+        # 로그아웃 요청 처리
+        if 'logout' in post.keys():
+            if 'id' in sess.keys():
+                del sess['id']
+            if 'store_id' in sess.keys():
+                del sess['store_id']
+            return redirect('login')
         # 로그인 요청 처리
         try:
             if not 'user_id' in post.keys() or not 'password' in post.keys():
@@ -57,14 +59,9 @@ def login(request):
             if user_object is None:
                 raise Exception('no user')
             if sha256(password.encode()).hexdigest() != user_object.password:
-                raise Exception("doesn't match password")
-            sess['id'] = id
-            sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
-            sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
-            # 직급코드 얻기
-            with connection.cursor() as c:
-                sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
-
+                raise Exception("doesn't match passworrrrd")
+            sess['id'] = user_object.id
+            sess['store_id'] = user_object.store_id.id
         except Exception as e:
             print(e)
             return redirect('login')
@@ -74,14 +71,6 @@ def login(request):
         else:
             return redirect('index')
     else:
-        get = request.GET
-        # 로그아웃 요청 처리
-        if 'logout' in get.keys():
-            if 'id' in sess.keys():
-                del sess['id']
-            if 'store_id' in sess.keys():
-                del sess['store_id']
-            return redirect('login')
         #로그인 페이지 처리
         return render(request, 'login.html')
 
@@ -103,20 +92,9 @@ def index(request):
 # 지점 관리
 @login_check_central
 def franchiseManage(request):
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
-    #지점은 그럴거같지않지만 상품의 경우 50개가 넘으면 잘되나 모르겠음.
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -140,7 +118,7 @@ def franchiseManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])
                 
-                return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -149,7 +127,7 @@ def franchiseManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_storeDelete, [id])
-            return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/central/franchiseManage?page=%s' % page)
 
         elif process == 'search':
             form = StoreSearchForm(request.POST)
@@ -180,20 +158,9 @@ def franchiseCostManage(request):
 # 납품 업체 관리
 @login_check_central
 def supplierManage(request):
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_SUPPLIER').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
-
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -216,7 +183,7 @@ def supplierManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, id])
                 
-                return HttpResponseRedirect(reverse('supplierManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -225,7 +192,7 @@ def supplierManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_supplierDelete, [id])
-            return HttpResponseRedirect(reverse('supplierManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/central/supplierManage?page=%s' % page)
 
         elif process == 'search':
             form = SupplierSearchForm(request.POST)
@@ -257,20 +224,8 @@ def storeOrderManage(request):
 # 상품 관리
 @login_check_central
 def productManage(request):
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(BARCODE) from MAINAPP_PRODUCT').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
-
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -298,7 +253,7 @@ def productManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_productUpdate, [name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path, barcode])
                 
-                return HttpResponseRedirect(reverse('productManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/productManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -307,8 +262,7 @@ def productManage(request):
             barcode = int(request.POST.get('barcode', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_productDelete, [barcode])
-            return HttpResponseRedirect(reverse('productManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/central/productManage?page=%s' % page)
 
         elif process == 'search':
             form = ProductSearchForm(request.POST)
@@ -345,19 +299,8 @@ def productManage(request):
 # 고객 관리
 @login_check_central
 def customerManage(request):
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -383,7 +326,7 @@ def customerManage(request):
                     elif process == 'update':
                         cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, id])
                 
-                return HttpResponseRedirect(reverse('customerManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/central/customerManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -392,8 +335,7 @@ def customerManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_customerDelete, [id])
-            return HttpResponseRedirect(reverse('customerManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/central/customerManage?page=%s' % page)
 
         elif process == 'search':
             form = CustomerSearchForm(request.POST)
@@ -428,19 +370,8 @@ def customerManage(request):
 def orderManage(request):
     store_id = request.session['store_id']
 
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -454,7 +385,7 @@ def orderManage(request):
                 if process == 'register':
                     cursor.execute(SQLs.sql_orderRegister, [store_id, order_timestamp])
             
-            return HttpResponseRedirect(reverse('orderManage')+'?page=%s' % page)
+            return HttpResponseRedirect('/franchise/orderManage?page=%s' % page)
         else:
             print(form.errors)
             print('가 발생')
@@ -476,19 +407,8 @@ def orderManageList(request, *args, **kwargs):
 
     store_id = request.session['store_id']
 
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -502,7 +422,7 @@ def orderManageList(request, *args, **kwargs):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_orderListRegister, [barcode, quantity, order_id])
                     
-                return HttpResponseRedirect(reverse('orderManageList')+'?order_id=%s&page=%s' % (order_id, page))
+                return HttpResponseRedirect('/franchise/orderManage/list/?order_id=%s&page=%s' % (order_id, page))
             else:
                 print(form.errors)
                 print('가 발생')
@@ -511,8 +431,7 @@ def orderManageList(request, *args, **kwargs):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_orderListDelete, [id])
-            return HttpResponseRedirect(reverse('orderManageList')+'?order_id=%s&page=%s' % (order_id, page))
-
+            return HttpResponseRedirect('/franchise/orderManage/list/?order_id=%s&page=%s' % (order_id, page))
 
     else:
         orderRecords = Order_list.objects.raw(SQLs.sql_orderListManage, [order_id])
@@ -529,19 +448,8 @@ def orderManageList(request, *args, **kwargs):
 def centralRefundManage(request):
     store_id = request.session['store_id']
 
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -557,7 +465,7 @@ def centralRefundManage(request):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_storeRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
                 
-                return HttpResponseRedirect(reverse('centralRefundManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/franchise/centralRefundManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -566,8 +474,7 @@ def centralRefundManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_storeRefundDelete, [id])
-            return HttpResponseRedirect(reverse('centralRefundManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/franchise/centralRefundManage?page=%s' % page)
 
     else:
         refunds = Store_refund.objects.raw(SQLs.sql_storeRefundManage, [store_id])
@@ -596,27 +503,55 @@ def expireDateManage(request):
 def saleManage(request):
     return render(request, 'saleManage.html')
 
+@login_check_store
 def maintenanceCostManage(request):
-    return render(request, 'maintenanceCostManage.html')
+    store_id = request.session['store_id']
+
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+
+        if process == 'register':
+            form = MaintenanceCostRegisterForm(request.POST)
+            if form.is_valid():
+                mccode = form.cleaned_data['maintenance_cost_code']
+                amount = form.cleaned_data['amount']
+                process_date = form.cleaned_data['process_date']
+                employee_id = form.cleaned_data['employee_id'].id
+                etc = form.cleaned_data['etc']
+
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_maintenanceCostRegister, [mccode, amount, process_date, employee_id, etc, store_id])
+                
+                return HttpResponseRedirect('/franchise/maintenanceCostManage?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            id = int(request.POST.get('id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_maintenanceCostDelete, [id])
+            return HttpResponseRedirect('/franchise/maintenanceCostManage?page=%s' % page)
+
+    else:
+        costs = Maintenance_cost.objects.raw(SQLs.sql_maintenanceCostManage, [store_id])
+        costs = costs[(10*(page-1)):10*page]
+
+    cost_register_form = MaintenanceCostRegisterForm()
+
+    return render(request, 'maintenanceCostManage.html', \
+        {'costs' : costs, 'maintenanceCostRegisterForm' : cost_register_form, 'this_page' : page, 'pages' : pages})
 
 # 점원 관리
 @login_check_store
 def employeeManage(request):
     store_id = request.session['store_id']
 
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -671,16 +606,8 @@ def employeeManage(request):
 def workListManage(request):
     store_id = request.session['store_id']
 
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
-    cnt = int(cnt[0])
-    page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        pages = [a for a in range(max(1, page-2), j+2)]
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -695,7 +622,7 @@ def workListManage(request):
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_workListRegister, [employee_id, workstart_timestamp, workend_timestamp])
                 
-                return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
+                return HttpResponseRedirect('/franchise/workListManage?page=%s' % page)
             else:
                 print(form.errors)
                 print('가 발생')
@@ -704,8 +631,7 @@ def workListManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_workListDelete, [id])
-            return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
-
+            return HttpResponseRedirect('/franchise/workListManage?page=%s' % page)
 
     else:
         worklists = Work_list.objects.raw(SQLs.sql_workListManage, [store_id])
@@ -716,5 +642,64 @@ def workListManage(request):
     return render(request, 'workListManage.html', \
         {'worklists' : worklists, 'workListRegisterForm' : worklist_register_form, 'this_page' : page, 'pages' : pages})
 
+# 월급 조회
+@login_check_store
 def salaryManage(request):
-    return render(request, 'salaryManage.html')
+    # 커스텀 SQL 용 함수
+    def dictfetchall(cursor):
+        "Return all rows from a cursor as a dict"
+        columns = [col[0] for col in cursor.description]
+        return [
+            dict(zip(columns, row))
+            for row in cursor.fetchall()
+        ]
+
+    store_id = request.session['store_id']
+
+    page = int(request.GET.get('page', 1))
+    pages = [i for i in range(max(1, page-2), max(5, page+2)+1)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+
+        if process == 'search':
+            form = SalaryManageForm(request.POST)
+            if form.is_valid():
+                date_min = form.cleaned_data['date_min']
+                date_max = form.cleaned_data['date_max']
+    else:
+        # 기본 조회 기간 : 현재 월
+        date_min = datetime.datetime.now().replace(day=1)
+        date_max = date_min + datetime.timedelta(days=30)
+
+    # 현재 지점의 모든 점원 정보 가져오기
+    with connection.cursor() as cursor:
+        cursor.execute(SQLs.sql_employeeManage, [store_id])
+        emp_list = dictfetchall(cursor)
+
+    day_works = {}
+    salries = []
+    for row in emp_list:
+        emp = row['NAME']
+        emp_id = row['ID']
+        day_pay = row['DAYTIME_HOURPAY']
+        with connection.cursor() as cursor:
+            cursor.execute(SQLs.sql_workListQueryForSalary, [emp_id, date_min, date_max])
+            work_list = dictfetchall(cursor)
+
+            for work in work_list:
+                try:
+                    day_works[emp] += (work['WORKEND_TIMESTAMP'] - work['WORKSTART_TIMESTAMP'])
+                except KeyError:
+                    day_works[emp] = (work['WORKEND_TIMESTAMP'] - work['WORKSTART_TIMESTAMP'])
+
+            try:
+                salries.append({'id' : emp, 'total_day' : day_works[emp], 'total_night' : None, \
+                    'amount' : day_works[emp].total_seconds()//3600 * day_pay})
+            except KeyError:
+                pass # 아직 근무기록 없는 경우
+    
+    # 점원별 근무시간 합 계산
+    salary_manage_form = SalaryManageForm()
+    return render(request, 'salaryManage.html', \
+        {'salaries' : salries, 'salaryManageForm' : salary_manage_form, 'this_page' : page, 'pages' : pages})

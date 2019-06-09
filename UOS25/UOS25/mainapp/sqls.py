@@ -146,4 +146,17 @@ class SQLs:
 
     sql_workListDelete = "delete from MAINAPP_WORK_LIST where id = %s"
 
-    sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
+    sql_workListQueryForSalary = "select id, workstart_timestamp, workend_timestamp \
+        from MAINAPP_WORK_LIST \
+        where employee_id = %s and workstart_timestamp >= %s and workend_timestamp <= %s \
+        order by id"
+
+    sql_maintenanceCostManage = "select id, maintenance_cost_code, amount, process_date, employee_id, etc, storeowner_check, store_id \
+        from MAINAPP_MAINTENANCE_COST \
+        where store_id = %s \
+        order by id desc"
+
+    sql_maintenanceCostRegister = "insert into MAINAPP_MAINTENANCE_COST(maintenance_cost_code, amount, process_date, employee_id, etc, storeowner_check, store_id) \
+        values (%s, %s, %s, %s, %s, 'N', %s)"
+
+    sql_maintenanceCostDelete = "delete from MAINAPP_MAINTENANCE_COST where id = %s"

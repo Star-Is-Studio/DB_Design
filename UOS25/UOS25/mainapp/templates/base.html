@@ -77,29 +77,25 @@
     <div class="container-fluid">
       <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'index' %}"><img style="margin-top:-10px;" src="{%static 'img/uos25logo.gif'%}"></a>
-        <p class="navbar-brand"> {% if 'id' in request.session %} 아이디 : {{ request.user_id }} 지점번호 : {{ request.store_id }} 직급코드 : {{ request.emp_pos }} {% endif %} </p>
+        <p class="navbar-brand"> 현재 로그인된 사용자 : {{ request.user_id }} </p>
+        <form class="navbar-brand" style="padding-top:8px">
+          <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
+        </form>
         <!--
         <form class="navbar-brand" style="padding-top:8px">
           <button type="button" class="btn btn-default" data-toggle="modal" data-target="#signupModal">직원등록</button>
         </form>
         -->
-        {% if 'id' in request.session %}
-          <form class="navbar-brand" style="padding-top:8px">
-            <a class="btn btn-default" href="{% url 'login' %}?logout" role="button">로그아웃</a>
-          </form>
-        {% else %}
-          <form class="navbar-brand" style="padding-top:8px">
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#loginModal">로그인</button>
-          </form>
-        {% endif %}
-
+        <form class="navbar-brand" style="padding-top:8px">
+          <a class="btn btn-default" href="{% url 'login' %}" role="button">로그아웃</a>
+        </form>
       </div>
     </div>
   </nav>
   <!-- 좌측 메뉴바-->
   <div class="container-fluid">
     <div class="row">
-      <div class="sideBar side-bar-small" id="sdBar" style="paddikng-left: 0px;padding-right: 0px;">
+      <div class="sideBar side-bar-small" id="sdBar" style="padding-left: 0px;padding-right: 0px;">
         <b>
           <ul class="nav nav-pills nav-stacked" style="height:100%;background-color: #424449;">
             <br>
@@ -234,6 +230,37 @@
           </div>
         </div>
       </div>
+
+      <!--
+      <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">
+                  &times;
+                </span>
+              </button>
+              <h4 class="modal-title" id="signupModalLabel">회원등록</h4>
+              <form method="POST" action="{% url 'login' %}">
+                <div class="form-group">
+                  <div class="modal-body">
+                    <label for="userId">회원등록</label>
+                    <input type="text" class="form-control" id="userId" name="userId" maxlength="50" style="width:auto">
+                  </div>
+                  <div class="modal-footer">
+                    {%csrf_token%}
+                    <button type="submit" class="btn btn-primary">회원등록</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
 
       <!-- 페이지 하단 푸터 -->
       <footer style="width:100%;background-color: #e4bcbc">
