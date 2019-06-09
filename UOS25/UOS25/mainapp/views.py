@@ -21,9 +21,9 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
-        request.emp_pos = sess['emp_pos']
+        # request.store_id = sess['store_id']
+        # request.emp_id = sess['emp_id'] if not sess['emp_id'] is None else ''
+        # request.emp_pos = sess['emp_pos'] if not sess['emp_pos'] is None else ''
         return func(request,*args,**kwargs)
     return checker
         
@@ -62,9 +62,14 @@ def login(request):
             sess['id'] = id
             sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
             sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
+
             # 직급코드 얻기
-            with connection.cursor() as c:
-                sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
+            store_id = sess['store_id']
+            if not store_id is None:
+                with connection.cursor() as c:
+                    sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
+            else:
+                sess['emp_pos'] = None
 
         except Exception as e:
             print(e)
@@ -411,6 +416,7 @@ def customerManage(request):
 @login_check_store
 def orderManage(request):
     store_id = request.session['store_id']
+    # orders = []
 
     #페이지네이션
     with connection.cursor() as c:
