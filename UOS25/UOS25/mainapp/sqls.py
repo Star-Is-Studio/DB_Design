@@ -161,4 +161,16 @@ class SQLs:
 
     sql_maintenanceCostDelete = "delete from MAINAPP_MAINTENANCE_COST where id = %s"
 
+    sql_receiptRegister = "insert into MAINAPP_RECEIPT(TRADE_TIMESTAMP, EMPLOYEE_ID, CUSTOMER_ID, \
+        PAYMENT_METHOD_CODE, PAYMENT_INFORMATION, STORE_ID) \
+        values (%s, %s, %s, %s, %s, %s)"
+
+    sql_tradeListManage = "select id, barcode, quantity, is_refund, receipt_id \
+        from MAINAPP_TRADE_LIST \
+        where receipt_id = %s \
+        order by id"
+
+    sql_tradeListRegister = "insert into MAINAPP_TRADE_LIST(BARCODE, QUANTITY, IS_REFUND, RECEIPT_ID) \
+        values (%s, %s, 'N', %s)"
+
     sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
