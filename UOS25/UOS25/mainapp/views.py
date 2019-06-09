@@ -265,7 +265,7 @@ def storeOrderManage(request):
 def productManage(request):
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
+        cnt = c.execute('select count(barcode) from MAINAPP_PRODUCT').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
@@ -581,7 +581,51 @@ def centralRefundManage(request):
         {'refunds' : refunds, 'storeRefundRegisterForm' : storeRefund_register_form, 'this_page' : page, 'pages' : pages})
 
 def saleProduct(request):
-    return render(request, 'saleProduct.html')
+    store_id = request.session['store_id']
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_RECEIPT').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+        
+        if process == 'register':
+            form = ReceiptRegisterForm(request.POST)
+        if form.is_valid():
+            trade_timestamp = datetime.datetime.now()
+            employee_id = form.cleaned_data['employee_id'].id
+            customer_id = None if form.cleaned_data['customer_id'] is None else form.cleaned_data['customer_id'].id
+            pay_method = form.cleaned_data['payment_method_code']
+            pay_info = form.cleaned_data['payment_information']
+            
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_receiptRegister, [trade_timestamp, employee_id, customer_id, pay_method, pay_info, store_id])
+            
+            return HttpResponseRedirect(reverse('saleProduct')+'?page=%s' % page)
+        else:
+            print(form.errors)
+            print('가 발생')
+
+    else:
+        receipts = Receipt.objects.raw(SQLs.sql_saleProductManage, [store_id])
+        receipts = receipts[(10*(page-1)):10*page]
+
+    receipt_register_form = ReceiptRegisterForm()
+
+    return render(request, 'saleProduct.html', \
+        {'receipts' : receipts, 'receiptRegisterForm' : receipt_register_form, 'this_page' : page, 'pages' : pages})
+
 
 def customerRefundManage(request):
     return render(request, 'customerRefundManage.html')
