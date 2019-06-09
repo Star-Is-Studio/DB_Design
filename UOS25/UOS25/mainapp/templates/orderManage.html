@@ -52,7 +52,9 @@
   </div>
 
 </nav>
-
+<script>
+  document.getElementById('currentDate').value = new Date().toISOString().substring(0, 10);;
+</script>
 <!--add모달-->
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -67,7 +69,10 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'orderManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ orderRegisterForm }}
+          <input type="datetime-local" id='currentDate'name="order_timestamp" class="form-control" required id="id_order_timestamp" />
+        <script>
+          document.getElementById('currentDatetime').value= new Date().toISOString().slice(0, 16);
+        </script>
         {% csrf_token %}
       </div>
       <div class="modal-footer">

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponseRedirect
 from django.db import connection
 from mainapp.models import *
@@ -114,10 +114,7 @@ def franchiseManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if j == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
 
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -191,10 +188,7 @@ def supplierManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -267,10 +261,7 @@ def productManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -352,10 +343,7 @@ def customerManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -433,15 +421,17 @@ def orderManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-            pages = [a for a in range(max(1, page-2), j+1)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
-        
+
+        f = request.POST.dict()
+        f['order_timestamp'] = f['order_timestamp'].replace("T"," ")
         if process == 'register':
-            form = OrderRegisterForm(request.POST)
+            form = OrderRegisterForm(f)
+        
         if form.is_valid():
             order_timestamp = form.cleaned_data['order_timestamp']
-            
             with connection.cursor() as cursor:
                 if process == 'register':
                     cursor.execute(SQLs.sql_orderRegister, [store_id, order_timestamp])
@@ -477,10 +467,7 @@ def orderManageList(request, *args, **kwargs):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
     
@@ -528,10 +515,7 @@ def centralRefundManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -597,10 +581,7 @@ def maintenanceCostManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -650,10 +631,7 @@ def employeeManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -716,10 +694,7 @@ def workListManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -776,10 +751,9 @@ def salaryManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+        pages = [a for a in range(max(1, page-2), j+1)]
+
+            
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
