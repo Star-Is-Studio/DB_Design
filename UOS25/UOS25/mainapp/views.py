@@ -101,10 +101,12 @@ def franchiseManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
+        if j == 0:
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+    print(j)
+    print(page)
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -419,10 +421,7 @@ def orderManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        if cnt%10 == 0:
             pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
