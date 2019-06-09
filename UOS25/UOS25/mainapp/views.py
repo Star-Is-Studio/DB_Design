@@ -119,7 +119,10 @@ def franchiseManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
 
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -193,7 +196,10 @@ def supplierManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -266,7 +272,10 @@ def productManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -348,7 +357,10 @@ def customerManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -420,14 +432,17 @@ def orderManage(request):
 
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
+        cnt = c.execute('select count(id) from MAINAPP_ORDER').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -473,7 +488,10 @@ def orderManageList(request, *args, **kwargs):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
     
@@ -514,19 +532,25 @@ def centralRefundManage(request):
 
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_STORE').fetchone()
+        cnt = c.execute('select count(barcode) from MAINAPP_STORE_REFUND').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
+        f = request.POST.dict()
+        f['refund_timestamp'] = f['refund_timestamp'].replace("T"," ")
+
         if process == 'register':
-            form = StoreRefundRegisterForm(request.POST)
+            form = StoreRefundRegisterForm(f)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode'].barcode
                 quantity = form.cleaned_data['quantity']
@@ -587,7 +611,10 @@ def maintenanceCostManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -637,7 +664,10 @@ def employeeManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
@@ -700,7 +730,10 @@ def workListManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
@@ -757,7 +790,10 @@ def salaryManage(request):
     if j>=5:
         pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
     else:
-        pages = [a for a in range(max(1, page-2), j+1)]
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
 
             
     if request.method == 'POST':

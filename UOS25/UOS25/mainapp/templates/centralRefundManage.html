@@ -71,7 +71,12 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'centralRefundManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ storeRefundRegisterForm }}
+          <input type="number" name="quantity" step="1" class="form-control" placeholder="quantity" required id="id_quantity" />
+          <input type="datetime-local" id='currentDatetime'name="refund_timestamp" class="form-control" required id="id_refund_timestamp" />
+          <script>
+            document.getElementById('currentDatetime').value= new Date().toISOString().slice(0, 16);
+          </script>
+          <input type="number" name="refund_reason_code" step="1" class="form-control" placeholder="refund_reason_code" required id="id_refund_reason_code" />
         {% csrf_token %}
       </div>
       <div class="modal-footer">
