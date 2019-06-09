@@ -160,3 +160,5 @@ class SQLs:
         values (%s, %s, %s, %s, %s, 'N', %s)"
 
     sql_maintenanceCostDelete = "delete from MAINAPP_MAINTENANCE_COST where id = %s"
+
+    sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
