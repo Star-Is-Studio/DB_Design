@@ -62,7 +62,7 @@
 
 <!--add모달-->
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog" style="width: 16%;">
     <div class="modal-content">
 
       <!-- 모달 창 제목 -->
@@ -74,7 +74,18 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'supplierManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ supplierRegisterForm }}
+        <div>
+          <label for=name  style="padding-top:5px">이름</label>
+          <input type="text" name="name" id="name" maxlength="25" class="form-control" required id="id_name" />
+        </div>
+        <div>
+          <label for=contact  style="padding-top:5px">연락처</label>
+          <input type="text" name="contact" id="contact" maxlength="20" class="form-control" required id="id_contact" />
+        </div>
+        <div>
+          <label for=email  style="padding-top:5px">이메일</label>
+          <input type="text" name="email" id="email" maxlength="40" class="form-control" required id="id_email" />
+        </div>
         {% csrf_token %}
       </div>
       <div class="modal-footer">
