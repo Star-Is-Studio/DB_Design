@@ -69,7 +69,7 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'orderManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-          <input type="datetime-local" id='currentDate'name="order_timestamp" class="form-control" required id="id_order_timestamp" />
+          <input type="datetime-local" id='currentDatetime'name="order_timestamp" class="form-control" required id="id_order_timestamp" />
         <script>
           document.getElementById('currentDatetime').value= new Date().toISOString().slice(0, 16);
         </script>
