@@ -626,6 +626,58 @@ def saleProduct(request):
     return render(request, 'saleProduct.html', \
         {'receipts' : receipts, 'receiptRegisterForm' : receipt_register_form, 'this_page' : page, 'pages' : pages})
 
+def saleProductList(request):
+    receipt_id = int(request.GET.get('receipt_id', 'Error'))
+    receipt = Receipt.objects.get(id=receipt_id)
+
+    store_id = request.session['store_id']
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_TRADE_LIST').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10 == 0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+    
+        if process == 'register':
+            form = TradeListRegisterForm(request.POST)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode'].barcode
+                quantity = form.cleaned_data['quantity']
+                
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
+                    
+                return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
+            else:
+                print(form.errors)
+                print('가 발생')
+
+    else:
+        tradeList = Trade_list.objects.raw(SQLs.sql_tradeListManage, [receipt_id])
+        tradeList = tradeList[(10*(page-1)):10*page]
+
+        total_price = 0
+        for trade in tradeList:
+            product_info = Product.objects.raw(SQLs.sql_productSearchByBarcode, [trade.barcode.barcode])
+            trade.subtotal_price = product_info[0].unit_price * trade.quantity
+            total_price += trade.subtotal_price
+
+    tradeList_register_form = TradeListRegisterForm()
+
+    return render(request, 'saleProductList.html', \
+        {'tradeList' : tradeList, 'tradeListRegisterForm' : tradeList_register_form, 'receipt': receipt, 'total_price' : total_price,\
+        'this_page' : page, 'pages' : pages})
 
 def customerRefundManage(request):
     return render(request, 'customerRefundManage.html')

@@ -259,3 +259,33 @@ class SalaryManageForm(forms.Form):
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             self.fields[field_name].label = ''
+            
+class ReceiptRegisterForm(forms.ModelForm):
+    class Meta:
+        model = Receipt
+        exclude = ['store_id', 'trade_timestamp']
+
+    # Bootstrap CSS 적용
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            self.fields[field_name].label = ''
+
+        self.fields['customer_id'].required = False
+        self.fields['employee_id'].empty_label = "점원 선택"
+        self.fields['customer_id'].empty_label = "손님 선택"
+
+class TradeListRegisterForm(forms.ModelForm):
+    class Meta:
+        model = Trade_list
+        fields = ['barcode', 'quantity']
+
+    # Bootstrap CSS 적용
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            self.fields[field_name].label = ''
+        
+        self.fields['barcode'].empty_label = "상품 선택"

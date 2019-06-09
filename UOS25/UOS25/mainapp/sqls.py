@@ -91,6 +91,10 @@ class SQLs:
         and category_b LIKE %s \
         order by barcode"
 
+    sql_productSearchByBarcode = "select barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path \
+        from MAINAPP_PRODUCT \
+        where barcode = %s"
+
     sql_employeeManage = "select id, name, daytime_hourpay, nighttime_hourpay, \
         employed_date, fire_date, contact, position_code \
         from MAINAPP_EMPLOYEE \
@@ -160,6 +164,11 @@ class SQLs:
         values (%s, %s, %s, %s, %s, 'N', %s)"
 
     sql_maintenanceCostDelete = "delete from MAINAPP_MAINTENANCE_COST where id = %s"
+
+    sql_saleProductManage = "select id, trade_timestamp, employee_id, customer_id, payment_method_code, payment_information, store_id \
+        from MAINAPP_RECEIPT \
+        where store_id = %s \
+        order by id desc"
 
     sql_receiptRegister = "insert into MAINAPP_RECEIPT(TRADE_TIMESTAMP, EMPLOYEE_ID, CUSTOMER_ID, \
         PAYMENT_METHOD_CODE, PAYMENT_INFORMATION, STORE_ID) \
