@@ -2,18 +2,6 @@ from django import forms
 from mainapp.models import *
 from bootstrap_datepicker_plus import DatePickerInput, DateTimePickerInput
 
-#되나안되나모르겠다. html에 안들가지냐;
-class ProductRegisterForm(forms.ModelForm):
-    class meta:
-        model = Product
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
-#여기까지
 
 class StoreRegisterForm(forms.ModelForm):
     class Meta:
@@ -132,8 +120,11 @@ class CustomerSearchForm(forms.Form):
             # self.fields[field_name].label = ''
 
 class ProductRegisterForm(forms.ModelForm):
+    picture_file = forms.FileField(required=False)
     class Meta:
         model = Product
+        exclude = ['picture_file_path']
+
         fields = '__all__'
 
     # Bootstrap CSS 적용

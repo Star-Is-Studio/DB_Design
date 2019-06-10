@@ -1,13 +1,23 @@
 from django.shortcuts import render, redirect, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.db import connection
 from mainapp.models import *
 from mainapp.query import *
 from mainapp.sqls import SQLs
 from mainapp.forms import *
 from hashlib import sha256
-import datetime
+import datetime, imghdr
 
+# 파일 업로드 핸들러 : 상품 사진 업로드용
+def handle_uploaded_file(f, fpath):
+    with open('product_pic/' + str(fpath), 'wb+') as dest:
+        for chunk in f.chunks():
+            dest.write(chunk)
+
+def productPicture(request, *args, **kwargs):
+    with open('product_pic/' + str(kwargs['pic_number']), 'rb') as f:
+        img_type = str(imghdr.what(f))
+        return HttpResponse(f.read(), content_type="image/"+img_type)
 
 def login_check_central(func):
     '''
@@ -382,6 +392,7 @@ def storeRefundManage(request):
 # 상품 관리
 @login_check_central
 def productManage(request):
+
     #페이지네이션
     with connection.cursor() as c:
         cnt = c.execute('select count(barcode) from MAINAPP_PRODUCT').fetchone()
@@ -395,15 +406,16 @@ def productManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+    
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
         if process in ('register', 'update'):
             if process == 'register':
-                form = ProductRegisterForm(request.POST)
+                form = ProductRegisterForm(request.POST, request.FILES)
             elif process == 'update' :
                 instance = Product.objects.get(barcode=request.POST.get('barcode', 'Error')) # 해당 id가 있는지 확인
-                form = ProductUpdateForm(request.POST, instance=instance)
+                form = ProductUpdateForm(request.POST, request.FILES, instance=instance)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode']
                 name = form.cleaned_data['name']
@@ -413,7 +425,22 @@ def productManage(request):
                 category_a = form.cleaned_data['category_a']
                 category_b = form.cleaned_data['category_b']
                 explain = form.cleaned_data['explain']
-                picture_file_path = form.cleaned_data['picture_file_path']
+
+                print(request.FILES)
+                # 사진 파일 처리
+                if request.FILES.get('picture_file', False):
+                    if imghdr.what(request.FILES['picture_file']): # 이미지 파일이 맞다면
+                        print('이미지 파일 감지')
+                        handle_uploaded_file(request.FILES['picture_file'], barcode)
+                        picture_file_path = barcode
+                else:
+                    if process == 'register':
+                        picture_file_path = None
+                    elif process == 'update':
+                        try:
+                            picture_file_path = Product.objects.get(pk=barcode).picture_file_path
+                        except Product.DoesNotExist:
+                            raise Http404("Picture File Check Error")
 
                 with connection.cursor() as cursor:
                     if process == 'register':
