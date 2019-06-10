@@ -1,6 +1,10 @@
 {% extends 'baseAdmin.html' %}
 {% load bootstrap3 %}
 
+{% block calendar_widget %}
+{{ franchiseStoreRcptRegisterForm.media }}
+{% endblock calendar_widget %}
+
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">

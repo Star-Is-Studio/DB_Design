@@ -1,4 +1,11 @@
 {% extends 'baseAdmin.html' %}
+
+{% load bootstrap3 %}
+
+{% block calendar_widget %}
+{{ storeOrderUpdateForm.media }}
+{% endblock calendar_widget %}
+
 {% block content %}
   <div class="panel panel-default" style="margin-bottom:0px">
       <div class="panel-body" style="margin-left:50px">
@@ -21,6 +28,8 @@
             <td>{{ order.order_timestamp }}</td>
             <td>{{ order.complete_timestamp }}</td>
             <td>{{ order.process_code }}</td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
+        onclick="update_onclick('{{ order.id }}', '{{ order.store_id.id }}', '{{ order.order_timestamp.isoformat }}', '{{ order.complete_timestamp | default_if_none:"" }}','{{ order.process_code }}')">수정</button></td>
           </tr>
         {% endfor %}
       </tbody>
@@ -53,74 +62,17 @@
 
 </nav>
 
-<!--add모달-->
-<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
-  <div class="modal-dialog"style="width:18%">
-    <div class="modal-content">
-
-      <!-- 모달 창 제목 -->
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="addLabel">지점 추가</h4>
-      </div>
-
-      <!-- 모달 창 내용 -->
-      <form action="{% url 'franchiseCostManage' %}?process=register&page={{this_page}}" method="POST">
-      <div class="modal-body input-group">
-        {{ franchiseStoreRcptRegisterForm }}
-        {% csrf_token %}
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">확인</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-      </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
 <script type="text/javascript">
-delete_onclick = function(id, name) {
-  $("#delete_id").text(name);
-  $("#del_id").val(id);
-}
-update_onclick = function(id, store_id, rcpt_date, rcpt_amount) {
+
+update_onclick = function(id, store_id, order_timestamp, complete_timestamp, process_code) {
   $("#update_id").val(id);
   $("#update_store_id").val(store_id);
-  $("#update_rcpt_date").val(rcpt_date);
-  $("#update_rcpt_amount").val(rcpt_amount);
+  $("#update_order_timestamp").val(order_timestamp);
+  $("#update_complete_timestamp").val(complete_timestamp);
+  $("#update_process_code").val(process_code);
 }
+
 </script>
-
-<!--del모달-->
-<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-
-      <!-- 모달 창 제목 -->
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="delLabel">거절</h4>
-      </div>
-
-      <!-- 모달 창 내용 -->
-      <form action="{% url 'franchiseCostManage' %}?process=delete&page={{this_page}}" method="POST">
-      <div class="modal-body">
-        <span id="delete_id"></span> 이 수납을 정말로 취소하시겠습니까?
-        <input type="hidden" id="del_id" name="id" value=""> 
-        {% csrf_token %}
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">확인</button>
-        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
-      </div>
-      </form>
-
-    </div>
-  </div>
-</div>
 
 <!--update모달-->
 <div class="modal fade" id="update" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
@@ -135,9 +87,9 @@ update_onclick = function(id, store_id, rcpt_date, rcpt_amount) {
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'franchiseCostManage' %}?process=update&page={{this_page}}" method="POST">
+      <form action="{% url 'storeOrderManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ franchiseStoreRcptUpdateForm }}
+        {% bootstrap_form storeOrderUpdateForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">

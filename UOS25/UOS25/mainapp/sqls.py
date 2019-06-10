@@ -215,6 +215,11 @@ class SQLs:
     sql_storeOrderManage = "select id, store_id, order_timestamp, complete_timestamp, process_code \
         from MAINAPP_ORDER \
         order by order_timestamp"
+    
+    sql_storeOrderUpdate = "update MAINAPP_ORDER set \
+        store_id = %s, order_timestamp = %s, complete_timestamp = %s, process_code = %s \
+        where id = %s"
+    
 
 
     sql_centralStoreRefundManage = 'select id, store_id, barcode, quantity, refund_timestamp, \

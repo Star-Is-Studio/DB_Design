@@ -201,6 +201,8 @@ class FranchiseStoreRcptRegisterForm(forms.ModelForm):
         model = Franchise_store_rcpt
         fields = '__all__'
 
+        widgets = {'rcpt_date':DatePickerInput(),}
+
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -226,9 +228,9 @@ class StockRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class StockUpdateForm(StockRegisterForm):
     # PK 구분용
@@ -349,3 +351,20 @@ class TradeListRegisterForm(forms.ModelForm):
     #         self.fields[field_name].label = ''
         
         self.fields['barcode'].empty_label = "상품 선택"
+
+
+class StoreOrderUpdateForm(forms.ModelForm):    
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+    class Meta:
+        model = Order
+        fields = '__all__'
+        
+        # widgets = {'order_timestamp':DateTimePickerInput(), 'complete_timestamp':DateTimePickerInput(),}
+        widgets = {'order_timestamp':DateTimePickerInput(format='%Y/%m/%d %H:%M:%S'), 'complete_timestamp':DateTimePickerInput(format='%Y/%m/%d %H:%M:%S'),}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
+        self.fields['complete_timestamp'].required = False

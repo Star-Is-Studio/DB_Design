@@ -21,7 +21,7 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        # request.store_id = sess['store_id']
+        request.store_id = sess['store_id']
         # request.emp_id = sess['emp_id'] if not sess['emp_id'] is None else ''
         # request.emp_pos = sess['emp_pos'] if not sess['emp_pos'] is None else ''
         return func(request,*args,**kwargs)
@@ -326,12 +326,31 @@ def storeOrderManage(request):
             pages = [a for a in range(max(1, page-2), j+2)]
 
     if request.method=='POST':
-        pass
-    
+        process = str(request.GET.get('process', False))
+        if process=='update':
+            post = request.POST.dict()
+            print(post['order_timestamp'], type(post['order_timestamp']))
+            instance = Order.objects.get(id=request.POST.get('id','Error'))
+            post['order_timestamp'] = post['order_timestamp'].replace('T', ' ')
+            post['complete_timestamp'] = post['complete_timestamp'].replace('T', ' ')
+            form = StoreOrderUpdateForm(post)
+            if form.is_valid():
+                id = form.cleaned_data['id']
+                store_id = form.cleaned_data['store_id'].id
+                order_timestamp = form.cleaned_data['order_timestamp']
+                complete_timestamp = form.cleaned_data['complete_timestamp']
+                process_code = form.cleaned_data['process_code']
+                
+                with connection.cursor() as cursor:
+                    print(SQLs.sql_storeOrderUpdate%(store_id, order_timestamp, complete_timestamp, process_code, id))
+                    cursor.execute(SQLs.sql_storeOrderUpdate, [store_id, order_timestamp, complete_timestamp, process_code, id])
+                
     orders = Order.objects.raw(SQLs.sql_storeOrderManage)
     orders = orders[(10*(page-1)):10*page]
     
-    return render(request, 'storeOrderManage.html', {'orders':orders, 'page':page, 'pages':pages})
+    store_order_update_form = StoreOrderUpdateForm()
+    return render(request, 'storeOrderManage.html', {'orders':orders, 'this_page':page, 'pages':pages,
+        'storeOrderUpdateForm':store_order_update_form})
 
 # 지점 반품 관리
 @login_check_central
