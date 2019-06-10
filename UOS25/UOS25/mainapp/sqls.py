@@ -220,9 +220,12 @@ class SQLs:
         store_id = %s, order_timestamp = %s, complete_timestamp = %s, process_code = %s \
         where id = %s"
     
-
-
     sql_centralStoreRefundManage = 'select id, store_id, barcode, quantity, refund_timestamp, \
         refund_reason_code, process_code\
         from MAINAPP_STORE_REFUND\
         order by store_id'
+    sql_centralStoreRefundUpdate = 'update MAINAPP_STORE_REFUND set\
+        store_id = %s, barcode = %s, refund_timestamp = %s, refund_reason_code = %s, \
+        process_code = %s \
+        where id = %s'
+    

@@ -351,7 +351,6 @@ class StoreOrderUpdateForm(forms.ModelForm):
         model = Order
         fields = '__all__'
         
-        # widgets = {'order_timestamp':DateTimePickerInput(), 'complete_timestamp':DateTimePickerInput(),}
         widgets = {'order_timestamp':DateTimePickerInput(format='%Y-%m-%d %H:%M:%S'), 'complete_timestamp':DateTimePickerInput(format='%Y-%m-%d %H:%M:%S'),}
 
     def __init__(self, *args, **kwargs):
@@ -359,3 +358,17 @@ class StoreOrderUpdateForm(forms.ModelForm):
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
         self.fields['complete_timestamp'].required = False
+
+class StoreRefundUpdateForm(forms.ModelForm):    
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+    class Meta:
+        model = Store_refund
+        fields = '__all__'
+        
+        widgets = {'refund_timestamp':DateTimePickerInput(format='%Y-%m-%d %H:%M:%S'),}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})

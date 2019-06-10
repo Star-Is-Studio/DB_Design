@@ -375,12 +375,28 @@ def storeRefundManage(request):
             pages = [a for a in range(max(1, page-2), j+2)]
 
     if request.method=='POST':
-        pass
+        process = str(request.GET.get('process', False))
+        if process=='update':
+            instance = Order.objects.get(id=request.POST.get('id','Error'))
+            form = StoreRefundUpdateForm(request.POST)
+            if form.is_valid():
+                id = form.cleaned_data['id']
+                store_id = form.cleaned_data['store_id'].id
+                barcode = form.cleaned_data['barcode'].barcode
+                refund_timestamp = form.cleaned_data['refund_timestamp']
+                refund_reason_code = form.cleaned_data['refund_reason_code']
+                process_code = form.cleaned_data['process_code']
+                
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_centralStoreRefundUpdate, 
+                        [store_id, barcode, refund_timestamp, refund_reason_code, process_code, id])
     
     refunds = Store_refund.objects.raw(SQLs.sql_centralStoreRefundManage)
     refunds = refunds[(10*(page-1)):10*page]
+    store_refund_update_form = StoreRefundUpdateForm()
     
-    return render(request, 'centralStoreRefundManage.html', {'refunds':refunds, 'page':page, 'pages':pages})
+    return render(request, 'centralStoreRefundManage.html', {'refunds':refunds, 'this_page':page, 'pages':pages,
+        'storeRefundUpdateForm':store_refund_update_form})
 
 
 
