@@ -1,4 +1,7 @@
 {% extends 'baseAdmin.html' %}
+
+{% load bootstrap3 %}
+
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -85,7 +88,7 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'productManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ productRegisterForm }}
+        {% bootstrap_form productRegisterForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -160,7 +163,7 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
       <!-- 모달 창 내용 -->
       <form action="{% url 'productManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ productUpdateForm }}
+        {% bootstrap_form productUpdateForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -187,7 +190,7 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
         <!-- 모달 창 내용 -->
         <form action="{% url 'productManage' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
-          {{ productSearchForm }}
+          {% bootstrap_form productSearchForm %}
           {% csrf_token %}
         </div>
         <div class="modal-footer">
@@ -199,4 +202,5 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
       </div>
     </div>
   </div>
-{%endblock%}
+
+{% endblock %}

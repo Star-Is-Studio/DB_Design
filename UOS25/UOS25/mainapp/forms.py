@@ -23,9 +23,9 @@ class StoreRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class StoreUpdateForm(StoreRegisterForm):
     # PK 구분용
@@ -48,9 +48,9 @@ class StoreSearchForm(forms.Form):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class SupplierRegisterForm(forms.ModelForm):
     class Meta:
@@ -60,9 +60,9 @@ class SupplierRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class SupplierUpdateForm(SupplierRegisterForm):
     # PK 구분용
@@ -84,9 +84,9 @@ class SupplierSearchForm(forms.Form):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class CustomerRegisterForm(forms.ModelForm):
     class Meta:
@@ -139,9 +139,9 @@ class ProductRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class ProductUpdateForm(ProductRegisterForm):
     
@@ -167,9 +167,9 @@ class ProductSearchForm(forms.Form):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class EmployeeRegisterForm(forms.ModelForm):
     class Meta:
@@ -204,9 +204,9 @@ class FranchiseStoreRcptRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class FranchiseStoreRcptUpdateForm(FranchiseStoreRcptRegisterForm):
     # PK 구분용

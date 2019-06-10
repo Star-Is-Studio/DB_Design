@@ -1,4 +1,7 @@
 {% extends 'baseAdmin.html' %}
+
+{% load bootstrap3 %}
+
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -159,7 +162,7 @@ update_onclick = function(id, address, contact, store_pay, store_code) {
       <!-- 모달 창 내용 -->
       <form action="{% url 'franchiseManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ storeUpdateForm }}
+        {% bootstrap_form storeUpdateForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -186,7 +189,7 @@ update_onclick = function(id, address, contact, store_pay, store_code) {
         <!-- 모달 창 내용 -->
         <form action="{% url 'franchiseManage' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
-          {{ storeSearchForm }}
+          {% bootstrap_form storeSearchForm %}
           {% csrf_token %}
         </div>
         <div class="modal-footer">
