@@ -570,6 +570,108 @@ def customerManage(request):
 
 # 가맹점 페이지
 
+# 상품 조회
+@login_check_store
+def productManageStore(request):
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(barcode) from MAINAPP_PRODUCT').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+        
+        if process in ('register', 'update'):
+            if process == 'register':
+                form = ProductRegisterForm(request.POST, request.FILES)
+            elif process == 'update' :
+                instance = Product.objects.get(barcode=request.POST.get('barcode', 'Error')) # 해당 id가 있는지 확인
+                form = ProductUpdateForm(request.POST, request.FILES, instance=instance)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode']
+                name = form.cleaned_data['name']
+                supply_price = form.cleaned_data['supply_price']
+                unit_price = form.cleaned_data['unit_price']
+                supplier_id = form.cleaned_data['supplier_id'].id
+                category_a = form.cleaned_data['category_a']
+                category_b = form.cleaned_data['category_b']
+                explain = form.cleaned_data['explain']
+
+                print(request.FILES)
+                # 사진 파일 처리
+                if request.FILES.get('picture_file', False):
+                    if imghdr.what(request.FILES['picture_file']): # 이미지 파일이 맞다면
+                        print('이미지 파일 감지')
+                        handle_uploaded_file(request.FILES['picture_file'], barcode)
+                        picture_file_path = barcode
+                else:
+                    if process == 'register':
+                        picture_file_path = None
+                    elif process == 'update':
+                        try:
+                            picture_file_path = Product.objects.get(pk=barcode).picture_file_path
+                        except Product.DoesNotExist:
+                            raise Http404("Picture File Check Error")
+
+                with connection.cursor() as cursor:
+                    if process == 'register':
+                        cursor.execute(SQLs.sql_productRegister, [barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path])
+                    elif process == 'update':
+                        cursor.execute(SQLs.sql_productUpdate, [name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path, barcode])
+                
+                return HttpResponseRedirect(reverse('productManageStore')+'?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            barcode = int(request.POST.get('barcode', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_productDelete, [barcode])
+            return HttpResponseRedirect(reverse('productManageStore')+'?page=%s' % page)
+
+        elif process == 'search':
+            form = ProductSearchForm(request.POST)
+            if form.is_valid():
+                #print(form.cleaned_data)
+                barcode = "%%" if form.cleaned_data['barcode'] is None else str(form.cleaned_data['barcode'])
+                name = "%" + form.cleaned_data['name'] + "%"
+                supply_price_min = 0 if form.cleaned_data['supply_price_min'] is None else form.cleaned_data['supply_price_min']
+                supply_price_max = 99999999 if form.cleaned_data['supply_price_max'] is None else form.cleaned_data['supply_price_max']
+                unit_price_min = 0 if form.cleaned_data['unit_price_min'] is None else form.cleaned_data['unit_price_min']
+                unit_price_max = 99999999 if form.cleaned_data['unit_price_max'] is None else form.cleaned_data['unit_price_max']
+                supplier_id = ("%" + str(form.cleaned_data['supplier_id'].id) + "%") if form.cleaned_data['supplier_id'] != None else "%%"
+                category_a = "%%" if form.cleaned_data['category_a'] is None else str(form.cleaned_data['category_a'])
+                category_b = "%%" if form.cleaned_data['category_b'] is None else str(form.cleaned_data['category_b'])
+
+                ##print([barcode, name, supply_price_min, supply_price_max, unit_price_min, \
+                #    unit_price_max, supplier_id, category_a, category_b])
+
+                products = Product.objects.raw(SQLs.sql_productSearch, \
+                    [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
+                    unit_price_max, supplier_id, category_a, category_b])
+
+    else:
+        products = Product.objects.raw(SQLs.sql_productManage)
+        products = products[(10*(page-1)):10*page]
+
+    product_register_form = ProductRegisterForm()
+    product_update_form = ProductUpdateForm()
+    product_search_form = ProductSearchForm()
+    return render(request, 'productManageStore.html', \
+        {'products' : products, 'productRegisterForm' : product_register_form, 'productUpdateForm' : product_update_form, \
+            'productSearchForm' : product_search_form, 'this_page' : page, 'pages' : pages})
+
 # 주문 관리
 @login_check_store
 def orderManage(request):

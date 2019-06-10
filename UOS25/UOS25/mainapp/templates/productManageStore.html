@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% load bootstrap3 %}
+
+{% block content %}
+<div class="panel panel-default" style="margin-bottom:0px">
+  <div class="panel-body" style="margin-left:50px">
+    <h1>상품 조회</h1>
+  </div>
+</div>
+<table class="table table-striped" style="margin-left:5px">
+  <thead>
+    <tr>
+      <th>바코드</th>
+      <th>상품명</th>
+      <th>납품가</th>
+      <th>판매가</th>
+      <th>납품업체</th>
+      <th>대분류</th>
+      <th>소분류</th>
+      <th>설명</th>
+      <th>그림</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for product in products %}
+    <tr>
+      <td>{{ product.barcode }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.supply_price }}</td>
+      <td>{{ product.unit_price }}</td>
+      <td>{{ product.supplier_id }}</td>
+      <td>{{ product.category_a }}</td>
+      <td>{{ product.category_b }}</td>
+      <td>{{ product.explain }}</td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#picture" 
+        onclick="picture_onclick('{{ product.picture_file_path }}')">사진</button></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!--추가 버튼 및 페이지 표시 -->
+<nav>
+  <div class="text-center">
+    <ul class="pagination">
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+      {% for page in pages %}
+      {% if this_page == page %}
+      <li class="active"><a href="?page={{page}}">{{page}}</a></li>
+      {% else %}
+      <li><a href="?page={{page}}">{{page}}</a></li>
+      {% endif %}
+      {% endfor %}
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+    </ul>
+  </div>
+
+  <!-- 추가 버튼 -->
+  <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
+      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#search">상품 검색</button>
+  </div>
+
+</nav>
+
+
+<script type="text/javascript">
+delete_onclick = function(barcode, name) {
+  $("#delete_id").text(name);
+  $("#del_id").val(barcode);
+}
+update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path) {
+  $("#update_barcode").val(barcode);
+  $("#update_name").val(name);
+  $("#update_supply_price").val(supply_price);
+  $("#update_unit_price").val(unit_price);
+  $("#update_supplier_id").val(supplier_id);
+  $("#update_category_a").val(category_a);
+  $("#update_category_b").val(category_b);
+  $("#update_explain").val(explain);
+  $("#picture_file_path").val(picture_file_path);
+}
+picture_onclick = function(picture_id) {
+  if(picture_id){
+    $("#prod_img").attr('src','product_pic/'+picture_id);
+    $("#img_not_exist_disp").text('');
+  }
+  else{
+    $("#prod_img").removeAttr('src');
+    $("#img_not_exist_disp").text('사진이 없습니다');
+  }
+}
+</script>
+
+<!-- search 모달-->
+<div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="searchLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- 모달 창 제목 -->
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="addLabel">상품 검색</h4>
+        </div>
+  
+        <!-- 모달 창 내용 -->
+        <form action="{% url 'productManage' %}?process=search&page={{this_page}}" method="POST">
+        <div class="modal-body input-group">
+          {% bootstrap_form productSearchForm %}
+          {% csrf_token %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">확인</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+        </div>
+        </form>
+  
+      </div>
+    </div>
+  </div>
+
+<!-- picture 모달-->
+<div class="modal fade" id="picture" tabindex="-1" role="dialog" aria-labelledby="searchLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addLabel">상품 사진</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <div class="modal-body input-group">
+        <div>
+          <img id="prod_img">
+          <span id="img_not_exist_disp"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

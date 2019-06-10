@@ -40,6 +40,7 @@ franchise_urlpatterns = [
     url(r'^franchise/saleProduct/list/$', saleProductList, name='saleProductList'), #물품판매목록
     url(r'^franchise/customerRefundManage/$', customerRefundManage, name='customerRefundManage'),#고객반품관리
     url(r'^franchise/stockManage/$',stockManage, name='stockManage'),#재고관리
+    url(r'^franchise/productManageStore/$', productManageStore, name='productManageStore'),#상품 관리
     url(r'^franchise/expireDateManage/$',expireDateManage, name='expireDateManage'),#유통기한관리
     url(r'^franchise/saleManage/$',saleManage, name='saleManage'),#매출관리
     url(r'^franchise/maintenanceCostManage/$',maintenanceCostManage, name='maintenanceCostManage'),#유지비관리
