@@ -33,10 +33,11 @@
       <td>{{ product.category_a }}</td>
       <td>{{ product.category_b }}</td>
       <td>{{ product.explain }}</td>
-      <td>{{ product.picture_file_path }}</td>
+      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#picture" 
+        onclick="picture_onclick('{{ product.picture_file_path }}')">사진</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
         onclick="update_onclick({{ product.barcode }}, '{{ product.name }}', {{ product.supply_price }}, {{ product.unit_price }},
-        '{{ product.supplier_id }}', {{ product.category_a }}, {{ product.category_b }}, '{{product.explain}}', '{{product.picture_file_path}}')">수정</button></td>
+        '{{ product.supplier_id.id }}', {{ product.category_a }}, {{ product.category_b }}, '{{product.explain}}', '{{product.picture_file_path}}')">수정</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del"
         onclick="delete_onclick({{ product.barcode }}, '{{product.name}}')">삭제</button></td>
     </tr>
@@ -85,8 +86,8 @@
         <h4 class="modal-title" id="addLabel">상품 추가</h4>
       </div>
 
-      <!-- 모달 창 내용 -->
-      <form action="{% url 'productManage' %}?process=register&page={{this_page}}" method="POST">
+      <!-- 모달 창 내용 : 사진 업로드용 enctype 추가-->
+      <form action="{% url 'productManage' %}?process=register&page={{this_page}}" method="POST" enctype="multipart/form-data">
       <div class="modal-body input-group">
         {% bootstrap_form productRegisterForm %}
         {% csrf_token %}
@@ -116,6 +117,16 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
   $("#update_category_b").val(category_b);
   $("#update_explain").val(explain);
   $("#picture_file_path").val(picture_file_path);
+}
+picture_onclick = function(picture_id) {
+  if(picture_id){
+    $("#prod_img").attr('src','product_pic/'+picture_id);
+    $("#img_not_exist_disp").text('');
+  }
+  else{
+    $("#prod_img").removeAttr('src');
+    $("#img_not_exist_disp").text('사진이 없습니다');
+  }
 }
 </script>
 
@@ -160,8 +171,8 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
         <h4 class="modal-title" id="updateLabel">수정하기</h4>
       </div>
 
-      <!-- 모달 창 내용 -->
-      <form action="{% url 'productManage' %}?process=update&page={{this_page}}" method="POST">
+      <!-- 모달 창 내용 : 사진 업로드용 enctype 추가-->
+      <form action="{% url 'productManage' %}?process=update&page={{this_page}}" method="POST" enctype="multipart/form-data">
       <div class="modal-body input-group">
         {% bootstrap_form productUpdateForm %}
         {% csrf_token %}
@@ -202,5 +213,31 @@ update_onclick = function(barcode, name, supply_price, unit_price, supplier_id, 
       </div>
     </div>
   </div>
+
+<!-- picture 모달-->
+<div class="modal fade" id="picture" tabindex="-1" role="dialog" aria-labelledby="searchLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="addLabel">상품 사진</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <div class="modal-body input-group">
+        <div>
+          <img id="prod_img">
+          <span id="img_not_exist_disp"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 {% endblock %}
