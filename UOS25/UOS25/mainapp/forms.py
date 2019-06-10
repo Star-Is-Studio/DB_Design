@@ -93,12 +93,14 @@ class CustomerRegisterForm(forms.ModelForm):
         model = Customer
         fields = '__all__'
 
+        widgets = {'birthday':DatePickerInput(), }
+
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+        #     self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+        #     self.fields[field_name].label = ''
 
 class CustomerUpdateForm(CustomerRegisterForm):
     # PK 구분용
@@ -117,16 +119,17 @@ class CustomerSearchForm(forms.Form):
     mileage_min = forms.DecimalField(min_value=0, required=False)
     mileage_max = forms.DecimalField(min_value=0, required=False)
     gender = forms.DecimalField(required=False)
-    birthday_min = forms.DateField(required=False)
-    birthday_max = forms.DateField(required=False)
+    birthday_min = forms.DateField(required=False, widget=DatePickerInput())
+    birthday_max = forms.DateField(required=False, widget=DatePickerInput())
     contact = forms.CharField(max_length=20, required=False)
+
 
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
+        # for field_name in self.fields.keys():
+            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+            # self.fields[field_name].label = ''
 
 class ProductRegisterForm(forms.ModelForm):
     class Meta:

@@ -166,7 +166,7 @@
       <!-- 메인 콘텐츠 -->
       <div class="main main-small" style="background-color:#f5f5f5">
         {% block content %}
-        {%endblock%}
+        {% endblock %}
       </div>
 
       <!--모달 : 로그인 / 로그아웃 -->
@@ -218,7 +218,7 @@
                     <input type="text" class="form-control" id="userId" name="userId" maxlength="50" style="width:auto">
                   </div>
                   <div class="modal-footer">
-                    {%csrf_token%}
+                    {% csrf_token %}
                     <button type="submit" class="btn btn-primary">회원등록</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
                   </div>

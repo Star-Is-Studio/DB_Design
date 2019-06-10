@@ -1,4 +1,12 @@
 {% extends 'baseAdmin.html' %}
+
+{% load bootstrap3 %}
+{% block calendar_widget %}
+{{ customerRegisterForm.media }}
+{{ customerUpdateForm.media }}
+{{ customerSearchForm.media }}
+{% endblock %}
+
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -78,7 +86,7 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'customerManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ customerRegisterForm }}
+        {% bootstrap_form customerRegisterForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -150,7 +158,7 @@ update_onclick = function(id, name, mileage, gender, birthday, contact) {
       <!-- 모달 창 내용 -->
       <form action="{% url 'customerManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ customerUpdateForm }}
+        {% bootstrap_form customerUpdateForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -177,7 +185,7 @@ update_onclick = function(id, name, mileage, gender, birthday, contact) {
         <!-- 모달 창 내용 -->
         <form action="{% url 'customerManage' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
-          {{ customerSearchForm }}
+          {% bootstrap_form customerSearchForm %}
           {% csrf_token %}
         </div>
         <div class="modal-footer">
