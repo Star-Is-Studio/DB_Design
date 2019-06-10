@@ -31,7 +31,7 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        request.store_id = sess['store_id']
+        # request.store_id = sess['store_id']
         # request.emp_id = sess['emp_id'] if not sess['emp_id'] is None else ''
         # request.emp_pos = sess['emp_pos'] if not sess['emp_pos'] is None else ''
         return func(request,*args,**kwargs)
@@ -1040,7 +1040,7 @@ def maintenanceCostManage(request):
                 mccode = form.cleaned_data['maintenance_cost_code']
                 amount = form.cleaned_data['amount']
                 process_date = form.cleaned_data['process_date']
-                employee_id = form.cleaned_data['employee_id'].id
+                employee_id = form.cleaned_data['employee_id'].id if form.cleaned_data['employee_id'] else None
                 etc = form.cleaned_data['etc']
 
                 with connection.cursor() as cursor:

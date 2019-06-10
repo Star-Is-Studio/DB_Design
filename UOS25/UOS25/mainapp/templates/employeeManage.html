@@ -33,7 +33,7 @@
       <td>{{ employee.employed_date }}</td>
       <td>{{ employee.fire_date | default_if_none:"" }}</td>
       <td>{{ employee.contact }}</td>
-      <td>{{ employee.position_code }}</td>
+      <td>{{ employee.get_position_code_display }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
         onclick="update_onclick({{ employee.id }}, '{{ employee.name }}', {{ employee.daytime_hourpay }}, {{ employee.nighttime_hourpay }},
         '{{ employee.employed_date }}', '{{employee.fire_date | default_if_none:""}}', '{{employee.contact}}', '{{employee.position_code}}')">수정</button></td>

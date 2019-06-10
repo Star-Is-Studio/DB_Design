@@ -26,7 +26,7 @@
       <td>{{ receipt.trade_timestamp }}</td>
       <td>{{ receipt.employee_id }}</td>
       <td>{{ receipt.customer_id|default_if_none:"" }}</td>
-      <td>{{ receipt.payment_method_code }}</td>
+      <td>{{ receipt.get_payment_method_code_display }}</td>
       <td>{{ receipt.payment_information }}</td>
       <td><button type="button" class="btn btn-success"><a href="{% url 'saleProductList' %}?receipt_id={{receipt.id}}">
         <span style="color:white">상세내역</span></a></button></td>

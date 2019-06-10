@@ -24,7 +24,7 @@
     <tr>
       <td>{{ order.order_timestamp }}</td>
       <td>{{ order.complete_timestamp|default_if_none:"" }}</td>
-      <td>{{ order.process_code}}</td>
+      <td>{{ order.get_process_code_display}}</td>
       <td><button type="button" class="btn btn-success"><a href="{% url 'orderManageList' %}?order_id={{order.id}}">
         <span style="color:white">내역</span></a></button></td>
     </tr>

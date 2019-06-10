@@ -28,7 +28,7 @@
       <td>{{ orderRecord.quantity }}</td>
       <td>{{ orderRecord.sent_timestamp | default_if_none:"" }}</td>
       <td>{{ orderRecord.arrival_timestamp | default_if_none:"" }}</td>
-      <td>{{ orderRecord.process_code }}</td>
+      <td>{{ orderRecord.get_process_code_display }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ orderRecord.id }}, '{{orderRecord.barcode}}')">취소</button></td>
     </tr>

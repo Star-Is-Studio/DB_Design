@@ -26,7 +26,7 @@
       <td>{{ worklist.employee_id }}</td>
       <td>{{ worklist.workstart_timestamp }}</td>
       <td>{{ worklist.workend_timestamp }}</td>
-      <td>{{ worklist.storeowner_check }}</td>
+      <td>{{ worklist.get_storeowner_check_display }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ worklist.id }})">삭제</button></td>
     </tr>

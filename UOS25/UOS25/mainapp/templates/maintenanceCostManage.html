@@ -25,12 +25,12 @@
   <tbody>
     {% for cost in costs %}
     <tr>
-      <td>{{ cost.maintenance_cost_code }}</td>
+      <td>{{ cost.get_maintenance_cost_code_display }}</td>
       <td>{{ cost.amount }}</td>
       <td>{{ cost.process_date }}</td>
-      <td>{{ cost.employee_id }}</td>
+      <td>{{ cost.employee_id|default_if_none:"" }}</td>
       <td>{{ cost.etc }}</td>
-      <td>{{ cost.storeowner_check }}</td>
+      <td>{{ cost.get_storeowner_check_display }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ cost.id }})">삭제</button></td>
     </tr>

@@ -16,8 +16,8 @@
       <th>납품가</th>
       <th>판매가</th>
       <th>납품업체</th>
-      <th>대분류</th>
-      <th>소분류</th>
+      <th>상품분류</th>
+      <th>판매분류</th>
       <th>설명</th>
       <th>그림</th>
     </tr>
@@ -30,8 +30,8 @@
       <td>{{ product.supply_price }}</td>
       <td>{{ product.unit_price }}</td>
       <td>{{ product.supplier_id }}</td>
-      <td>{{ product.category_a }}</td>
-      <td>{{ product.category_b }}</td>
+      <td>{{ product.get_category_a_display }}</td>
+      <td>{{ product.get_category_b_display }}</td>
       <td>{{ product.explain }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#picture" 
         onclick="picture_onclick('{{ product.picture_file_path }}')">사진</button></td>

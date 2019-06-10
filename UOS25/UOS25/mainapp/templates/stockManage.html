@@ -1,9 +1,5 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
-{% block calendar_widget %}
-{{ stockRegisterForm.media }}
-{{ stockUpdateForm.media }}
-{% endblock calendar_widget %}
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -22,12 +18,12 @@
     {% for stock in stocks %}
     <tr>
       <td>{{ stock.barcode }}</td>
-      <td>{{ stock.display_location_code }}</td>
+      <td>{{ stock.get_display_location_code_display }}</td>
       <td>{{ stock.quantity }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
         onclick="update_onclick({{ stock.id }}, {{ stock.barcode.barcode }}, {{ stock.display_location_code }}, {{ stock.quantity }} )">수정</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
-        onclick="delete_onclick({{ stock.id }}, '{{ stock.barcode }}_{{ stock.display_location_code }}')">삭제</button></td>
+        onclick="delete_onclick({{ stock.id }}, '{{ stock.barcode }}_{{ stock.get_display_location_code_display }}')">삭제</button></td>
     </tr>
     {% endfor %}
   </tbody>
@@ -115,7 +111,7 @@ update_onclick = function(id, barcode, display_location_code, quantity) {
       <!-- 모달 창 내용 -->
       <form action="{% url 'stockManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
-        <span id="delete_id"></span> 이 재고를 정말로 삭제하시겠습니까?
+        <span id="delete_id"></span> 의 재고를 정말로 삭제하시겠습니까?
         <input type="hidden" id="del_id" name="id" value=""> 
         {% csrf_token %}
       </div>

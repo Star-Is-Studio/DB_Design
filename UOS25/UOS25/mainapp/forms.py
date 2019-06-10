@@ -89,6 +89,7 @@ class CustomerRegisterForm(forms.ModelForm):
         # for field_name in self.fields.keys():
         #     self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
         #     self.fields[field_name].label = ''
+        self.fields['gender'].required = False
 
 class CustomerUpdateForm(CustomerRegisterForm):
     # PK 구분용
@@ -120,12 +121,11 @@ class CustomerSearchForm(forms.Form):
             # self.fields[field_name].label = ''
 
 class ProductRegisterForm(forms.ModelForm):
-    picture_file = forms.FileField(required=False)
     class Meta:
         model = Product
         exclude = ['picture_file_path']
 
-        fields = '__all__'
+    picture_file = forms.FileField(required=False)
 
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
@@ -191,7 +191,7 @@ class FranchiseStoreRcptRegisterForm(forms.ModelForm):
     class Meta:
         model = Franchise_store_rcpt
         fields = '__all__'
-
+        
         widgets = {'rcpt_date':DatePickerInput(),}
 
     # Bootstrap CSS 적용
@@ -216,12 +216,12 @@ class StockRegisterForm(forms.ModelForm):
         model = Stock
         exclude = ['store_id']
 
-    # Bootstrap CSS 적용
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # for field_name in self.fields.keys():
-            # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            # self.fields[field_name].label = ''
+    # # Bootstrap CSS 적용
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field_name in self.fields.keys():
+    #         self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+    #         self.fields[field_name].label = ''
 
 class StockUpdateForm(StockRegisterForm):
     # PK 구분용
@@ -296,22 +296,24 @@ class MaintenanceCostRegisterForm(forms.ModelForm):
         widgets = {'process_date' : DatePickerInput(), }
 
     # # Bootstrap CSS 적용
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    #     for field_name in self.fields.keys():
+    #         self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+    #         self.fields[field_name].label = ''
+        self.fields['employee_id'].required = False
+        self.fields['etc'].required = False
+
+class SalaryManageForm(forms.Form):
+    date_min = forms.DateTimeField(widget=DateTimePickerInput())
+    date_max = forms.DateTimeField(widget=DateTimePickerInput())
+
+    # # Bootstrap CSS 적용
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
     #     for field_name in self.fields.keys():
     #         self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
     #         self.fields[field_name].label = ''
-
-class SalaryManageForm(forms.Form):
-    date_min = forms.DateTimeField()
-    date_max = forms.DateTimeField()
-
-    # Bootstrap CSS 적용
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name in self.fields.keys():
-            self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
-            self.fields[field_name].label = ''
             
 class ReceiptRegisterForm(forms.ModelForm):
     class Meta:

@@ -27,6 +27,7 @@ central_urlpatterns = [
     url(r'^central/storeOrderManage/$', storeOrderManage, name='storeOrderManage'),#지점 주문 관리
     url(r'^central/storeRefundManage/$', storeRefundManage, name='storeRefundManage'),#지점 반품 관리
     url(r'^central/productManage/$', productManage, name='productManage'),#상품 관리
+    url(r'^central/productManage/product_pic/(?P<pic_number>\w+)/$', productPicture, name='productPicture'), #상품 사진 표시
     url(r'^central/customerManage/$',customerManage, name='customerManage'),#고객 관리
 ]
 
