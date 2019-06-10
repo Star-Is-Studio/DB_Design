@@ -1,4 +1,11 @@
 {% extends 'base.html' %}
+{% load bootstrap3 %}
+
+{% block calendar_widget %}
+{{ employeeRegisterForm.media }}
+{{ employeeUpdateForm.media }}
+{% endblock %}
+
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -78,7 +85,7 @@
       <!-- 모달 창 내용 -->
       <form action="{% url 'employeeManage' %}?process=register&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ employeeRegisterForm }}
+        {% bootstrap_form employeeRegisterForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">
@@ -152,7 +159,7 @@ update_onclick = function(id, name, dpay, npay, edate, fdate, contact, poscode) 
       <!-- 모달 창 내용 -->
       <form action="{% url 'employeeManage' %}?process=update&page={{this_page}}" method="POST">
       <div class="modal-body input-group">
-        {{ employeeUpdateForm }}
+        {% bootstrap_form employeeUpdateForm %}
         {% csrf_token %}
       </div>
       <div class="modal-footer">

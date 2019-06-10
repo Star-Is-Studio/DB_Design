@@ -1,2 +1,4 @@
 django<2.0
 cx_oracle==6.4.1
+django-bootstrap3
+django-bootstrap-datepicker-plus

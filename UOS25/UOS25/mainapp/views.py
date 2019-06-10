@@ -179,6 +179,7 @@ def franchiseManage(request):
             'storeSearchForm' : store_search_form, 'this_page' : page, 'pages' : pages})
 
 # 가맹요급 수납
+@login_check_central
 def franchiseCostManage(request):
 
     #페이지네이션
@@ -308,6 +309,7 @@ def supplierManage(request):
             'supplierSearchForm' : supplier_search_form, 'this_page' : page, 'pages' : pages})
 
 # 지점 주문 관리
+@login_check_central
 def storeOrderManage(request):
     #페이지네이션
     with connection.cursor() as c:
@@ -331,7 +333,8 @@ def storeOrderManage(request):
     
     return render(request, 'storeOrderManage.html', {'orders':orders, 'page':page, 'pages':pages})
 
-# 품 관리
+# 지점 반품 관리
+@login_check_central
 def storeRefundManage(request):
     #페이지네이션
     with connection.cursor() as c:
@@ -677,6 +680,7 @@ def centralRefundManage(request):
     return render(request, 'centralRefundManage.html', \
         {'refunds' : refunds, 'storeRefundRegisterForm' : storeRefund_register_form, 'this_page' : page, 'pages' : pages})
 
+@login_check_store
 def saleProduct(request):
     store_id = request.session['store_id']
 
@@ -723,6 +727,7 @@ def saleProduct(request):
     return render(request, 'saleProduct.html', \
         {'receipts' : receipts, 'receiptRegisterForm' : receipt_register_form, 'this_page' : page, 'pages' : pages})
 
+@login_check_store
 def saleProductList(request):
     receipt_id = int(request.GET.get('receipt_id', 'Error'))
     receipt = Receipt.objects.get(id=receipt_id)
@@ -780,6 +785,7 @@ def customerRefundManage(request):
     return render(request, 'customerRefundManage.html')
 
 #재고 관리
+@login_check_store
 def stockManage(request):
     store_id = request.session['store_id']
 
