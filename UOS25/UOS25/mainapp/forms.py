@@ -352,7 +352,7 @@ class StoreOrderUpdateForm(forms.ModelForm):
         fields = '__all__'
         
         # widgets = {'order_timestamp':DateTimePickerInput(), 'complete_timestamp':DateTimePickerInput(),}
-        widgets = {'order_timestamp':DateTimePickerInput(format='%Y/%m/%d %H:%M:%S'), 'complete_timestamp':DateTimePickerInput(format='%Y/%m/%d %H:%M:%S'),}
+        widgets = {'order_timestamp':DateTimePickerInput(format='%Y-%m-%d %H:%M:%S'), 'complete_timestamp':DateTimePickerInput(format='%Y-%m-%d %H:%M:%S'),}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

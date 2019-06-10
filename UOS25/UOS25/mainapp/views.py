@@ -338,12 +338,8 @@ def storeOrderManage(request):
     if request.method=='POST':
         process = str(request.GET.get('process', False))
         if process=='update':
-            post = request.POST.dict()
-            print(post['order_timestamp'], type(post['order_timestamp']))
             instance = Order.objects.get(id=request.POST.get('id','Error'))
-            post['order_timestamp'] = post['order_timestamp'].replace('T', ' ')
-            post['complete_timestamp'] = post['complete_timestamp'].replace('T', ' ')
-            form = StoreOrderUpdateForm(post)
+            form = StoreOrderUpdateForm(request.POST)
             if form.is_valid():
                 id = form.cleaned_data['id']
                 store_id = form.cleaned_data['store_id'].id
@@ -352,7 +348,6 @@ def storeOrderManage(request):
                 process_code = form.cleaned_data['process_code']
                 
                 with connection.cursor() as cursor:
-                    print(SQLs.sql_storeOrderUpdate%(store_id, order_timestamp, complete_timestamp, process_code, id))
                     cursor.execute(SQLs.sql_storeOrderUpdate, [store_id, order_timestamp, complete_timestamp, process_code, id])
                 
     orders = Order.objects.raw(SQLs.sql_storeOrderManage)
