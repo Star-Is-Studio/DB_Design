@@ -108,7 +108,7 @@ picture_onclick = function(picture_id) {
         </div>
   
         <!-- 모달 창 내용 -->
-        <form action="{% url 'productManage' %}?process=search&page={{this_page}}" method="POST">
+        <form action="{% url 'productManageStore' %}?process=search&page={{this_page}}" method="POST">
         <div class="modal-body input-group">
           {% bootstrap_form productSearchForm %}
           {% csrf_token %}
