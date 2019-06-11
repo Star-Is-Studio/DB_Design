@@ -9,7 +9,7 @@ class Store(models.Model):
     address = models.CharField(max_length=80, null=False)
     contact = models.CharField(max_length=20, null=False)
     # 용어사전 반영 필요
-    store_pay = models.DecimalField(decimal_places=2, max_digits=5,null=False) # 가맹요금비율
+    store_pay = models.DecimalField(decimal_places=2, max_digits=3,null=False) # 가맹요금비율
 
     __STORE_CODE__ = [
         (1, '개점'),
