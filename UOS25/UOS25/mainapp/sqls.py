@@ -46,6 +46,12 @@ class SQLs:
         and contact LIKE %s\
         and email LIKE %s\
         order by id"
+    sql_supplierSearchp = "select count(id) \
+        from MAINAPP_SUPPLIER \
+        where name LIKE %s\
+        and contact LIKE %s\
+        and email LIKE %s\
+        order by id"
 
     sql_customerManage = "select id, name, mileage, gender, birthday, contact \
         from MAINAPP_CUSTOMER \
@@ -61,6 +67,15 @@ class SQLs:
         where id = %s"
 
     sql_customerSearch = "select id, name, mileage, gender, birthday, contact \
+        from MAINAPP_CUSTOMER \
+        where name LIKE %s\
+        and mileage between %s and %s\
+        and gender = %s\
+        and birthday between %s and %s\
+        and contact LIKE %s\
+        order by id"
+
+    sql_customerSearchp = "select count(id) \
         from MAINAPP_CUSTOMER \
         where name LIKE %s\
         and mileage between %s and %s\
@@ -86,6 +101,17 @@ class SQLs:
         where barcode = %s"
 
     sql_productSearch = "select barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path \
+        from MAINAPP_PRODUCT \
+        where barcode LIKE %s\
+        and name LIKE %s\
+        and supply_price between %s and %s\
+        and unit_price between %s and %s\
+        and supplier_id LIKE %s \
+        and category_a LIKE %s \
+        and category_b LIKE %s \
+        order by barcode"
+    
+    sql_productSearchp = "select count(barcode) \
         from MAINAPP_PRODUCT \
         where barcode LIKE %s\
         and name LIKE %s\

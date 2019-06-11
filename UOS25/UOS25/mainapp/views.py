@@ -320,6 +320,19 @@ def supplierManage(request):
                 contact = "%" + form.cleaned_data['contact'] + "%"
                 email = "%" + form.cleaned_data['email'] + "%"
                 suppliers = Supplier.objects.raw(SQLs.sql_supplierSearch, [name, contact, email])
+                                #페이지네이션
+                with connection.cursor() as c:
+                    cntp = c.execute(SQLs.sql_supplierSearchp,[name, contact, email]).fetchone()
+                cntp = int(cntp[0])
+                page = int(request.GET.get('page', 1))#현재페이지
+                j = int(cntp/10)#5보다작으면 처리필요
+                if j>=5:
+                    pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+                else:
+                    if cntp%10==0:
+                        pages = [a for a in range(max(1, page-2), j+1)]
+                    else:
+                        pages = [a for a in range(max(1, page-2), j+2)]
 
     else:
         suppliers = Supplier.objects.raw(SQLs.sql_supplierManage)
@@ -551,6 +564,21 @@ def productManage(request):
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b])
+                                #페이지네이션
+                with connection.cursor() as c:
+                    cntp = c.execute(SQLs.sql_productSearchp,[barcode, name, supply_price_min, supply_price_max, unit_price_min, \
+                    unit_price_max, supplier_id, category_a, category_b]).fetchone()
+                cntp = int(cntp[0])
+                page = int(request.GET.get('page', 1))#현재페이지
+                j = int(cntp/10)#5보다작으면 처리필요
+                if j>=5:
+                    pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+                else:
+                    if cntp%10==0:
+                        pages = [a for a in range(max(1, page-2), j+1)]
+                    else:
+                        pages = [a for a in range(max(1, page-2), j+2)]
+                    
                     
         elif process == 'barcodesearch':
             form = ProductBarcodeSearchForm(request.POST)
@@ -635,6 +663,19 @@ def customerManage(request):
                 print([name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
                 customers = Customer.objects.raw(SQLs.sql_customerSearch,\
                     [name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
+                                                #페이지네이션
+                with connection.cursor() as c:
+                    cntp = c.execute(SQLs.sql_customerSearchp,[name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact]).fetchone()
+                cntp = int(cntp[0])
+                page = int(request.GET.get('page', 1))#현재페이지
+                j = int(cntp/10)#5보다작으면 처리필요
+                if j>=5:
+                    pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+                else:
+                    if cntp%10==0:
+                        pages = [a for a in range(max(1, page-2), j+1)]
+                    else:
+                        pages = [a for a in range(max(1, page-2), j+2)]
 
     else:
         customers = Customer.objects.raw(SQLs.sql_customerManage)
@@ -739,6 +780,20 @@ def productManageStore(request):
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b])
+                                                                #페이지네이션
+                with connection.cursor() as c:
+                    cntp = c.execute(SQLs.sql_productSearchp,[barcode, name, supply_price_min, supply_price_max, unit_price_min, \
+                    unit_price_max, supplier_id, category_a, category_b]).fetchone()
+                cntp = int(cntp[0])
+                page = int(request.GET.get('page', 1))#현재페이지
+                j = int(cntp/10)#5보다작으면 처리필요
+                if j>=5:
+                    pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+                else:
+                    if cntp%10==0:
+                        pages = [a for a in range(max(1, page-2), j+1)]
+                    else:
+                        pages = [a for a in range(max(1, page-2), j+2)]
 
     else:
         products = Product.objects.raw(SQLs.sql_productManage)
