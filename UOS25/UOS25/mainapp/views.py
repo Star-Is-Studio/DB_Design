@@ -34,9 +34,6 @@ def login_check_central(func):
         else: # 현재 세션에 로그인 정보가 없을 경우
             return redirect('login')
         request.user_id = sess['id']
-        # request.store_id = sess['store_id']
-        # request.emp_id = sess['emp_id'] if not sess['emp_id'] is None else ''
-        # request.emp_pos = sess['emp_pos'] if not sess['emp_pos'] is None else ''
         return func(request,*args,**kwargs)
     return checker
         
@@ -53,7 +50,6 @@ def login_check_store(func):
             return redirect('login')
         request.user_id = sess['id']
         request.store_id = sess['store_id']
-        request.emp_id = sess['emp_id']
         request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
@@ -74,15 +70,7 @@ def login(request):
                 raise Exception("doesn't match password")
             sess['id'] = id
             sess['store_id'] = user_object.store_id.id if not user_object.store_id is None else None
-            sess['emp_id'] = user_object.employee_id.id if not user_object.employee_id is None else None
-
-            # 직급코드 얻기
-            store_id = sess['store_id']
-            if not store_id is None:
-                with connection.cursor() as c:
-                    sess['emp_pos'] = c.execute(SQLs.sql_userGetPosition, [user_object.employee_id.id]).fetchone()[0]
-            else:
-                sess['emp_pos'] = None
+            sess['emp_pos'] = user_object.emp_pos_code
 
         except Exception as e:
             print(e)
@@ -105,10 +93,10 @@ def login(request):
         return render(request, 'login.html')
 
 # 패스워드 처리 확인을 위한 코드!!
-def _join(id,pwd,store_id):
+def hash_pwd(pwd):
     from hashlib import sha256
     pwd = sha256(pwd.encode()).hexdigest()
-    return id, pwd, store_id
+    return pwd
     
 @login_check_central
 def indexAdmin(request):
@@ -157,6 +145,14 @@ def franchiseManage(request):
                 with connection.cursor() as cursor:
                     if process == 'register':
                         cursor.execute(SQLs.sql_storeRegister, ['', address, contact, store_pay, store_code])
+                        # 지점장 생성 로직
+                        user_id, password = '{}m'.format(id), hash_pwd('hoho')
+                        cursor.execute(SQLs.sql_userRegister, [user_id, password, id, 0])
+
+                        # 점원 생성 로직
+                        user_id, password = '{}e'.format(id), hash_pwd('hoho')
+                        cursor.execute(SQLs.sql_userRegister, [user_id, password, id, 1])
+                        
                     elif process == 'update':
                         cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])
                 

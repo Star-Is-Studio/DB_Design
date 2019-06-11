@@ -206,9 +206,6 @@ class SQLs:
     sql_tradeListRegister = "insert into MAINAPP_TRADE_LIST(BARCODE, QUANTITY, IS_REFUND, RECEIPT_ID) \
         values (%s, %s, 'N', %s)"
 
-    sql_userGetPosition = "select position_code from mainapp_employee where id=%s;"
-
-
     sql_franchiseStoreRcptManage = "select id, store_id, rcpt_date, rcpt_amount\
         from MAINAPP_FRANCHISE_STORE_RCPT \
         order by rcpt_date desc"
@@ -252,3 +249,5 @@ class SQLs:
         sent_timestamp=%s, arrival_timestamp=%s, process_code=%s \
         where id=%s"
     
+    sql_userRegister = 'insert into mainapp_user(user_id, password, store_id, emp_pos_code) \
+        values = (%s, %s, %s, %s)'

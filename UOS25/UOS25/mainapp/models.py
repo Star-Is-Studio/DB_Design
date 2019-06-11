@@ -259,4 +259,9 @@ class User(models.Model):
     user_id = models.CharField(max_length=50)
     password = models.CharField(max_length=200)
     store_id = models.ForeignKey(Store, db_column='store_id', null=True)
-    employee_id = models.ForeignKey(Employee, db_column='employee_id', null=True)
+    # employee_id = models.ForeignKey(Employee, db_column='employee_id', null=True)
+    __EMP_POS_CODE__ = [
+        (0, '지점장/본점장'),
+        (1, '직원'),
+    ]
+    emp_pos_code = models.DecimalField(max_digits=1, decimal_places=0, choices=__EMP_POS_CODE__, null=False, default=0)
