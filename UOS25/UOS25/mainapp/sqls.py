@@ -292,3 +292,16 @@ class SQLs:
     sql_customerMileageAdd = 'update mainapp_customer set \
         mileage = mileage + %s where id=%s '
         
+    sql_salesMonthlyGroup = '''
+    select to_char(trade_timestamp,'YYYY-MM') as dat
+    from mainapp_receipt
+    where store_id=%s
+    group by to_char(trade_timestamp,'YYYY-MM')
+    '''
+
+    sql_salesMonthlyGett = '''
+    select  sum(p.unit_price*a.quantity) from mainapp_trade_list a, mainapp_product p
+    where a.receipt_id in 
+    (select id from mainapp_receipt where to_char(trade_timestamp, 'YYYY-MM') = %s and store_id=%s )
+    and p.barcode=a.barcode
+    '''
