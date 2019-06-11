@@ -176,6 +176,19 @@ def franchiseManage(request):
                 store_pay_min = 0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
                 store_pay_max = 1 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
                 stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
+                #페이지네이션
+                with connection.cursor() as c:
+                    cntp = c.execute(SQLs.sql_storeSearchPage,[address, contact, store_pay_min, store_pay_max]).fetchone()
+                cntp = int(cntp[0])
+                page = int(request.GET.get('page', 1))#현재페이지
+                j = int(cntp/10)#5보다작으면 처리필요
+                if j>=5:
+                    pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+                else:
+                    if cntp%10==0:
+                        pages = [a for a in range(max(1, page-2), j+1)]
+                    else:
+                        pages = [a for a in range(max(1, page-2), j+2)]
 
     else:
         stores = Store.objects.raw(SQLs.sql_franchiseManage)

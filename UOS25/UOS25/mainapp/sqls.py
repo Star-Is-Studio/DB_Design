@@ -21,7 +21,12 @@ class SQLs:
         and contact LIKE %s\
         and store_pay between %s and %s\
         order by id"
-
+    sql_storeSearchPage = "select cnt(id) \
+        from MAINAPP_STORE \
+        where address LIKE %s\
+        and contact LIKE %s\
+        and store_pay between %s and %s\
+        order by id"
     sql_supplierManage = "select id, name, contact, email \
         from MAINAPP_SUPPLIER \
         order by id"
