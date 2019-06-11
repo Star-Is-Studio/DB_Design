@@ -19,6 +19,9 @@ def productPicture(request, *args, **kwargs):
         img_type = str(imghdr.what(f))
         return HttpResponse(f.read(), content_type="image/"+img_type)
 
+def alertBack(msg):
+    return "<script>alert('데이터베이스 에러  :  " + msg + " '); window.history.back();</script>"
+
 def login_check_central(func):
     '''
     본사 로그인 체크 데코레이터, @login_check_central로 사용
@@ -509,6 +512,7 @@ def productManage(request):
             else:
                 print(form.errors)
                 print('가 발생')
+                return HttpResponse(alertBack('상품정보가 올바른지, 중복 바코드가 존재하는지 확인해주세요.'))
 
         elif process == 'delete':
             barcode = int(request.POST.get('barcode', 'Error'))
@@ -751,10 +755,10 @@ def orderManage(request):
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
-        f = request.POST.dict()
-        f['order_timestamp'] = f['order_timestamp'].replace("T"," ")
+        # f = request.POST.dict()
+        # f['order_timestamp'] = f['order_timestamp'].replace("T"," ")
         if process == 'register':
-            form = OrderRegisterForm(f)
+            form = OrderRegisterForm(request.POST)
         
         if form.is_valid():
             order_timestamp = form.cleaned_data['order_timestamp']
@@ -851,10 +855,10 @@ def centralRefundManage(request):
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
-        f = request.POST.dict()
+        # f = request.POST.dict()
 
         if process == 'register':
-            form = StoreRefundRegisterForm(f)
+            form = StoreRefundRegisterForm(request.POST)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode'].barcode
                 quantity = form.cleaned_data['quantity']
