@@ -134,26 +134,6 @@ class Store_refund(models.Model):
     ]
     process_code = models.DecimalField(decimal_places=0, max_digits=4, choices=__PROCESS_CODE__, null=False)
 
-# 고객반품 테이블
-class Customer_refund(models.Model):
-    barcode = models.ForeignKey(Product, null=False, db_column='barcode')
-    quantity = models.DecimalField(decimal_places=0, max_digits=6, null=False)
-    refund_timestamp = models.DateTimeField(null=False)
-
-    __REFUND_REASON_CODE__ = [
-        (0, '일반반품'),
-        (1, '불량품'),
-    ]
-    refund_reason_code = models.DecimalField(decimal_places=0, max_digits=4, choices=__REFUND_REASON_CODE__, null=False)
-
-    __PROCESS_CODE__ = [
-        (0, '반품대기'),
-        (1, '회수완료'),
-        (2, '반품불가'),
-        (-1, '자체폐기'),
-    ]
-    process_code = models.DecimalField(decimal_places=0, max_digits=4, choices=__PROCESS_CODE__, null=False)
-
 # 가맹요금수납 테이블
 class Franchise_store_rcpt(models.Model): # 가맹요금수납
     store_id = models.ForeignKey(Store, null=False, db_column='store_id')
@@ -255,6 +235,9 @@ class Trade_list(models.Model):
         ('Y', '반품됨'),
     ]
     is_refund = models.CharField(max_length=1, default='N', null=False)
+
+    def __str__(self):
+        return "{}번_판매_{}_{}개".format(self.receipt_id.id, self.barcode, self.quantity)
     
 # 고객반품 테이블
 class Customer_refund(models.Model):
