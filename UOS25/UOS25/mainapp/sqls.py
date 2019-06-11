@@ -154,6 +154,16 @@ class SQLs:
 
     sql_storeRefundDelete = "delete from MAINAPP_STORE_REFUND where id = %s"
 
+    sql_customerRefundManage = "select id, refund_timestamp, refund_reason_code, trade_list_id \
+        from MAINAPP_CUSTOMER_REFUND \
+        where store_id = %s \
+        order by id desc"
+
+    sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(barcode, quantity, refund_timestamp, refund_reason_code, process_code, store_id) \
+        values (%s, %s, %s, %s, 0, %s)"
+
+    sql_customerRefundDelete = "delete from MAINAPP_CUSTOMER_REFUND where id = %s"
+
     sql_workListManage = "select wl.id as id, workstart_timestamp, workend_timestamp, storeowner_check, wl.employee_id as employee_id \
         from MAINAPP_WORK_LIST wl, MAINAPP_EMPLOYEE emp \
         where wl.employee_id = emp.id and emp.store_id = %s \

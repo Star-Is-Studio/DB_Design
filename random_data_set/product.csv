@@ -1,5 +1,21 @@
-name, content, barcode, category_a, category_b, img_path, information, supply_price, unit_price, supplier_id
-'삼다수', '삼다수', 1, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 2, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 3, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
-'삼다수', '삼다수', 4, NULL, NULL, '', '삼다수임 그런거임', 10000,20000,1
+﻿name,content,barcode,category_a,category_b,img_path,information,supply_price,unit_price,supplier_id
+'삼다수','삼다수',1,NULL,NULL,NULL,'삼다수',10000,20000,1
+'콜라','콜라',2,NULL,NULL,NULL,'콜라',11000,20100,1
+'사이다','사이다',3,NULL,NULL,NULL,'사이다',12000,20200,1
+'물티슈','물티슈',4,NULL,NULL,NULL,'물티슈',13000,20300,1
+'스프라이트','스프라이트',5,NULL,NULL,NULL,'스프라이트',14000,20400,1
+'화장지','화장지',6,NULL,NULL,NULL,'화장지',15000,20500,1
+'가위','가위',7,NULL,NULL,NULL,'가위',16000,20600,1
+'칼','칼',8,NULL,NULL,NULL,'칼',17000,20700,1
+'삼각김밥','삼각김밥',9,NULL,NULL,NULL,'삼각김밥',18000,20800,1
+'김밥','김밥',10,NULL,NULL,NULL,'김밥',19000,20900,1
+'헛개수','헛개수',11,NULL,NULL,NULL,'헛개수',20000,21000,1
+'치토스','치토스',12,NULL,NULL,NULL,'치토스',21000,21100,1
+'포카칩','포카칩',13,NULL,NULL,NULL,'포카칩',22000,21200,1
+'샤프','샤프',14,NULL,NULL,NULL,'샤프',23000,21300,1
+'연필','연필',15,NULL,NULL,NULL,'연필',24000,21400,1
+'펜','펜',16,NULL,NULL,NULL,'펜',25000,21500,1
+'A4용지','A4용지',17,NULL,NULL,NULL,'A4용지',26000,21600,1
+'편지지','편지지',18,NULL,NULL,NULL,'편지지',27000,21700,1
+'비타500','비타500',19,NULL,NULL,NULL,'비타500',28000,21800,1
+'포카리스웨트',포카리스웨트',20,NULL,NULL,NULL,포카리스웨트',29000,21900,1
