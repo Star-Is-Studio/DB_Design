@@ -48,6 +48,7 @@ franchise_urlpatterns = [
     url(r'^franchise/employeeManage/$',employeeManage, name='employeeManage'),#점원관리
     url(r'^franchise/workListManage/$',workListManage, name='workListManage'),#근무기록관리
     url(r'^franchise/salaryManage/$',salaryManage, name='salaryManage'),#월급관리
+    url(r'^franchise/productManageStore/product_pic/(?P<pic_number>\w+)/$', productPicture, name='productPicture'), #상품 사진 표시
 ]
 
 # 통합페이지
