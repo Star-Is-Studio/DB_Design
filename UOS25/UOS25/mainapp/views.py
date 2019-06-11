@@ -806,7 +806,6 @@ def centralRefundManage(request):
         process = str(request.GET.get('process', False))
 
         f = request.POST.dict()
-        f['refund_timestamp'] = f['refund_timestamp'].replace("T"," ")
 
         if process == 'register':
             form = StoreRefundRegisterForm(f)
@@ -1131,6 +1130,60 @@ def employeeManage(request):
     return render(request, 'employeeManage.html', \
         {'employees' : employees, 'employeeRegisterForm' : employee_register_form, 'employeeUpdateForm' : employee_update_form, \
             'this_page' : page, 'pages' : pages})
+
+# 고객 반품 관리
+@login_check_store
+def customerRefundManage(request):
+    store_id = request.session['store_id']
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(barcode) from MAINAPP_STORE_REFUND').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+    if request.method == 'POST':
+        process = str(request.GET.get('process', False))
+
+        f = request.POST.dict()
+
+        if process == 'register':
+            form = StoreRefundRegisterForm(f)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode'].barcode
+                quantity = form.cleaned_data['quantity']
+                refund_timestamp = form.cleaned_data['refund_timestamp']
+                refund_reason_code = form.cleaned_data['refund_reason_code']
+                
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_storeRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
+                
+                return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
+            else:
+                print(form.errors)
+                print('가 발생')
+
+        elif process == 'delete':
+            id = int(request.POST.get('id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_storeRefundDelete, [id])
+            return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
+
+    else:
+        refunds = Store_refund.objects.raw(SQLs.sql_storeRefundManage, [store_id])
+        refunds = refunds[(10*(page-1)):10*page]
+
+    storeRefund_register_form = StoreRefundRegisterForm()
+
+    return render(request, 'customerRefundManage.html', \
+        {'refunds' : refunds, 'storeRefundRegisterForm' : storeRefund_register_form, 'this_page' : page, 'pages' : pages})
 
 # 근무 기록 관리
 @login_check_store
