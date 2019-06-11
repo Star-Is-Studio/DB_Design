@@ -17,7 +17,11 @@
       <th>직원명</th>
       <th>근무시작</th>
       <th>근무종료</th>
+      {% if request.emp_pos == '0' %}
+        <th>확인하기</th>
+      {% endif %}
       <th>점주확인</th>
+      <th>삭제</th>
     </tr>
   </thead>
   <tbody>
@@ -27,7 +31,13 @@
       <td>{{ worklist.workstart_timestamp }}</td>
       <td>{{ worklist.workend_timestamp }}</td>
       <td>{{ worklist.get_storeowner_check_display }}</td>
-      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
+      <td>
+        {% if request.emp_pos == '0' and worklist.storeowner_check == 'N' %}
+          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirm" 
+        onclick="confirm_onclick({{ worklist.id }})">확인</button></td>
+        {% endif %}
+      <td>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ worklist.id }})">삭제</button></td>
     </tr>
     {% endfor %}
@@ -92,6 +102,9 @@
 delete_onclick = function(id) {
   $("#del_id").val(id);
 }
+confirm_onclick = function(id) {
+  $("#confirm_id").val(id);
+}
 </script>
 
 <!--del모달-->
@@ -107,7 +120,7 @@ delete_onclick = function(id) {
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=delete&page={{this_page}}" method="POST">
+      <form action="{% url 'workListManage' %}?process=confirm&page={{this_page}}" method="POST">
       <div class="modal-body">
         이 기록을 정말로 취소하시겠습니까?
         <input type="hidden" id="del_id" name="id" value=""> 
@@ -119,6 +132,34 @@ delete_onclick = function(id) {
       </div>
       </form>
 
+    </div>
+  </div>
+</div>
+
+<!--confirm모달-->
+<div class="modal fade" id="confirm" tabindex="-1" role="dialog" aria-labelledby="confirmLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="confirmLabel">근무 확인</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'workListManage' %}?process=confirm&page={{this_page}}" method="POST">
+      <div class="modal-body">
+        근무를 확인하시겠습니까?
+        <input type="hidden" id="confirm_id" name="id" value=""> 
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+      </form>
     </div>
   </div>
 </div>
