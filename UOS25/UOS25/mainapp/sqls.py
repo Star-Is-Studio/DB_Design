@@ -237,10 +237,13 @@ class SQLs:
         order by id"
     
     #영수증 등록하기전에 충분한 재고의 갯수를 리턴
-    sql_tradeListRegisterCheck = "select quantity from MAINAPP_STOCK where BARCODE = %s"
+    sql_tradeListRegisterCheck = "select quantity from MAINAPP_STOCK \
+        where BARCODE = %s and store_id = %s \
+        order by quantity desc"
 
     #영수증 등록 후 재고에서 뺌
-    #sql_tradeListMinus = 
+    sql_tradeListMinusStock = 'update mainapp_stock set \
+        quantity = quantity - %s where barcode = %s and store_id = %s'
 
     sql_tradeListRegister = "insert into MAINAPP_TRADE_LIST(BARCODE, QUANTITY, IS_REFUND, RECEIPT_ID) \
         values (%s, %s, 'N', %s)"

@@ -1028,10 +1028,19 @@ def saleProductList(request):
                 quantity = form.cleaned_data['quantity']
                 
                 with connection.cursor() as cursor:
-                    cursor.execute(SQLs.sql_tradeListRegisterCheck, [barcode])
-                    records = cursor.fetchall()
-                    print(records)
+                    cursor.execute(SQLs.sql_tradeListRegisterCheck, [barcode, store_id])
+                    stock_qunatity = cursor.fetchone()[0]
+                    #재고 체크
+                    if stock_qunatity < quantity:
+                        return HttpResponse(alertBack('현재 상품 재고가 부족합니다.'))
+                    
+                    #재고 빼기.
+                    cursor.execute(SQLs.sql_tradeListMinusStock, [quantity, barcode, store_id])
+                    
+                    #거래기록 삽입.
                     cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
+
+                    #마일리지 추가.
                     if not receipt.customer_id is None:
                         m = float(form.cleaned_data['barcode'].unit_price) * float(quantity) * 0.01
                         cursor.execute(SQLs.sql_customerMileageAdd, [int(m), receipt.customer_id.id])                    
