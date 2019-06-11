@@ -53,7 +53,10 @@ def login_check_store(func):
         request.emp_pos = sess['emp_pos']
         return func(request,*args,**kwargs)
     return checker
-    
+
+def loginfail(request):
+    return "<script>alert('데이터베이스 에러  :  " + msg + " '); window.history.back();</script>"
+
 def login(request):
     sess = request.session
     if request.method=='POST':
@@ -74,7 +77,7 @@ def login(request):
 
         except Exception as e:
             print(e)
-            return redirect('login')
+            return render(request,'loginfail.html')
         # 로그인 성공 후 적절한 페이지로 연결
         if user_object.store_id == None:
             return redirect('indexAdmin')
