@@ -145,13 +145,14 @@ def franchiseManage(request):
                 with connection.cursor() as cursor:
                     if process == 'register':
                         cursor.execute(SQLs.sql_storeRegister, ['', address, contact, store_pay, store_code])
+                        store_id = Store.objects.raw(SQLs.sql_storeSearch, [address,contact,store_pay, store_pay])[0].id
                         # 지점장 생성 로직
-                        user_id, password = '{}m'.format(id), hash_pwd('hoho')
-                        cursor.execute(SQLs.sql_userRegister, [user_id, password, id, 0])
+                        user_id, password = '{}m'.format(store_id), hash_pwd('hoho')
+                        cursor.execute(SQLs.sql_userRegister, [user_id, password, store_id, 0])
 
                         # 점원 생성 로직
-                        user_id, password = '{}e'.format(id), hash_pwd('hoho')
-                        cursor.execute(SQLs.sql_userRegister, [user_id, password, id, 1])
+                        user_id, password = '{}e'.format(store_id), hash_pwd('hoho')
+                        cursor.execute(SQLs.sql_userRegister, [user_id, password, store_id, 1])
                         
                     elif process == 'update':
                         cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])

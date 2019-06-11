@@ -252,4 +252,8 @@ class SQLs:
         where id=%s"
     
     sql_userRegister = 'insert into mainapp_user(user_id, password, store_id, emp_pos_code) \
-        values = (%s, %s, %s, %s)'
+        values (%s, %s, %s, %s)'
+
+    sql_userIdGetter = 'select id, password, store_id, emp_pos_code \
+        from mainapp_user \
+        where user_id=%s'
