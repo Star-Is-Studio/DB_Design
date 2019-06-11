@@ -26,9 +26,9 @@
         {% for order in orders %}
           <tr>
             <td>{{ order.store_id }}</td>
-            <td>{{ order.order_timestamp }}</td>
-            <td>{{ order.complete_timestamp }}</td>
-            <td>{{ order.process_code }}</td>
+            <td>{{ order.order_timestamp| default_if_none:"" }}</td>
+            <td>{{ order.complete_timestamp| default_if_none:"" }}</td>
+            <td>{{ order.get_process_code_display }}</td>
             <td>{{ order.sum_price }}</td>
       <td><button type="button" class="btn btn-success"><a href="{% url 'storeOrderManageList' %}?order_id={{order.id}}">
         <span style="color:white">상세내역</span></a></button></td>
