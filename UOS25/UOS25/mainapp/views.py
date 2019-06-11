@@ -1015,20 +1015,8 @@ def saleProductList(request):
     receipt = Receipt.objects.get(id=receipt_id)
 
     store_id = request.session['store_id']
-
-    #페이지네이션
-    with connection.cursor() as c:
-        cnt = c.execute('select count(id) from MAINAPP_TRADE_LIST').fetchone()
-    cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
-    j = int(cnt/10)#5보다작으면 처리필요
-    if j>=5:
-        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
-    else:
-        if cnt%10 == 0:
-            pages = [a for a in range(max(1, page-2), j+1)]
-        else:
-            pages = [a for a in range(max(1, page-2), j+2)]
+    pages = [1]
     
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
@@ -1051,7 +1039,6 @@ def saleProductList(request):
 
     else:
         tradeList = Trade_list.objects.raw(SQLs.sql_tradeListManage, [receipt_id])
-        tradeList = tradeList[(10*(page-1)):10*page]
 
         total_price = 0
         for trade in tradeList:
