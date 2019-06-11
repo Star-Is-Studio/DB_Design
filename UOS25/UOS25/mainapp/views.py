@@ -173,8 +173,8 @@ def franchiseManage(request):
             if form.is_valid():
                 address = "%" + form.cleaned_data['address'] + "%"
                 contact = "%" + form.cleaned_data['contact'] + "%"
-                store_pay_min = 0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
-                store_pay_max = 1 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
+                store_pay_min = 0.0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
+                store_pay_max = 100.0 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
                 stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
 
     else:
