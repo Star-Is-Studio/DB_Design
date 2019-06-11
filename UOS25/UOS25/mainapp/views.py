@@ -985,9 +985,6 @@ def saleProductList(request):
         {'tradeList' : tradeList, 'tradeListRegisterForm' : tradeList_register_form, 'receipt': receipt, 'total_price' : total_price,\
         'this_page' : page, 'pages' : pages})
 
-def customerRefundManage(request):
-    return render(request, 'customerRefundManage.html')
-
 #재고 관리
 @login_check_store
 def stockManage(request):
@@ -1184,7 +1181,7 @@ def customerRefundManage(request):
 
     #페이지네이션
     with connection.cursor() as c:
-        cnt = c.execute('select count(barcode) from MAINAPP_STORE_REFUND').fetchone()
+        cnt = c.execute('select count(id) from MAINAPP_CUSTOMER_REFUND').fetchone()
     cnt = int(cnt[0])
     page = int(request.GET.get('page', 1))#현재페이지
     j = int(cnt/10)#5보다작으면 처리필요
@@ -1201,7 +1198,7 @@ def customerRefundManage(request):
         f = request.POST.dict()
 
         if process == 'register':
-            form = StoreRefundRegisterForm(f)
+            form = CustomerRefundRegisterForm(f)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode'].barcode
                 quantity = form.cleaned_data['quantity']
@@ -1209,7 +1206,7 @@ def customerRefundManage(request):
                 refund_reason_code = form.cleaned_data['refund_reason_code']
                 
                 with connection.cursor() as cursor:
-                    cursor.execute(SQLs.sql_storeRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
+                    cursor.execute(SQLs.sql_customerRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
                 
                 return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
             else:
@@ -1219,17 +1216,17 @@ def customerRefundManage(request):
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_storeRefundDelete, [id])
+                cursor.execute(SQLs.sql_customerRefundDelete, [id])
             return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
 
     else:
-        refunds = Store_refund.objects.raw(SQLs.sql_storeRefundManage, [store_id])
+        refunds = Customer_refund.objects.raw(SQLs.sql_customerRefundManage, [store_id])
         refunds = refunds[(10*(page-1)):10*page]
 
-    storeRefund_register_form = StoreRefundRegisterForm()
+    customerRefund_register_form = CustomerRefundRegisterForm()
 
     return render(request, 'customerRefundManage.html', \
-        {'refunds' : refunds, 'storeRefundRegisterForm' : storeRefund_register_form, 'this_page' : page, 'pages' : pages})
+        {'refunds' : refunds, 'CustomerRefundRegisterForm' : customerRefund_register_form, 'this_page' : page, 'pages' : pages})
 
 # 근무 기록 관리
 @login_check_store
@@ -1271,6 +1268,11 @@ def workListManage(request):
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_workListDelete, [id])
+            return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
+        elif process == 'confirm':
+            id = int(request.POST.get('id', 'Error'))
+            with connection.cursor() as cursor:
+                cursor.execute(SQLs.sql_workListConfirm, [id])
             return HttpResponseRedirect(reverse('workListManage')+'?page=%s' % page)
 
     else:

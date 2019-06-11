@@ -156,11 +156,11 @@ class SQLs:
 
     sql_customerRefundManage = "select id, refund_timestamp, refund_reason_code, trade_list_id \
         from MAINAPP_CUSTOMER_REFUND \
-        where store_id = %s \
+        where id = %s \
         order by id desc"
 
-    sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(barcode, quantity, refund_timestamp, refund_reason_code, process_code, store_id) \
-        values (%s, %s, %s, %s, 0, %s)"
+    sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(id, refund_timestamp, refund_reason_code, trade_list_id) \
+        values (%s, %s, %s, %s)"
 
     sql_customerRefundDelete = "delete from MAINAPP_CUSTOMER_REFUND where id = %s"
 
@@ -173,6 +173,8 @@ class SQLs:
         values (%s, %s, %s, 'N')"
 
     sql_workListDelete = "delete from MAINAPP_WORK_LIST where id = %s"
+
+    sql_workListConfirm = "update MAINAPP_WORK_LIST set STOREOWNER_CHECK = 'Y' where id = %s"
 
     sql_workListQueryForSalary = "select id, workstart_timestamp, workend_timestamp \
         from MAINAPP_WORK_LIST \

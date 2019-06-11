@@ -119,7 +119,19 @@ class CustomerSearchForm(forms.Form):
         # for field_name in self.fields.keys():
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
+class CustomerRefundRegisterForm(forms.ModelForm):
+    class Meta:
+        model = Customer_refund
+        fields = ['id', 'refund_timestamp', 'refund_reason_code', 'trade_list_id']
 
+        widgets = {'refund_timestamp' : DateTimePickerInput(), }
+
+    # # Bootstrap CSS 적용
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #     for field_name in self.fields.keys():
+    #         self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
+    #         self.fields[field_name].label = ''
 class ProductRegisterForm(forms.ModelForm):
     class Meta:
         model = Product
