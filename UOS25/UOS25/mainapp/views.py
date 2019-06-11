@@ -175,7 +175,6 @@ def franchiseManage(request):
                 contact = "%" + form.cleaned_data['contact'] + "%"
                 store_pay_min = 0.0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
                 store_pay_max = 100.0 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
-                stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
                 #페이지네이션
                 with connection.cursor() as c:
                     cntp = c.execute(SQLs.sql_storeSearchPage,[address, contact, store_pay_min, store_pay_max]).fetchone()
@@ -189,6 +188,8 @@ def franchiseManage(request):
                         pages = [a for a in range(max(1, page-2), j+1)]
                     else:
                         pages = [a for a in range(max(1, page-2), j+2)]
+                stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
+                
 
     else:
         stores = Store.objects.raw(SQLs.sql_franchiseManage)

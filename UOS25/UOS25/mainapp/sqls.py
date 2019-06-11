@@ -21,7 +21,7 @@ class SQLs:
         and contact LIKE %s\
         and store_pay between %s and %s\
         order by id"
-    sql_storeSearchPage = "select cnt(id) \
+    sql_storeSearchPage = "select count(id) \
         from MAINAPP_STORE \
         where address LIKE %s\
         and contact LIKE %s\
