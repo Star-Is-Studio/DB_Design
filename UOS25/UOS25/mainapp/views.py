@@ -1028,6 +1028,9 @@ def saleProductList(request):
                 quantity = form.cleaned_data['quantity']
                 
                 with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_tradeListRegisterCheck, [barcode])
+                    records = cursor.fetchall()
+                    print(records)
                     cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
                     if not receipt.customer_id is None:
                         m = float(form.cleaned_data['barcode'].unit_price) * float(quantity) * 0.01
