@@ -30,6 +30,8 @@
             <td>{{ order.complete_timestamp }}</td>
             <td>{{ order.process_code }}</td>
             <td>{{ order.sum_price }}</td>
+      <td><button type="button" class="btn btn-success"><a href="{% url 'storeOrderManageList' %}?order_id={{order.id}}">
+        <span style="color:white">상세내역</span></a></button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
         onclick="update_onclick('{{ order.id }}', '{{ order.store_id.id }}', '{{ order.order_timestamp.isoformat }}', '{{ order.complete_timestamp.isoformat | default_if_none:"" }}','{{ order.process_code }}')">수정</button></td>
           </tr>
