@@ -54,9 +54,6 @@ def login_check_store(func):
         return func(request,*args,**kwargs)
     return checker
 
-def loginfail(request):
-    return "<script>alert('데이터베이스 에러  :  " + msg + " '); window.history.back();</script>"
-
 def login(request):
     sess = request.session
     if request.method=='POST':

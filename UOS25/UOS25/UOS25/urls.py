@@ -56,5 +56,4 @@ franchise_urlpatterns = [
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$',login, name='login'),#로그인페이지
-    url(r'^$',loginfail, name='loginfail'),
 ] + central_urlpatterns + franchise_urlpatterns
