@@ -25,6 +25,7 @@ central_urlpatterns = [
     url(r'^central/franchiseCostManage/$',franchiseCostManage, name='franchiseCostManage'),#가맹요금 수납
     url(r'^central/supplierManage/$', supplierManage, name='supplierManage'),#납품 업체 관리
     url(r'^central/storeOrderManage/$', storeOrderManage, name='storeOrderManage'),#지점 주문 관리
+    url(r'^central/storeOrderManage/list/$', storeOrderManageList, name='storeOrderManageList'),#지점 주문 관리
     url(r'^central/storeRefundManage/$', storeRefundManage, name='storeRefundManage'),#지점 반품 관리
     url(r'^central/productManage/$', productManage, name='productManage'),#상품 관리
     url(r'^central/productManage/product_pic/(?P<pic_number>\w+)/$', productPicture, name='productPicture'), #상품 사진 표시

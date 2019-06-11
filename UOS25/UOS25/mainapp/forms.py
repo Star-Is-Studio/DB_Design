@@ -376,3 +376,18 @@ class StoreRefundUpdateForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name in self.fields.keys():
             self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})
+
+class StoreOrderManageListUpdateForm(forms.ModelForm):
+    # PK 구분용
+    id = forms.DecimalField(widget=forms.HiddenInput())
+    class Meta:
+        model = Order_list
+        fields = ['sent_timestamp', 'arrival_timestamp', 'process_code']
+        widgets = {'sent_timestamp':DateTimePickerInput(), 'arrival_timestamp':DateTimePickerInput(), }
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['sent_timestamp'].required = False
+        self.fields['arrival_timestamp'].required = False        
+        for field_name in self.fields.keys():
+            self.fields[field_name].widget.attrs.update({'id' : 'update_' + field_name})

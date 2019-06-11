@@ -239,3 +239,16 @@ class SQLs:
         process_code = %s \
         where id = %s'
     
+    sql_storeOrderTotalPrice = 'select sum(b.quantity*p.unit_price) \
+        from mainapp_order a, mainapp_order_list b, mainapp_product p \
+        where a.id=b.order_id and b.barcode=p.barcode\
+        and a.id=%s '
+    
+    sql_storeOrderListManage = 'select id, barcode, quantity, sent_timestamp, arrival_timestamp, \
+        process_code, order_id \
+        from mainapp_order_list \
+        where order_id=%s '
+    sql_storeOrderListUpdate = "update mainapp_order_list set\
+        sent_timestamp=%s, arrival_timestamp=%s, process_code=%s \
+        where id=%s"
+    

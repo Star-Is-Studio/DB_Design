@@ -357,6 +357,52 @@ def storeOrderManage(request):
     return render(request, 'storeOrderManage.html', {'orders':orders, 'this_page':page, 'pages':pages,
         'storeOrderUpdateForm':store_order_update_form})
 
+# 지점 주문내역 조회
+@login_check_central
+def storeOrderManageList(request):
+    order_id = int(request.GET.get('order_id','Error'))
+    
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute('select count(id) from MAINAPP_ORDER').fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+
+
+    if request.method=='POST':
+        process = str(request.GET.get('process', False))
+        if process=='update':
+            print(request.POST)
+            form = StoreOrderManageListUpdateForm(request.POST)
+            if form.is_valid():
+                id = form.cleaned_data['id']
+                sent_timestamp =  form.cleaned_data['sent_timestamp']
+                arrival_timestamp = form.cleaned_data['arrival_timestamp']
+                process_code = form.cleaned_data['process_code']
+
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_storeOrderListUpdate, [sent_timestamp, arrival_timestamp, process_code, id])
+            else:
+                print("non valid")
+                print(form.errors)
+
+    orders = Order_list.objects.raw(SQLs.sql_storeOrderListManage, [order_id])
+    orders = orders[(10*(page-1)):10*page]
+    for order in orders:
+        order.subtotal = order.quantity * order.barcode.unit_price
+    
+    store_order_manage_list_update_form = StoreOrderManageListUpdateForm()
+    return render(request, 'storeOrderManageList.html', {'order_id':order_id,'orders':orders, 'this_page':page, 'pages':pages,
+        'storeOrderManageListUpdateForm':StoreOrderManageListUpdateForm,})
+
 # 지점 반품 관리
 @login_check_central
 def storeRefundManage(request):

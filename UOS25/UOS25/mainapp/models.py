@@ -1,5 +1,6 @@
-from django.db import models
+from django.db import models, connection
 from decimal import Decimal
+from mainapp.sqls import SQLs
 
 # Create your models here.
 
@@ -84,6 +85,13 @@ class Order(models.Model):
         (-1, '주문취소'),
     ]
     process_code = models.DecimalField(decimal_places=0, max_digits=4, choices=__PROCESS_CODE__, null=False)
+    
+    def sum_price(self):
+        with connection.cursor() as cursor:
+            gett = cursor.execute(SQLs.sql_storeOrderTotalPrice,[self.id]).fetchone() 
+            val = gett[0]
+        return val
+        
     
 # 주문내역 테이블
 class Order_list(models.Model):
