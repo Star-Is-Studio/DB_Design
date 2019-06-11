@@ -173,8 +173,8 @@ def franchiseManage(request):
             if form.is_valid():
                 address = "%" + form.cleaned_data['address'] + "%"
                 contact = "%" + form.cleaned_data['contact'] + "%"
-                store_pay_min = 0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
-                store_pay_max = 1 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
+                store_pay_min = 0.0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
+                store_pay_max = 100.0 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
                 stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
                 #페이지네이션
                 with connection.cursor() as c:
@@ -550,6 +550,12 @@ def productManage(request):
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b])
+                    
+        elif process == 'barcodesearch':
+            form = ProductBarcodeSearchForm(request.POST)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode']
+                products = Product.objects.raw(SQLs.sql_productSearchByBarcode, [barcode])
 
     else:
         products = Product.objects.raw(SQLs.sql_productManage)
@@ -558,9 +564,10 @@ def productManage(request):
     product_register_form = ProductRegisterForm()
     product_update_form = ProductUpdateForm()
     product_search_form = ProductSearchForm()
+    product_barcode_search_form = ProductBarcodeSearchForm()
     return render(request, 'productManage.html', \
         {'products' : products, 'productRegisterForm' : product_register_form, 'productUpdateForm' : product_update_form, \
-            'productSearchForm' : product_search_form, 'this_page' : page, 'pages' : pages})
+            'productSearchForm' : product_search_form, 'productBarcodeSearchForm':product_barcode_search_form, 'this_page' : page, 'pages' : pages})
 
 # 고객 관리
 @login_check_central
