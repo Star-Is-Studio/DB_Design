@@ -288,3 +288,7 @@ class SQLs:
     sql_userIdGetter = 'select id, password, store_id, emp_pos_code \
         from mainapp_user \
         where user_id=%s'
+
+    sql_customerMileageAdd = 'update mainapp_customer set \
+        mileage = mileage + %s where id=%s '
+        

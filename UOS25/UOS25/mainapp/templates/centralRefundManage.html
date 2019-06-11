@@ -27,8 +27,8 @@
       <td>{{ refund.barcode }}</td>
       <td>{{ refund.quantity }}</td>
       <td>{{ refund.refund_timestamp }}</td>
-      <td>{{ refund.refund_reason_code }}</td>
-      <td>{{ refund.process_code }}</td>
+      <td>{{ refund.get_refund_reason_code_display }}</td>
+      <td>{{ refund.get_process_code_display }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ refund.id }}, '{{ refund.barcode }}')">삭제</button></td>
     </tr>

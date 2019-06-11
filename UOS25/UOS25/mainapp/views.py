@@ -993,6 +993,7 @@ def saleProduct(request):
             
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_receiptRegister, [trade_timestamp, employee_id, customer_id, pay_method, pay_info, store_id])
+
             
             return HttpResponseRedirect(reverse('saleProduct')+'?page=%s' % page)
         else:
@@ -1040,7 +1041,9 @@ def saleProductList(request):
                 
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
-                    
+                    if not receipt.customer_id is None:
+                        m = float(form.cleaned_data['barcode'].unit_price) * float(quantity) * 0.01
+                        cursor.execute(SQLs.sql_customerMileageAdd, [int(m), receipt.customer_id.id])                    
                 return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
             else:
                 print(form.errors)
