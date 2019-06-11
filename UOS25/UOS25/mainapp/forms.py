@@ -176,6 +176,10 @@ class ProductSearchForm(forms.Form):
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
 
+class ProductBarcodeSearchForm(forms.Form):
+    barcode = forms.DecimalField(required=True)
+
+
 class EmployeeRegisterForm(forms.ModelForm):
     class Meta:
         model = Employee

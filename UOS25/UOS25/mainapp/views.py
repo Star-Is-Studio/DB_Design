@@ -537,6 +537,12 @@ def productManage(request):
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b])
+                    
+        elif process == 'barcodesearch':
+            form = ProductBarcodeSearchForm(request.POST)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode']
+                products = Product.objects.raw(SQLs.sql_productSearchByBarcode, [barcode])
 
     else:
         products = Product.objects.raw(SQLs.sql_productManage)
@@ -545,9 +551,10 @@ def productManage(request):
     product_register_form = ProductRegisterForm()
     product_update_form = ProductUpdateForm()
     product_search_form = ProductSearchForm()
+    product_barcode_search_form = ProductBarcodeSearchForm()
     return render(request, 'productManage.html', \
         {'products' : products, 'productRegisterForm' : product_register_form, 'productUpdateForm' : product_update_form, \
-            'productSearchForm' : product_search_form, 'this_page' : page, 'pages' : pages})
+            'productSearchForm' : product_search_form, 'productBarcodeSearchForm':product_barcode_search_form, 'this_page' : page, 'pages' : pages})
 
 # 고객 관리
 @login_check_central
