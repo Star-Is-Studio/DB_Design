@@ -755,10 +755,10 @@ def orderManage(request):
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
-        f = request.POST.dict()
-        f['order_timestamp'] = f['order_timestamp'].replace("T"," ")
+        # f = request.POST.dict()
+        # f['order_timestamp'] = f['order_timestamp'].replace("T"," ")
         if process == 'register':
-            form = OrderRegisterForm(f)
+            form = OrderRegisterForm(request.POST)
         
         if form.is_valid():
             order_timestamp = form.cleaned_data['order_timestamp']
@@ -855,10 +855,10 @@ def centralRefundManage(request):
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
 
-        f = request.POST.dict()
+        # f = request.POST.dict()
 
         if process == 'register':
-            form = StoreRefundRegisterForm(f)
+            form = StoreRefundRegisterForm(request.POST)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode'].barcode
                 quantity = form.cleaned_data['quantity']

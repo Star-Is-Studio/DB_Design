@@ -115,7 +115,7 @@ class SQLs:
     sql_stockManage = "select id, store_id, display_location_code, barcode, quantity \
         from MAINAPP_STOCK \
         where store_id = %s \
-        order by id"
+        order by barcode"
 
     sql_stockRegister = "insert into MAINAPP_STOCK(store_id, display_location_code, barcode, quantity) \
         values (%s, %s, %s, %s)"
@@ -211,7 +211,7 @@ class SQLs:
 
     sql_franchiseStoreRcptManage = "select id, store_id, rcpt_date, rcpt_amount\
         from MAINAPP_FRANCHISE_STORE_RCPT \
-        order by id"
+        order by rcpt_date desc"
 
     sql_franchiseStoreRcptRegister = "insert into MAINAPP_FRANCHISE_STORE_RCPT(store_id, rcpt_date, rcpt_amount) \
         values (%s, %s, %s)"

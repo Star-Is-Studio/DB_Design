@@ -133,7 +133,7 @@ class ProductRegisterForm(forms.ModelForm):
         # for field_name in self.fields.keys():
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
-        self.fields['barcode'].widget.attrs.update({'min':'100000000000', 'max':'9999999999999'})
+        self.fields['barcode'].widget.attrs.update({'min':'1000000000000', 'max':'9999999999999'})
         self.fields['explain'].required = False
 
 class ProductUpdateForm(ProductRegisterForm):
