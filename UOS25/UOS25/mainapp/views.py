@@ -8,20 +8,25 @@ from mainapp.forms import *
 from hashlib import sha256
 import datetime, imghdr
 
+################################### 도우미 함수들 ###################################
+
 # 파일 업로드 핸들러 : 상품 사진 업로드용
 def handle_uploaded_file(f, fpath):
     with open('product_pic/' + str(fpath), 'wb+') as dest:
         for chunk in f.chunks():
             dest.write(chunk)
 
+# 사진 파일 요청시 응답
 def productPicture(request, *args, **kwargs):
     with open('product_pic/' + str(kwargs['pic_number']), 'rb') as f:
         img_type = str(imghdr.what(f))
         return HttpResponse(f.read(), content_type="image/"+img_type)
 
+# 데이터베이스 에러메시지 출력 및 자동 뒤로가기 : 예)외래키 제약 조건에 의한 삭제 거부
 def alertBack(msg):
     return "<script>alert('데이터베이스 에러  :  " + msg + " '); window.history.back();</script>"
 
+# 본사 로그인 체크 데코레이터
 def login_check_central(func):
     '''
     본사 로그인 체크 데코레이터, @login_check_central로 사용
@@ -37,6 +42,7 @@ def login_check_central(func):
         return func(request,*args,**kwargs)
     return checker
         
+# 지점 로그인 체크 데코레이터
 def login_check_store(func):
     '''
     지점 로그인 체크 데코레이터, @login_check_login로 사용
@@ -54,6 +60,7 @@ def login_check_store(func):
         return func(request,*args,**kwargs)
     return checker
 
+# 로그인 페이지
 def login(request):
     sess = request.session
     if request.method=='POST':
@@ -92,12 +99,13 @@ def login(request):
         #로그인 페이지 처리
         return render(request, 'login.html')
 
-# 패스워드 처리 확인을 위한 코드!!
+# 패스워드 처리 확인을 위한 코드(SHA256 계산)
 def hash_pwd(pwd):
     from hashlib import sha256
     pwd = sha256(pwd.encode()).hexdigest()
     return pwd
-    
+
+# 홈 화면(본사 및 지점)
 @login_check_central
 def indexAdmin(request):
     return render(request, 'indexAdmin.html')
@@ -106,7 +114,7 @@ def index(request):
     return render(request, 'index.html')
 
 
-# 본사 페이지
+################################### 본사 페이지 ###################################
 
 # 지점 관리
 @login_check_central
@@ -125,9 +133,11 @@ def franchiseManage(request):
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
 
+    # 등록, 갱신, 삭제, 검색
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
+        # 등록, 갱신
         if process in ('register', 'update'):
             if process == 'register':
                 form = StoreRegisterForm(request.POST)
@@ -143,17 +153,18 @@ def franchiseManage(request):
                 store_code = form.cleaned_data['store_code']
 
                 with connection.cursor() as cursor:
+                    # 등록
                     if process == 'register':
                         cursor.execute(SQLs.sql_storeRegister, ['', address, contact, store_pay, store_code])
                         store_id = Store.objects.raw(SQLs.sql_storeSearch, [address,contact,store_pay, store_pay])[0].id
-                        # 지점장 생성 로직
+                        # 지점장 생성 로직(로그인 계정)
                         user_id, password = '{}m'.format(store_id), hash_pwd('hoho')
                         cursor.execute(SQLs.sql_userRegister, [user_id, password, store_id, 0])
-
-                        # 점원 생성 로직
+                        # 점원 생성 로직(로그인 계정)
                         user_id, password = '{}e'.format(store_id), hash_pwd('hoho')
                         cursor.execute(SQLs.sql_userRegister, [user_id, password, store_id, 1])
-                        
+
+                    # 갱신    
                     elif process == 'update':
                         cursor.execute(SQLs.sql_storeUpdate, [address, contact, store_pay, store_code, id])
                 
@@ -161,7 +172,8 @@ def franchiseManage(request):
             else:
                 print(form.errors)
                 print('가 발생')
-
+        
+        # 삭제
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
             try:
@@ -171,6 +183,7 @@ def franchiseManage(request):
             except DatabaseError:
                 return HttpResponse(alertBack('지점 삭제는 거래 자료 보존을 위해 제한되어 있습니다. 수정 - 지점코드 변경을 해주세요.'))
 
+        # 검색
         elif process == 'search':
             form = StoreSearchForm(request.POST)
             if form.is_valid():
@@ -178,6 +191,7 @@ def franchiseManage(request):
                 contact = "%" + form.cleaned_data['contact'] + "%"
                 store_pay_min = 0.0 if form.cleaned_data['store_pay_min'] is None else float(form.cleaned_data['store_pay_min'])
                 store_pay_max = 100.0 if form.cleaned_data['store_pay_max'] is None else float(form.cleaned_data['store_pay_max'])
+
                 #페이지네이션
                 with connection.cursor() as c:
                     cntp = c.execute(SQLs.sql_storeSearchPage,[address, contact, store_pay_min, store_pay_max]).fetchone()
@@ -193,7 +207,7 @@ def franchiseManage(request):
                         pages = [a for a in range(max(1, page-2), j+2)]
                 stores = Store.objects.raw(SQLs.sql_storeSearch, [address, contact, store_pay_min, store_pay_max])
                 
-
+    # 전체 조회(기본 화면)
     else:
         stores = Store.objects.raw(SQLs.sql_franchiseManage)
         stores = stores[(10*(page-1)):10*page]
@@ -201,6 +215,7 @@ def franchiseManage(request):
         for store in stores:
             store.store_pay = str(store.store_pay*100) + "%"
 
+    # 화면 렌더링 및 출력
     store_register_form = StoreRegisterForm()
     store_update_form = StoreUpdateForm()
     store_search_form = StoreSearchForm()
@@ -225,9 +240,12 @@ def franchiseCostManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+
+    # 등록, 갱신, 삭제
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
+        # 등록, 갱신
         if process in ('register', 'update'):
             if process == 'register':
                 form = FranchiseStoreRcptRegisterForm(request.POST)
@@ -243,8 +261,10 @@ def franchiseCostManage(request):
                 rcpt_amount = form.cleaned_data['rcpt_amount']
                 
                 with connection.cursor() as cursor:
+                    # 등록
                     if process == 'register':
                         cursor.execute(SQLs.sql_franchiseStoreRcptRegister, [store_id, rcpt_date, rcpt_amount])
+                    # 갱신
                     elif process == 'update':
                         cursor.execute(SQLs.sql_franchiseStoreRcptUpdate, [rcpt_date, rcpt_amount, store_id, id])
                 
@@ -253,16 +273,19 @@ def franchiseCostManage(request):
                 print(form.errors)
                 print('가 발생')
 
+        # 삭제
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_franchiseStoreRcptDelete, [id])
             return HttpResponseRedirect('/central/franchiseCostManage?page=%s' % page)
 
+    # 전체 조회(기본 화면))
     else:
         franchiseStoreRcpts = Franchise_store_rcpt.objects.raw(SQLs.sql_franchiseStoreRcptManage)
         franchiseStoreRcpts = franchiseStoreRcpts[(10*(page-1)):10*page]
 
+    # 화면 렌더링 및 출력
     franchise_store_rcpt_register_form = FranchiseStoreRcptRegisterForm()
     franchise_store_rcpt_update_form = FranchiseStoreRcptUpdateForm()
 
@@ -286,9 +309,12 @@ def supplierManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+
+    # 등록, 갱신, 삭제, 검색
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
+        # 등록, 갱신
         if process in ('register', 'update'):
             if process == 'register':
                 form = SupplierRegisterForm(request.POST)
@@ -303,8 +329,10 @@ def supplierManage(request):
                 email = form.cleaned_data['email']
 
                 with connection.cursor() as cursor:
+                    # 등록
                     if process == 'register':
                         cursor.execute(SQLs.sql_supplierRegister, ['', name, contact, email])
+                    # 갱신
                     elif process == 'update':
                         cursor.execute(SQLs.sql_supplierUpdate, [name, contact, email, id])
                 
@@ -313,6 +341,7 @@ def supplierManage(request):
                 print(form.errors)
                 print('가 발생')
 
+        # 삭제
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
             try:
@@ -322,6 +351,7 @@ def supplierManage(request):
             except DatabaseError:  
                 return HttpResponse(alertBack("납품업체에서 공급한 상품정보를 먼저 제거하세요."))
 
+        # 검색
         elif process == 'search':
             form = SupplierSearchForm(request.POST)
             if form.is_valid():
@@ -329,7 +359,8 @@ def supplierManage(request):
                 contact = "%" + form.cleaned_data['contact'] + "%"
                 email = "%" + form.cleaned_data['email'] + "%"
                 suppliers = Supplier.objects.raw(SQLs.sql_supplierSearch, [name, contact, email])
-                                #페이지네이션
+
+                #페이지네이션
                 with connection.cursor() as c:
                     cntp = c.execute(SQLs.sql_supplierSearchp,[name, contact, email]).fetchone()
                 cntp = int(cntp[0])
@@ -343,10 +374,12 @@ def supplierManage(request):
                     else:
                         pages = [a for a in range(max(1, page-2), j+2)]
 
+    # 전체 조회(기본 화면)
     else:
         suppliers = Supplier.objects.raw(SQLs.sql_supplierManage)
         suppliers = suppliers[(10*(page-1)):10*page]
 
+    # 화면 렌더링 및 출력
     supplier_register_form = SupplierRegisterForm()
     supplier_update_form = SupplierUpdateForm()
     supplier_search_form = SupplierSearchForm()
@@ -371,6 +404,7 @@ def storeOrderManage(request):
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
 
+    # 갱신(등록은 지점에서 가능)
     if request.method=='POST':
         process = str(request.GET.get('process', False))
         if process=='update':
@@ -385,10 +419,12 @@ def storeOrderManage(request):
                 
                 with connection.cursor() as cursor:
                     cursor.execute(SQLs.sql_storeOrderUpdate, [store_id, order_timestamp, complete_timestamp, process_code, id])
-                
+
+    # 전체 조회(기본 화면)
     orders = Order.objects.raw(SQLs.sql_storeOrderManage)
     orders = orders[(10*(page-1)):10*page]
     
+    # 화면 렌더링 및 출력
     store_order_update_form = StoreOrderUpdateForm()
     return render(request, 'storeOrderManage.html', {'orders':orders, 'this_page':page, 'pages':pages,
         'storeOrderUpdateForm':store_order_update_form})
@@ -396,6 +432,7 @@ def storeOrderManage(request):
 # 지점 주문내역 조회
 @login_check_central
 def storeOrderManageList(request):
+    # 주문번호 가져오기
     order_id = int(request.GET.get('order_id','Error'))
     
     #페이지네이션
@@ -412,7 +449,7 @@ def storeOrderManageList(request):
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
 
-
+    # 갱신(삭제는 지점에서 가능)
     if request.method=='POST':
         process = str(request.GET.get('process', False))
         if process=='update':
@@ -430,11 +467,13 @@ def storeOrderManageList(request):
                 print("non valid")
                 print(form.errors)
 
+    # 전체 조회(기본 화면)
     orders = Order_list.objects.raw(SQLs.sql_storeOrderListManage, [order_id])
     orders = orders[(10*(page-1)):10*page]
     for order in orders:
         order.subtotal = order.quantity * order.barcode.unit_price
     
+    # 화면 렌더링 및 출력
     store_order_manage_list_update_form = StoreOrderManageListUpdateForm()
     return render(request, 'storeOrderManageList.html', {'order_id':order_id,'orders':orders, 'this_page':page, 'pages':pages,
         'storeOrderManageListUpdateForm':StoreOrderManageListUpdateForm,})
@@ -456,6 +495,8 @@ def storeRefundManage(request):
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
 
+
+    # 갱신(등록은 지점에서 가능)
     if request.method=='POST':
         process = str(request.GET.get('process', False))
         if process=='update':
@@ -473,14 +514,14 @@ def storeRefundManage(request):
                     cursor.execute(SQLs.sql_centralStoreRefundUpdate, 
                         [store_id, barcode, refund_timestamp, refund_reason_code, process_code, id])
     
+    # 전체 조회(기본 화면)
     refunds = Store_refund.objects.raw(SQLs.sql_centralStoreRefundManage)
     refunds = refunds[(10*(page-1)):10*page]
+
+    # 화면 렌더링 및 출력
     store_refund_update_form = StoreRefundUpdateForm()
-    
     return render(request, 'centralStoreRefundManage.html', {'refunds':refunds, 'this_page':page, 'pages':pages,
         'storeRefundUpdateForm':store_refund_update_form})
-
-
 
 # 상품 관리
 @login_check_central
@@ -500,9 +541,11 @@ def productManage(request):
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
     
+    # 등록, 갱신, 삭제, 검색
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
+        # 등록, 갱신
         if process in ('register', 'update'):
             if process == 'register':
                 form = ProductRegisterForm(request.POST, request.FILES)
@@ -519,7 +562,6 @@ def productManage(request):
                 category_b = form.cleaned_data['category_b']
                 explain = form.cleaned_data['explain']
 
-                print(request.FILES)
                 # 사진 파일 처리
                 if request.FILES.get('picture_file', False):
                     if imghdr.what(request.FILES['picture_file']): # 이미지 파일이 맞다면
@@ -536,8 +578,10 @@ def productManage(request):
                             raise Http404("Picture File Check Error")
 
                 with connection.cursor() as cursor:
+                    # 등록
                     if process == 'register':
                         cursor.execute(SQLs.sql_productRegister, [barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path])
+                    # 갱신
                     elif process == 'update':
                         cursor.execute(SQLs.sql_productUpdate, [name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path, barcode])
                 
@@ -547,16 +591,17 @@ def productManage(request):
                 print('가 발생')
                 return HttpResponse(alertBack('상품정보가 올바른지, 중복 바코드가 존재하는지 확인해주세요.'))
 
+        # 삭제
         elif process == 'delete':
             barcode = int(request.POST.get('barcode', 'Error'))
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_productDelete, [barcode])
             return HttpResponseRedirect(reverse('productManage')+'?page=%s' % page)
 
+        # 검색
         elif process == 'search':
             form = ProductSearchForm(request.POST)
             if form.is_valid():
-                #print(form.cleaned_data)
                 barcode = "%%" if form.cleaned_data['barcode'] is None else str(form.cleaned_data['barcode'])
                 name = "%" + form.cleaned_data['name'] + "%"
                 supply_price_min = 0 if form.cleaned_data['supply_price_min'] is None else form.cleaned_data['supply_price_min']
@@ -567,13 +612,12 @@ def productManage(request):
                 category_a = "%%" if form.cleaned_data['category_a'] is None else str(form.cleaned_data['category_a'])
                 category_b = "%%" if form.cleaned_data['category_b'] is None else str(form.cleaned_data['category_b'])
 
-                ##print([barcode, name, supply_price_min, supply_price_max, unit_price_min, \
-                #    unit_price_max, supplier_id, category_a, category_b])
-
+                # 검색 쿼리
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b])
-                                #페이지네이션
+                
+                #페이지네이션
                 with connection.cursor() as c:
                     cntp = c.execute(SQLs.sql_productSearchp,[barcode, name, supply_price_min, supply_price_max, unit_price_min, \
                     unit_price_max, supplier_id, category_a, category_b]).fetchone()
@@ -588,17 +632,19 @@ def productManage(request):
                     else:
                         pages = [a for a in range(max(1, page-2), j+2)]
                     
-                    
+        # 검색(바코드 정확히 일치)
         elif process == 'barcodesearch':
             form = ProductBarcodeSearchForm(request.POST)
             if form.is_valid():
                 barcode = form.cleaned_data['barcode']
                 products = Product.objects.raw(SQLs.sql_productSearchByBarcode, [barcode])
 
+    # 전체 조회(기본 화면)
     else:
         products = Product.objects.raw(SQLs.sql_productManage)
         products = products[(10*(page-1)):10*page]
 
+    # 화면 렌더링 및 출력
     product_register_form = ProductRegisterForm()
     product_update_form = ProductUpdateForm()
     product_search_form = ProductSearchForm()
@@ -623,9 +669,12 @@ def customerManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+
+    # 등록, 갱신, 조회, 삭제
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
+        # 등록, 갱신
         if process in ('register', 'update'):
             if process == 'register':
                 form = CustomerRegisterForm(request.POST)
@@ -642,8 +691,10 @@ def customerManage(request):
                 contact = form.cleaned_data['contact']
 
                 with connection.cursor() as cursor:
+                    # 등록
                     if process == 'register':
                         cursor.execute(SQLs.sql_customerRegister, ['', name, mileage, gender, birthday, contact])
+                    # 갱신
                     elif process == 'update':
                         cursor.execute(SQLs.sql_customerUpdate, [name, mileage, gender, birthday, contact, id])
                 
@@ -652,6 +703,7 @@ def customerManage(request):
                 print(form.errors)
                 print('가 발생')
 
+        # 삭제
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
             try:
@@ -661,6 +713,7 @@ def customerManage(request):
             except DatabaseError:
                 return HttpResponse(alertBack("판매 기록이 있는 고객은 삭제 불가능합니다."))
 
+        # 검색
         elif process == 'search':
             form = CustomerSearchForm(request.POST)
             if form.is_valid():
@@ -672,10 +725,12 @@ def customerManage(request):
                 birthday_min = '1970-01-01' if form.cleaned_data['birthday_min'] is None else str(form.cleaned_data['birthday_min'])
                 birthday_max = '2100-12-12' if form.cleaned_data['birthday_max'] is None else str(form.cleaned_data['birthday_max'])
                 contact = "%" + form.cleaned_data['contact'] + "%"
-                print([name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
+                
+                # 검색 쿼리
                 customers = Customer.objects.raw(SQLs.sql_customerSearch,\
                     [name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact])
-                                                #페이지네이션
+                
+                #페이지네이션
                 with connection.cursor() as c:
                     cntp = c.execute(SQLs.sql_customerSearchp,[name, mileage_min, mileage_max, gender, birthday_min, birthday_max, contact]).fetchone()
                 cntp = int(cntp[0])
@@ -689,10 +744,12 @@ def customerManage(request):
                     else:
                         pages = [a for a in range(max(1, page-2), j+2)]
 
+    # 전체 조회(기본 화면)
     else:
         customers = Customer.objects.raw(SQLs.sql_customerManage)
         customers = customers[(10*(page-1)):10*page]
 
+    # 화면 렌더링 및 출력
     customer_register_form = CustomerRegisterForm()
     customer_update_form = CustomerUpdateForm()
     customer_search_form = CustomerSearchForm()
@@ -700,7 +757,7 @@ def customerManage(request):
         {'customers' : customers, 'customerRegisterForm' : customer_register_form, 'customerUpdateForm' : customer_update_form, \
             'customerSearchForm' : customer_search_form, 'this_page' : page, 'pages' : pages})
 
-# 가맹점 페이지
+#################################### 가맹점 페이지 ###################################
 
 # 상품 조회
 @login_check_store
@@ -928,6 +985,7 @@ def centralRefundManage(request):
     return render(request, 'centralRefundManage.html', \
         {'refunds' : refunds, 'storeRefundRegisterForm' : storeRefund_register_form, 'this_page' : page, 'pages' : pages})
 
+# 물품 판매
 @login_check_store
 def saleProduct(request):
     store_id = request.session['store_id']
@@ -975,6 +1033,7 @@ def saleProduct(request):
     return render(request, 'saleProduct.html', \
         {'receipts' : receipts, 'receiptRegisterForm' : receipt_register_form, 'this_page' : page, 'pages' : pages})
 
+# 물품 판매 상세 내역
 @login_check_store
 def saleProductList(request):
     receipt_id = int(request.GET.get('receipt_id', 'Error'))
@@ -1050,7 +1109,7 @@ def saleProductList(request):
         {'tradeList' : tradeList, 'tradeListRegisterForm' : tradeList_register_form, 'receipt': receipt, 'total_price' : total_price,\
         'customerRefundForm' : customer_refund_form, 'this_page' : page, 'pages' : pages})
 
-#재고 관리
+# 재고 관리
 @login_check_store
 def stockManage(request):
     store_id = request.session['store_id']
@@ -1113,7 +1172,7 @@ def stockManage(request):
         {'stocks' : stocks, 'stockRegisterForm' : stock_register_form, 'stockUpdateForm' : stock_update_form, \
             'this_page' : page, 'pages' : pages})
             
-
+# 유통기한 관리
 @login_check_store
 def expireDateManage(request):
     store_id = request.session['store_id']
@@ -1141,6 +1200,7 @@ def expireDateManage(request):
     return render(request, 'expireDateManage.html', \
         {'foods' : foods, 'this_page' : page, 'pages' : pages})
 
+# 매출관리
 @login_check_store
 def saleManage(request):
     records = []
@@ -1167,6 +1227,7 @@ def saleManage(request):
     
     return render(request, 'saleManage.html', {'records':records, 'this_page':page, 'pages':pages})
 
+# 유지비관리
 @login_check_store
 def maintenanceCostManage(request):
     store_id = request.session['store_id']
