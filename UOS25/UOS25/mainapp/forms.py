@@ -14,6 +14,7 @@ class StoreRegisterForm(forms.ModelForm):
         # for field_name in self.fields.keys():
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
+        self.fields['store_pay'].widget.attrs.update({'min':'0', 'max':'1'})
 
 class StoreUpdateForm(StoreRegisterForm):
     # PK 구분용
@@ -120,9 +121,11 @@ class CustomerSearchForm(forms.Form):
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
 class CustomerRefundRegisterForm(forms.ModelForm):
+    tlist_id = forms.DecimalField(widget=forms.HiddenInput())
+
     class Meta:
         model = Customer_refund
-        fields = ['id', 'refund_timestamp', 'refund_reason_code', 'trade_list_id']
+        fields = ['refund_timestamp', 'refund_reason_code']
 
         widgets = {'refund_timestamp' : DateTimePickerInput(), }
 
@@ -339,11 +342,14 @@ class ReceiptRegisterForm(forms.ModelForm):
         exclude = ['store_id', 'trade_timestamp']
 
     # # Bootstrap CSS 적용
-    def __init__(self, *args, **kwargs):
+    def __init__(self, store_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
     #     for field_name in self.fields.keys():
     #         self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
     #         self.fields[field_name].label = ''
+        # 지점 점원만 출력
+        store = Store.objects.get(id=store_id)
+        self.fields['employee_id'].queryset = Employee.objects.all().filter(store_id=store)
 
         self.fields['customer_id'].required = False
         self.fields['employee_id'].empty_label = "점원 선택"

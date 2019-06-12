@@ -1,10 +1,6 @@
 {% extends 'base.html' %}
 {% load bootstrap3 %}
 
-{% block calendar_widget %}
-{{ storeRefundRegisterForm.media }}
-{% endblock %}
-
 {% block content %}
 <div class="panel panel-default" style="margin-bottom:0px">
   <div class="panel-body" style="margin-left:50px">
@@ -18,7 +14,6 @@
       <th>수량</th>
       <th>반품요청일</th>
       <th>반품사유</th>
-      <th>처리코드</th>
     </tr>
   </thead>
   <tbody>
@@ -28,9 +23,8 @@
       <td>{{ refund.quantity }}</td>
       <td>{{ refund.refund_timestamp }}</td>
       <td>{{ refund.get_refund_reason_code_display }}</td>
-      <td>{{ refund.process_code }}</td>
-      <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
-        onclick="delete_onclick({{ refund.id }}, '{{ refund.barcode }}')">삭제</button></td>
+{% comment %}       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
+        onclick="delete_onclick({{ refund.id }}, '{{ refund.barcode }}')">삭제</button></td> {% endcomment %}
     </tr>
     {% endfor %}
   </tbody>
@@ -56,13 +50,14 @@
     </ul>
   </div>
 
-  <!-- 추가 버튼 -->
+{% comment %}   <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">반품 요청</button>
-  </div>
+  </div> {% endcomment %}
 
 </nav>
 
+{% comment %} <!--
 <!--add모달-->
 <div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="addLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -125,4 +120,5 @@ delete_onclick = function(id, name) {
     </div>
   </div>
 </div>
+--> {% endcomment %}
 {%endblock%}

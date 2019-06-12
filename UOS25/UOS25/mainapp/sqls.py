@@ -143,6 +143,13 @@ class SQLs:
         employed_date = %s, fire_date = %s, contact = %s, position_code = %s \
         where store_id = %s and id = %s"
 
+    sql_expireDateManage = "select id, store_id, display_location_code, st.barcode as barcode, quantity \
+        from MAINAPP_STOCK st, MAINAPP_PRODUCT p\
+        where store_id = %s and \
+        st.barcode = p.barcode and \
+        p.category_a in (1, 2) \
+        order by st.barcode"
+
     sql_stockManage = "select id, store_id, display_location_code, barcode, quantity \
         from MAINAPP_STOCK \
         where store_id = %s \
@@ -190,8 +197,10 @@ class SQLs:
         where id = %s \
         order by id desc"
 
-    sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(id, refund_timestamp, refund_reason_code, trade_list_id) \
-        values (%s, %s, %s, %s)"
+    sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(refund_timestamp, refund_reason_code, trade_list_id) \
+        values (%s, %s, %s)"
+    
+    sql_tradelistRefundMark = "update MAINAPP_TRADE_LIST set IS_REFUND = 'Y' where id = %s"
 
     sql_customerRefundDelete = "delete from MAINAPP_CUSTOMER_REFUND where id = %s"
 
@@ -237,10 +246,13 @@ class SQLs:
         order by id"
     
     #영수증 등록하기전에 충분한 재고의 갯수를 리턴
-    sql_tradeListRegisterCheck = "select quantity from MAINAPP_STOCK where BARCODE = %s"
+    sql_tradeListRegisterCheck = "select quantity from MAINAPP_STOCK \
+        where BARCODE = %s and store_id = %s \
+        order by quantity desc"
 
     #영수증 등록 후 재고에서 뺌
-    #sql_tradeListMinus = 
+    sql_tradeListMinusStock = 'update mainapp_stock set \
+        quantity = quantity - %s where barcode = %s and store_id = %s'
 
     sql_tradeListRegister = "insert into MAINAPP_TRADE_LIST(BARCODE, QUANTITY, IS_REFUND, RECEIPT_ID) \
         values (%s, %s, 'N', %s)"
@@ -284,6 +296,7 @@ class SQLs:
         process_code, order_id \
         from mainapp_order_list \
         where order_id=%s '
+
     sql_storeOrderListUpdate = "update mainapp_order_list set\
         sent_timestamp=%s, arrival_timestamp=%s, process_code=%s \
         where id=%s"
@@ -305,8 +318,9 @@ class SQLs:
     group by to_char(trade_timestamp,'YYYY-MM')
     '''
 
-    sql_salesMonthlyGett = '''
-    select  sum(p.unit_price*a.quantity) from mainapp_trade_list a, mainapp_product p
+    sql_salesMonthlyGet = '''
+    select  sum(p.unit_price*a.quantity) 
+    from mainapp_trade_list a, mainapp_product p
     where a.receipt_id in 
     (select id from mainapp_receipt where to_char(trade_timestamp, 'YYYY-MM') = %s and store_id=%s )
     and p.barcode=a.barcode

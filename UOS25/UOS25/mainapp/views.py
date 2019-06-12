@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.db import connection
+from django.db import connection, DatabaseError
 from mainapp.models import *
 from mainapp.query import *
 from mainapp.sqls import SQLs
@@ -164,9 +164,12 @@ def franchiseManage(request):
 
         elif process == 'delete':
             id = int(request.POST.get('id', 'Error'))
-            with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_storeDelete, [id])
-            return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_storeDelete, [id])
+                return HttpResponseRedirect(reverse('franchiseManage')+'?page=%s' % page)
+            except DatabaseError:
+                return HttpResponse(alertBack('지점 삭제는 거래 자료 보존을 위해 제한되어 있습니다. 수정 - 지점코드 변경을 해주세요.'))
 
         elif process == 'search':
             form = StoreSearchForm(request.POST)
@@ -194,6 +197,9 @@ def franchiseManage(request):
     else:
         stores = Store.objects.raw(SQLs.sql_franchiseManage)
         stores = stores[(10*(page-1)):10*page]
+
+        for store in stores:
+            store.store_pay = str(store.store_pay*100) + "%"
 
     store_register_form = StoreRegisterForm()
     store_update_form = StoreUpdateForm()
@@ -711,59 +717,10 @@ def productManageStore(request):
     if request.method == 'POST':
         process = str(request.GET.get('process', False))
         
-        if process in ('register', 'update'):
-            if process == 'register':
-                form = ProductRegisterForm(request.POST, request.FILES)
-            elif process == 'update' :
-                instance = Product.objects.get(barcode=request.POST.get('barcode', 'Error')) # 해당 id가 있는지 확인
-                form = ProductUpdateForm(request.POST, request.FILES, instance=instance)
-            if form.is_valid():
-                barcode = form.cleaned_data['barcode']
-                name = form.cleaned_data['name']
-                supply_price = form.cleaned_data['supply_price']
-                unit_price = form.cleaned_data['unit_price']
-                supplier_id = form.cleaned_data['supplier_id'].id
-                category_a = form.cleaned_data['category_a']
-                category_b = form.cleaned_data['category_b']
-                explain = form.cleaned_data['explain']
-
-                print(request.FILES)
-                # 사진 파일 처리
-                if request.FILES.get('picture_file', False):
-                    if imghdr.what(request.FILES['picture_file']): # 이미지 파일이 맞다면
-                        print('이미지 파일 감지')
-                        handle_uploaded_file(request.FILES['picture_file'], barcode)
-                        picture_file_path = barcode
-                else:
-                    if process == 'register':
-                        picture_file_path = None
-                    elif process == 'update':
-                        try:
-                            picture_file_path = Product.objects.get(pk=barcode).picture_file_path
-                        except Product.DoesNotExist:
-                            raise Http404("Picture File Check Error")
-
-                with connection.cursor() as cursor:
-                    if process == 'register':
-                        cursor.execute(SQLs.sql_productRegister, [barcode, name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path])
-                    elif process == 'update':
-                        cursor.execute(SQLs.sql_productUpdate, [name, supply_price, unit_price, supplier_id, category_a, category_b, explain, picture_file_path, barcode])
-                
-                return HttpResponseRedirect(reverse('productManageStore')+'?page=%s' % page)
-            else:
-                print(form.errors)
-                print('가 발생')
-
-        elif process == 'delete':
-            barcode = int(request.POST.get('barcode', 'Error'))
-            with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_productDelete, [barcode])
-            return HttpResponseRedirect(reverse('productManageStore')+'?page=%s' % page)
-
-        elif process == 'search':
+        if process == 'search':
             form = ProductSearchForm(request.POST)
             if form.is_valid():
-                #print(form.cleaned_data)
+                
                 barcode = "%%" if form.cleaned_data['barcode'] is None else str(form.cleaned_data['barcode'])
                 name = "%" + form.cleaned_data['name'] + "%"
                 supply_price_min = 0 if form.cleaned_data['supply_price_min'] is None else form.cleaned_data['supply_price_min']
@@ -774,17 +731,16 @@ def productManageStore(request):
                 category_a = "%%" if form.cleaned_data['category_a'] is None else str(form.cleaned_data['category_a'])
                 category_b = "%%" if form.cleaned_data['category_b'] is None else str(form.cleaned_data['category_b'])
 
-                ##print([barcode, name, supply_price_min, supply_price_max, unit_price_min, \
-                #    unit_price_max, supplier_id, category_a, category_b])
-
                 products = Product.objects.raw(SQLs.sql_productSearch, \
                     [barcode, name, supply_price_min, supply_price_max, unit_price_min, \
-                    unit_price_max, supplier_id, category_a, category_b])
-                                                                #페이지네이션
-                with connection.cursor() as c:
-                    cntp = c.execute(SQLs.sql_productSearchp,[barcode, name, supply_price_min, supply_price_max, unit_price_min, \
-                    unit_price_max, supplier_id, category_a, category_b]).fetchone()
-                cntp = int(cntp[0])
+                    unit_price_max, supplier_id, category_a, category_b])[:]
+                
+                #페이지네이션
+                # with connection.cursor() as c:
+                #     cntp = c.execute(SQLs.sql_productSearchp,[barcode, name, supply_price_min, supply_price_max, unit_price_min, \
+                #     unit_price_max, supplier_id, category_a, category_b]).fetchone()
+                # cntp = int(cntp[0])
+                cntp = len(products)
                 page = int(request.GET.get('page', 1))#현재페이지
                 j = int(cntp/10)#5보다작으면 처리필요
                 if j>=5:
@@ -795,15 +751,20 @@ def productManageStore(request):
                     else:
                         pages = [a for a in range(max(1, page-2), j+2)]
 
+        elif process == 'barcodesearch':
+            form = ProductBarcodeSearchForm(request.POST)
+            if form.is_valid():
+                barcode = form.cleaned_data['barcode']
+                products = Product.objects.raw(SQLs.sql_productSearchByBarcode, [barcode])
+
     else:
         products = Product.objects.raw(SQLs.sql_productManage)
         products = products[(10*(page-1)):10*page]
 
-    product_register_form = ProductRegisterForm()
-    product_update_form = ProductUpdateForm()
     product_search_form = ProductSearchForm()
+    product_barcode_search_form = ProductBarcodeSearchForm()
     return render(request, 'productManageStore.html', \
-        {'products' : products, 'productRegisterForm' : product_register_form, 'productUpdateForm' : product_update_form, \
+        {'products' : products, 'productBarcodeSearchForm' : product_barcode_search_form, \
             'productSearchForm' : product_search_form, 'this_page' : page, 'pages' : pages})
 
 # 주문 관리
@@ -994,7 +955,6 @@ def saleProduct(request):
             with connection.cursor() as cursor:
                 cursor.execute(SQLs.sql_receiptRegister, [trade_timestamp, employee_id, customer_id, pay_method, pay_info, store_id])
 
-            
             return HttpResponseRedirect(reverse('saleProduct')+'?page=%s' % page)
         else:
             print(form.errors)
@@ -1004,7 +964,7 @@ def saleProduct(request):
         receipts = Receipt.objects.raw(SQLs.sql_saleProductManage, [store_id])
         receipts = receipts[(10*(page-1)):10*page]
 
-    receipt_register_form = ReceiptRegisterForm()
+    receipt_register_form = ReceiptRegisterForm(store_id)
 
     return render(request, 'saleProduct.html', \
         {'receipts' : receipts, 'receiptRegisterForm' : receipt_register_form, 'this_page' : page, 'pages' : pages})
@@ -1026,22 +986,50 @@ def saleProductList(request):
             if form.is_valid():
                 barcode = form.cleaned_data['barcode'].barcode
                 quantity = form.cleaned_data['quantity']
-                
-                with connection.cursor() as cursor:
-                    cursor.execute(SQLs.sql_tradeListRegisterCheck, [barcode])
-                    records = cursor.fetchall()
-                    print(records)
-                    cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
-                    if not receipt.customer_id is None:
-                        m = float(form.cleaned_data['barcode'].unit_price) * float(quantity) * 0.01
-                        cursor.execute(SQLs.sql_customerMileageAdd, [int(m), receipt.customer_id.id])                    
-                return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
+                try:
+                    with connection.cursor() as cursor:
+                        cursor.execute(SQLs.sql_tradeListRegisterCheck, [barcode, store_id])
+                        stock_quantity = cursor.fetchone()
+                        if stock_quantity is not None:
+                            stock_quantity = stock_quantity[0]
+                        #재고 체크
+                        if stock_quantity is None or stock_quantity < quantity :
+                            return HttpResponse(alertBack('현재 상품 재고가 부족합니다.'))
+                        
+                        #재고 빼기.
+                        cursor.execute(SQLs.sql_tradeListMinusStock, [quantity, barcode, store_id])
+                        
+                        #거래기록 삽입.
+                        cursor.execute(SQLs.sql_tradeListRegister, [barcode, quantity, receipt_id])
+
+                        #마일리지 추가.
+                        if not receipt.customer_id is None:
+                            m = float(form.cleaned_data['barcode'].unit_price) * float(quantity) * 0.01
+                            cursor.execute(SQLs.sql_customerMileageAdd, [int(m), receipt.customer_id.id])                    
+                    return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
+                except DatabaseError:
+                    return HttpResponse(alertBack('관리자 문의 요망'))
             else:
                 print(form.errors)
                 print('가 발생')
+        
+        elif process == 'refund':
+            form = CustomerRefundRegisterForm(request.POST)
+            
+            if form.is_valid():
+                trade_list_id = form.cleaned_data['tlist_id']
+                refund_timestamp = form.cleaned_data['refund_timestamp']
+                refund_reason_code = form.cleaned_data['refund_reason_code']
+
+                with connection.cursor() as cursor:
+                    cursor.execute(SQLs.sql_customerRefundRegister, [refund_timestamp, refund_reason_code, trade_list_id])
+                    cursor.execute(SQLs.sql_tradelistRefundMark, [trade_list_id])
+
+                return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
 
     else:
         tradeList = Trade_list.objects.raw(SQLs.sql_tradeListManage, [receipt_id])
+        tradeList = tradeList[(10*(page-1)):10*page]
 
         total_price = 0
         for trade in tradeList:
@@ -1050,10 +1038,11 @@ def saleProductList(request):
             total_price += trade.subtotal_price
 
     tradeList_register_form = TradeListRegisterForm()
+    customer_refund_form = CustomerRefundRegisterForm()
 
     return render(request, 'saleProductList.html', \
         {'tradeList' : tradeList, 'tradeListRegisterForm' : tradeList_register_form, 'receipt': receipt, 'total_price' : total_price,\
-        'this_page' : page, 'pages' : pages})
+        'customerRefundForm' : customer_refund_form, 'this_page' : page, 'pages' : pages})
 
 #재고 관리
 @login_check_store
@@ -1119,9 +1108,32 @@ def stockManage(request):
             'this_page' : page, 'pages' : pages})
             
 
-
+@login_check_store
 def expireDateManage(request):
-    return render(request, 'expiryDateManage.html')
+    store_id = request.session['store_id']
+
+    #페이지네이션
+    with connection.cursor() as c:
+        cnt = c.execute(SQLs.sql_expireDateManage, [store_id]).fetchone()
+    cnt = int(cnt[0])
+    page = int(request.GET.get('page', 1))#현재페이지
+    j = int(cnt/10)#5보다작으면 처리필요
+    if j>=5:
+        pages = [a for a in range(max(1, page-2), max(5, page+2)+1)]
+    else:
+        if cnt%10==0:
+            pages = [a for a in range(max(1, page-2), j+1)]
+        else:
+            pages = [a for a in range(max(1, page-2), j+2)]
+
+    if request.method == 'POST':
+        pass
+    else:
+        foods = Stock.objects.raw(SQLs.sql_expireDateManage, [store_id])
+        foods = foods[(10*(page-1)):10*page]
+
+    return render(request, 'expireDateManage.html', \
+        {'foods' : foods, 'this_page' : page, 'pages' : pages})
 
 @login_check_store
 def saleManage(request):
@@ -1131,8 +1143,8 @@ def saleManage(request):
         months = cursor.execute(SQLs.sql_salesMonthlyGroup,[store_id]).fetchall()
         for dat in months:
             dat = dat[0]
-            print(dat, request.store_id)
-            value = cursor.execute(SQLs.sql_salesMonthlyGett,[dat, store_id]).fetchone()[0]
+            # print(dat, request.store_id)
+            value = cursor.execute(SQLs.sql_salesMonthlyGet,[dat, store_id]).fetchone()[0]
             records.append([dat, value if not value is None else 0])
 
     #페이지네이션
@@ -1285,46 +1297,54 @@ def customerRefundManage(request):
             pages = [a for a in range(max(1, page-2), j+1)]
         else:
             pages = [a for a in range(max(1, page-2), j+2)]
+
     if request.method == 'POST':
-        process = str(request.GET.get('process', False))
+        pass
+        # process = str(request.GET.get('process', False))
 
-        f = request.POST.dict()
+        # f = request.POST.dict()
 
-        if process == 'register':
-            form = CustomerRefundRegisterForm(f)
-            if form.is_valid():
-                barcode = form.cleaned_data['barcode'].barcode
-                quantity = form.cleaned_data['quantity']
-                refund_timestamp = form.cleaned_data['refund_timestamp']
-                refund_reason_code = form.cleaned_data['refund_reason_code']
+        # if process == 'register':
+        #     form = CustomerRefundRegisterForm(f)
+        #     if form.is_valid():
+        #         barcode = form.cleaned_data['barcode'].barcode
+        #         quantity = form.cleaned_data['quantity']
+        #         refund_timestamp = form.cleaned_data['refund_timestamp']
+        #         refund_reason_code = form.cleaned_data['refund_reason_code']
                 
-                with connection.cursor() as cursor:
-                    cursor.execute(SQLs.sql_customerRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
+        #         with connection.cursor() as cursor:
+        #             cursor.execute(SQLs.sql_customerRefundRegister, [barcode, quantity, refund_timestamp, refund_reason_code, store_id])
                 
-                return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
-            else:
-                print(form.errors)
-                print('가 발생')
+        #         return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
+        #     else:
+        #         print(form.errors)
+        #         print('가 발생')
 
-        elif process == 'delete':
-            id = int(request.POST.get('id', 'Error'))
-            with connection.cursor() as cursor:
-                cursor.execute(SQLs.sql_customerRefundDelete, [id])
-            return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
+        # elif process == 'delete':
+        #     id = int(request.POST.get('id', 'Error'))
+        #     with connection.cursor() as cursor:
+        #         cursor.execute(SQLs.sql_customerRefundDelete, [id])
+        #     return HttpResponseRedirect(reverse('customerRefundManage')+'?page=%s' % page)
 
     else:
         refunds = Customer_refund.objects.raw(SQLs.sql_customerRefundManage, [store_id])
         refunds = refunds[(10*(page-1)):10*page]
 
-    customerRefund_register_form = CustomerRefundRegisterForm()
+        for refund in refunds:
+            tlist = refund.trade_list_id
+            refund.barcode = tlist.barcode
+            refund.quantity = tlist.quantity
+
+    # customerRefund_register_form = CustomerRefundRegisterForm()
 
     return render(request, 'customerRefundManage.html', \
-        {'refunds' : refunds, 'CustomerRefundRegisterForm' : customerRefund_register_form, 'this_page' : page, 'pages' : pages})
+        {'refunds' : refunds, 'this_page' : page, 'pages' : pages})
 
 # 근무 기록 관리
 @login_check_store
 def workListManage(request):
     store_id = request.session['store_id']
+    emp_pos = request.session['emp_pos']
 
     #페이지네이션
     with connection.cursor() as c:
@@ -1375,7 +1395,7 @@ def workListManage(request):
     worklist_register_form = WorkListRegisterForm()
 
     return render(request, 'workListManage.html', \
-        {'worklists' : worklists, 'workListRegisterForm' : worklist_register_form, 'this_page' : page, 'pages' : pages})
+        {'emp_pos' : emp_pos, 'worklists' : worklists, 'workListRegisterForm' : worklist_register_form, 'this_page' : page, 'pages' : pages})
 
 # 월급 조회
 @login_check_store

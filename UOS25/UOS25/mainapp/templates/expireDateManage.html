@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load bootstrap3 %}
+{% block content %}
+<div class="panel panel-default" style="margin-bottom:0px">
+  <div class="panel-body" style="margin-left:50px">
+    <h1>유통기한 관리</h1>
+  </div>
+</div>
+<table class="table table-striped" style="margin-left:5px">
+  <thead>
+    <tr>
+      <th>식품</th>
+      <th>전시 위치</th>
+      <th>수량</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for food in foods %}
+    <tr>
+      <td>{{ food.barcode }}</td>
+      <td>{{ food.get_display_location_code_display }}</td>
+      <td>{{ food.quantity }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!--추가 버튼 및 페이지 표시 -->
+<nav>
+  <div class="text-center">
+    <ul class="pagination">
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+      {% for page in pages %}
+      {% if this_page == page %}
+      <li class="active"><a href="?page={{page}}">{{page}}</a></li>
+      {% else %}
+      <li><a href="?page={{page}}">{{page}}</a></li>
+      {% endif %}
+      {% endfor %}
+      <li>
+          <span aria-hidden="true">-</span>
+      </li>
+    </ul>
+  </div>
+
+</nav>
+
+{%endblock%}

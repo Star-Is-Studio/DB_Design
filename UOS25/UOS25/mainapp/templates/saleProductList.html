@@ -3,6 +3,7 @@
 
 {% block calendar_widget %}
 {{ tradeListRegisterForm.media }}
+{{ customerRefundForm.media }}
 {% endblock %}
 
 {% block content %}
@@ -17,6 +18,7 @@
       <th>바코드</th>
       <th>수량</th>
       <th>소계</th>
+      <th>반품</th>
     </tr>
   </thead>
   <tbody>
@@ -25,6 +27,13 @@
       <td>{{ trade.barcode }}</td>
       <td>{{ trade.quantity }}</td>
       <td>{{ trade.subtotal_price }}</td>
+      <td>{% if trade.is_refund == 'N' %}
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#refund" 
+        onclick="refund_onclick('{{ trade.id }}');">반품</button>
+          {% else %}
+          반품됨
+          {% endif %}
+      </td>
     </tr>
     {% endfor %}
     <tr>
@@ -87,5 +96,37 @@
   </div>
 </div>
 
+<script type="text/javascript">
+refund_onclick = function(tlist_id) {
+  $("#id_tlist_id").val(tlist_id);
+}
+</script>
+<!--update모달-->
+<div class="modal fade" id="refund" tabindex="-1" role="dialog" aria-labelledby="updateLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <!-- 모달 창 제목 -->
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="updateLabel">반품하기</h4>
+      </div>
+
+      <!-- 모달 창 내용 -->
+      <form action="{% url 'saleProductList' %}?receipt_id={{ receipt.id }}&process=refund&page={{this_page}}" method="POST">
+      <div class="modal-body input-group">
+        {% bootstrap_form customerRefundForm %}
+        {% csrf_token %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">확인</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+      </div>
+
+      </form>
+    </div>
+  </div>
+</div>
 
 {%endblock%}
