@@ -17,11 +17,11 @@
       <th>직원명</th>
       <th>근무시작</th>
       <th>근무종료</th>
-      {% if request.emp_pos == '0' %}
-        <th>확인하기</th>
-      {% endif %}
-      <th>점주확인</th>
+      <th>점주확인여부</th>
+      {% if emp_pos == 0 %}
+      <th>확인</th>
       <th>삭제</th>
+      {% endif %}
     </tr>
   </thead>
   <tbody>
@@ -32,13 +32,18 @@
       <td>{{ worklist.workend_timestamp }}</td>
       <td>{{ worklist.get_storeowner_check_display }}</td>
       <td>
-        {% if request.emp_pos == '0' and worklist.storeowner_check == 'N' %}
+        {% if emp_pos == 0 %}
+          {% if worklist.storeowner_check == 'N' %}
           <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirm" 
-        onclick="confirm_onclick({{ worklist.id }})">확인</button></td>
+          onclick="confirm_onclick({{ worklist.id }})">확인</button></td>
+          {% endif %}
         {% endif %}
       <td>
+        {% if emp_pos == 0%}
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
-        onclick="delete_onclick({{ worklist.id }})">삭제</button></td>
+        onclick="delete_onclick({{ worklist.id }})">삭제</button>
+        {% endif %}
+      </td>
     </tr>
     {% endfor %}
   </tbody>
@@ -120,7 +125,7 @@ confirm_onclick = function(id) {
       </div>
 
       <!-- 모달 창 내용 -->
-      <form action="{% url 'workListManage' %}?process=confirm&page={{this_page}}" method="POST">
+      <form action="{% url 'workListManage' %}?process=delete&page={{this_page}}" method="POST">
       <div class="modal-body">
         이 기록을 정말로 취소하시겠습니까?
         <input type="hidden" id="del_id" name="id" value=""> 

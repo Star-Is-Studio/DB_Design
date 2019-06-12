@@ -25,7 +25,7 @@
       <td>{{ store.contact }}</td>
       <td>{{ store.store_pay }}</td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#update" 
-        onclick="update_onclick({{ store.id }}, '{{ store.address }}', '{{ store.contact }}', {{ store.store_pay }}, {{ store.store_code }})">수정</button></td>
+        onclick="update_onclick({{ store.id }}, '{{ store.address }}', '{{ store.contact }}', '{{ store.store_pay }}', {{ store.store_code }})">수정</button></td>
       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" onclick="delete_onclick({{ store.id }})">폐업</button></td>
     </tr>
     {% endfor %}
