@@ -11,12 +11,9 @@ class StoreRegisterForm(forms.ModelForm):
     # Bootstrap CSS 적용
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-<<<<<<< HEAD
         # for field_name in self.fields.keys():
             # self.fields[field_name].widget.attrs.update({'class':'form-control', 'placeholder' : field_name})
             # self.fields[field_name].label = ''
-=======
->>>>>>> 4c9bf3d1a710ae18f8eddb322a51a2012496f566
         self.fields['store_pay'].widget.attrs.update({'min':'0', 'max':'1'})
 
 class StoreUpdateForm(StoreRegisterForm):
@@ -241,7 +238,6 @@ class ReceiptRegisterForm(forms.ModelForm):
         model = Receipt
         exclude = ['store_id', 'trade_timestamp']
 
-<<<<<<< HEAD
     # # Bootstrap CSS 적용
     def __init__(self, store_id, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -251,13 +247,6 @@ class ReceiptRegisterForm(forms.ModelForm):
         # 지점 점원만 출력
         store = Store.objects.get(id=store_id)
         self.fields['employee_id'].queryset = Employee.objects.all().filter(store_id=store)
-=======
-    def __init__(self, store_id, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        store = Store.objects.get(id=store_id)
-        self.fields['employee_id'].queryset = Employee.objects.filter(store_id=store)
->>>>>>> 4c9bf3d1a710ae18f8eddb322a51a2012496f566
 
         self.fields['customer_id'].required = False
         self.fields['employee_id'].empty_label = "점원 선택"
