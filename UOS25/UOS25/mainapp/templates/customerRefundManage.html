@@ -23,11 +23,8 @@
       <td>{{ refund.quantity }}</td>
       <td>{{ refund.refund_timestamp }}</td>
       <td>{{ refund.get_refund_reason_code_display }}</td>
-<<<<<<< HEAD
 {% comment %}       <td><button type="button" class="btn btn-success" data-toggle="modal" data-target="#del" 
         onclick="delete_onclick({{ refund.id }}, '{{ refund.barcode }}')">삭제</button></td> {% endcomment %}
-=======
->>>>>>> 4c9bf3d1a710ae18f8eddb322a51a2012496f566
     </tr>
     {% endfor %}
   </tbody>
@@ -53,7 +50,6 @@
     </ul>
   </div>
 
-<<<<<<< HEAD
 {% comment %}   <!-- 추가 버튼 -->
   <div class="btn-group" role="group" style="margin-top:-100px;margin-left: 20px">
     <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add">반품 요청</button>
@@ -125,10 +121,4 @@ delete_onclick = function(id, name) {
   </div>
 </div>
 --> {% endcomment %}
-=======
-
-</nav>
-
-
->>>>>>> 4c9bf3d1a710ae18f8eddb322a51a2012496f566
 {%endblock%}

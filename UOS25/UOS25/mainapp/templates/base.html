@@ -228,6 +228,37 @@
         </div>
       </div>
 
+      <!--
+      <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">
+                  &times;
+                </span>
+              </button>
+              <h4 class="modal-title" id="signupModalLabel">회원등록</h4>
+              <form method="POST" action="{% url 'login' %}">
+                <div class="form-group">
+                  <div class="modal-body">
+                    <label for="userId">회원등록</label>
+                    <input type="text" class="form-control" id="userId" name="userId" maxlength="50" style="width:auto">
+                  </div>
+                  <div class="modal-footer">
+                    {%csrf_token%}
+                    <button type="submit" class="btn btn-primary">회원등록</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      -->
+
       <!-- 페이지 하단 푸터 -->
       <footer style="width:100%;background-color: #e4bcbc">
         <br>
