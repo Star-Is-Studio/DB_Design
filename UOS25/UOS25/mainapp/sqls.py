@@ -192,10 +192,12 @@ class SQLs:
 
     sql_storeRefundDelete = "delete from MAINAPP_STORE_REFUND where id = %s"
 
-    sql_customerRefundManage = "select id, refund_timestamp, refund_reason_code, trade_list_id \
-        from MAINAPP_CUSTOMER_REFUND \
-        where id = %s \
-        order by id desc"
+    sql_customerRefundManage = "select cr.id as id, refund_timestamp, refund_reason_code, trade_list_id \
+        from MAINAPP_CUSTOMER_REFUND cr, MAINAPP_TRADE_LIST tr, MAINAPP_RECEIPT rc \
+        where cr.trade_list_id = tr.id and \
+        tr.receipt_id = rc.id and \
+        rc.store_id = %s\
+        order by cr.id desc"
 
     sql_customerRefundRegister = "insert into MAINAPP_CUSTOMER_REFUND(refund_timestamp, refund_reason_code, trade_list_id) \
         values (%s, %s, %s)"
