@@ -1009,6 +1009,7 @@ def saleProductList(request):
                     return HttpResponseRedirect(reverse('saleProductList')+'?receipt_id=%s&page=%s' % (receipt_id, page))
                 except DatabaseError:
                     return HttpResponse(alertBack('관리자 문의 요망'))
+
             else:
                 print(form.errors)
                 print('가 발생')
